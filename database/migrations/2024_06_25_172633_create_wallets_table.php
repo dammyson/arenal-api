@@ -17,7 +17,6 @@ return new class extends Migration
             $table->decimal('balance', 8, 2)->default(0);
             $table->enum('revenue_share_group', ['platform_owner', 'partner', 'audience'])->nullable();
             $table->timestamps();
-            $table->timestamps();
         });
     }
 

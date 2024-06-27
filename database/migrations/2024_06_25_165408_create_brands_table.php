@@ -12,7 +12,21 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('brands', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
+            $table->string('name');
+            $table->string('image_url')->nullable();
+            $table->string('industry_code');
+            $table->string('sub_industry_code');
+            $table->string('slug');
+            $table->uuid('created_by');
+            $table->foreign('created_by')->references('id')->on('users')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
+                
+            $table->uuid('client_id');
+            $table->foreign('client_id')->references('id')->on('clients')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
             $table->timestamps();
         });
     }

@@ -13,10 +13,14 @@ return new class extends Migration
     {
         Schema::create('games', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('title');
+            $table->string('name');
             $table->string('type');
-            $table->url('image_url');
-            $table->boolean('isFavorite');
+            $table->string('image_url');
+            $table->boolean('is_favorite')->default(false);
+            $table->uuid('user_id');
+            $table->foreign('user_id')->references('id')->on('users')
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
             $table->timestamps();
         });
     }

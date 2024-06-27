@@ -14,6 +14,11 @@ return new class extends Migration
         Schema::create('campaign_game_rules', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('rule_description');
+            $table->uuid('campaign_id');
+            $table->foreign('campaign_id')->references('id')->on('campaigns')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
+
             $table->uuid('game_id');
             $table->foreign('game_id')->references('id')->on('games')
                 ->onDelete('cascade')

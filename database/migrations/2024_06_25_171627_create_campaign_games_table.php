@@ -15,6 +15,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->uuid('campaign_id')->index();
             $table->uuid('game_id')->index();
+            $table->string('details');
             $table->timestamps();
         });
     }
