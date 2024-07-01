@@ -2,14 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Models\Game;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use Carbon\Carbon;
+use App\Http\Requests\StoreGameRequest;
+use App\Models\CampaignGame;
+use PhpParser\Node\Expr\FuncCall;
 
 class GameController extends Controller
 {
-    //
     public function index() {
 
         try {
@@ -33,19 +36,9 @@ class GameController extends Controller
 
     }
 
-    // custom request handler will be made in future
-    public function storeGame(Request $request) {
-        $validated = $request->validate([
-            'name' => 'required',
-            'type' => 'required',
-            'image_url' => 'required',
-            'is_favorite' => 'sometimes' // will be removed later
-        ]);
-    
-
-        
-
-        try {
+   
+    public function storeGame(StoreGameRequest $request) {
+       try {
 
             $user = $request->user();
 
@@ -55,15 +48,12 @@ class GameController extends Controller
                     'message' => "unauthorized"
                 ], 401);
             }
+         
 
             $game = Game::create([
-                'name'=> $request->name,
-                'type' => $validated['is_favorite'],
-                'image_url' => $validated['image_url'],
-                'is_favorite' => $validated['is_favorite'] // should be removed later
+                ...$request->validated(),
+                'user_id' => $user->id
             ]);
-           
-            // dd($game);
 
         } catch (\Throwable $throwable) {
 
@@ -74,12 +64,16 @@ class GameController extends Controller
             ], 500);
         }
 
-        return response()->json(["error" => "false", $game], 200);
+        return response()->json([
+            "error" => "false",         
+            "game" => $game
+        ], 200);
     }
 
     public function showGame($gameId) {
         try {
-           $game = Game::find($gameId)->with('rules');
+            
+            $game = Game::where('id', $gameId)->with('rules')->first();
 
            if (!$game) {
             return response()->json(['error' => 'false', 'message' => 'no game found'], 404);
@@ -94,7 +88,10 @@ class GameController extends Controller
             ], 500);
         }
 
-        return response()->json(["error" => "false", $game], 200);
+        return response()->json([
+            "error" => "false",
+            "game_with_rules" => $game
+        ], 200);
     }
 
     public function updateGame(Request $request, $game_id) {
@@ -106,6 +103,16 @@ class GameController extends Controller
 
 
         try {
+
+            $user = $request->user();
+
+            if ($user->is_audience) {
+                return response()->json([
+                    'error' => true, 
+                    'message' => "unauthorized"
+                ], 401);
+            }
+            
             $game = Game::find($game_id);
 
             if (!$game) {
@@ -140,19 +147,30 @@ class GameController extends Controller
         try {
 
             $categoryName = $validated['type'];
+            
             $start_week = Carbon::now()->startOfWeek()->format('Y-m-d');
             $end_week = Carbon::now()->endOfWeek()->format('Y-m-d');
+            
     
-            if ($categoryName !== "all") {
-                $games = Game::whereDate('created_at', '>=', $start_week)
-                    ->whereDate('created_at', '<=', $end_week);
+            if ($categoryName == "all") {
+                $games = CampaignGame::whereHas('game', function ($query) use($start_week, $end_week) {
+                    $query->whereDate('created_at', '>=', $start_week)
+                    ->whereDate('created_at', '<=', $end_week); 
+                   
+                })->with('game')->get();
+                
+        
             
             } else {
-                $games = Game::where('type', $categoryName)
+                
+                $games = CampaignGame::whereHas('game', function ($query) use($start_week, $end_week, $categoryName) {
+                    $query
+                    ->where('type', $categoryName)
                     ->whereDate('created_at', '>=', $start_week)
-                    ->whereDate('created_at', '<=', $end_week)  
-                    ->get();
-    
+                    ->whereDate('created_at', '<=', $end_week); 
+                   
+                })->with('game')->get();
+                
             }
         } catch(\Throwable $throwable) {
             
@@ -163,7 +181,7 @@ class GameController extends Controller
             ], 500);
         }
 
-        return response()->json(["error" => "false", ...$games], 200);
+        return response()->json(["error" => "false", $games], 200);
 
     }
 
@@ -192,38 +210,18 @@ class GameController extends Controller
     }
 
 
-    public function indexFavorite(Request $request)
-    {   
-        try {
-            $audience = $request->user();
-    
-            $favoriteGames = Game::where('user_id', $audience->id)
-                ->where('is_favorite', true)
-                ->get();
-
-        } catch(\Throwable $throwable) {
-            
-            report($throwable);
-            response()->json([
-                "error" => "true",
-                "message" => $throwable->getMessage()
-            ], 500);
-        }
-
-        return response()->json([
-            "error" => "false", 
-            $favoriteGames
-        ], 200);
-    }
 
     public function gamesByType() {
-        try {
-            $games = Game::groupBy('type');
+         // Retrieve CampaignGame models and join with games to group by game type
+        try{
+            $campaignGamesByType = CampaignGame::with('game')
+                ->get();
+
+            
 
         } catch(\Throwable $throwable) {
-            
             report($throwable);
-            response()->json([
+            return response()->json([
                 "error" => "true",
                 "message" => $throwable->getMessage()
             ], 500);
@@ -231,9 +229,10 @@ class GameController extends Controller
 
         return response()->json([
             "error" => "false", 
-            $games
+            "data" => $campaignGamesByType
         ], 200);
-
     }
+    
+
 
 }

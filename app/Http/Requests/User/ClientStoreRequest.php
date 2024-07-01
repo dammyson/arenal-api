@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\User;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class BrandStoreRequest extends FormRequest
+class ClientStoreRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,11 +24,11 @@ class BrandStoreRequest extends FormRequest
         return [
             'name' => ['required', 'string'],
             'image_url' => ['nullable', 'string'],
-            'industry_code' => ['nullable', 'string'],
-            'sub_industry_code' => ['nullable', 'string'],
-            'slug' => ['nullable', 'string'],
-            'created_by' => ['required', 'uuid', 'exists:Users,id'],
-            'client_id' => ['required', 'uuid', 'exists:Clients,id'],
+            'company_id' => ['required', 'uuid', 'exists:Companies,id'],
+            'street_address' => ['nullable', 'string'],
+            'city' => ['nullable', 'string'],
+            'state' => ['nullable', 'string'],
+            'nationality' => ['nullable', 'string'],
         ];
     }
 }

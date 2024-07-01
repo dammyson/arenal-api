@@ -2,29 +2,22 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Wallet\TransactionHistoryRequest;
 use App\Models\TransactionHistory;
 use Illuminate\Http\Request;
 
 class TransactionHistoryController extends Controller
 {
-    //
 
-    public function storeTxHistory(Request $request, $wallet_id)
+    public function storeTxHistory(TransactionHistoryRequest $request, $wallet_id)
     {   
-        $validated = $request->validate([
-            'receipient_name' => 'required|string',
-            'transaction_id' => 'required|string', //later this will be modified to be validated on the transaction table
-            'amount' => 'required|integer'
-        ]);
        
         try{
             $transactionHistory= TransactionHistory::create([
-                'wallet_id' => $wallet_id,
-                'receipient_name' => $validated['receipient_name'],
-                'transaction_id' => $validated['transaction_id'],
-                'amount' => $validated['amount']
-
+                ...$request->validated(),
+                'wallet_id' => $wallet_id
             ]);
+            
         } catch (\Throwable $th) {
             report($th);
             return response()->json([
@@ -43,12 +36,10 @@ class TransactionHistoryController extends Controller
     public function getTxHistory(Request $request, $wallet_id)
     {
         try {
-            $txHistory = TransactionHistory::where('wallet_id', $wallet_id)->get();
-            // TransactionHistory::wallet(function($query) use($request){
-            //     $query->user(function($query) use ($request) {
-            //         $query->where('user_id', $request->user()->id);
-            //     });
-            // })->get();
+            $txHistory = TransactionHistory::where('wallet_id', $wallet_id)
+                ->orderBy('created_at', 'DESC')
+                ->get();
+           
 
         } catch (\Throwable $th)
         {

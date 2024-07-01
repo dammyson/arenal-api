@@ -2,29 +2,32 @@
 
 namespace App\Http\Controllers\search;
 
-use App\Models\Wallet;
 use Illuminate\Http\Request;
+use App\Models\TransactionHistory;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Wallet\SearchTransactionHistoryRequest;
 
-class searchTransactionController extends Controller
+class SearchTransactionController extends Controller
 {
-    public function searchTransaction(Request $request) {
-        $validated = $request->validate([
-            'transaction-param' => 'sometimes|required'
-        ]);
+    public function searchTransaction(SearchTransactionHistoryRequest $request, $wallet_id) {
 
         try {
 
-           $data = Wallet::where('user_id', $request->user()->id)
+           $data = TransactionHistory::where('wallet_id', $wallet_id)
                 ->whereAny([
-                    'recepient_name',
+                    'receipient_name',
                     'transaction_id'
-                ], $validated['transaction-param'] . '%');
+                ], 'LIKE', '%'. $request['transaction-param']. '%')
+                ->get();
         
         } catch (\Throwable $th) 
         {
             report($th);
-            return response()->json(["message" => "unable to search "], 500);
+            return response()->json([
+                "error" => true,
+                "message" => "unable to search ",
+                "error-details" => $th->getMessage()
+        ], 500);
 
         }
 

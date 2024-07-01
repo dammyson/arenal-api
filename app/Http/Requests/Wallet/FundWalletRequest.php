@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Wallet;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ClientStoreRequest extends FormRequest
+class FundWalletRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,7 @@ class ClientStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'amount' => 'required|integer|gt:0'
         ];
     }
 }

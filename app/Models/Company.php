@@ -11,15 +11,15 @@ class Company extends Model
     use HasFactory, HasUuids;
     
     protected $fillable = [
-        'name',
-        'address',
-        'logo',
+        'company_name',
+        'company_address',
+        'company_logo',
         'company_rc',
-        'email',
-        'phone_number',
-        'website',
-        'city',
-        'state',
-        'country',
+        'company_email',
+        'company_phone_number',
+        'company_website',
+        'company_city',
+        'company_state',
+        'company_country',
     ];
 }

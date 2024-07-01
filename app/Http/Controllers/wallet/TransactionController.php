@@ -59,21 +59,5 @@ class TransactionController extends Controller
         return new TransactionResource($transaction);
     }
 
-    public function histories(Request $request, $wallet_id)
-    {
-        $validated = $request->validate([
-            'range' => 'nullable|integer'
-        ]);
 
-        try {
-            $data = Transaction::where('wallet_id', $wallet_id)
-                                    ->when(!is_null($validated['range']), function ($query) use ($validated) {
-                                        $query->whereDate('created_at', '>=', Carbon::today()->subDays($validated['range']));
-                                    })->get();
-        } catch (\Throwable $th) {
-            report($th);
-            return response()->json(["message" => "unable to fetch transaction histories"], 500);
-        }
-        return TransactionResource::collection($data);
-    }
 }

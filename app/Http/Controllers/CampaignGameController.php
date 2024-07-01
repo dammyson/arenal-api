@@ -2,25 +2,23 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Campaign\StoreCampaignGameRequest;
 use App\Models\CampaignGame;
 use Illuminate\Http\Request;
 
 class CampaignGameController extends Controller
 {
-    //
 
-    public function storeCampaignGame(Request $request, $campaign_id) {
-        $validated = $request->validate([
-            'game_id' => 'sometimes',
-            'details' => 'sometimes|string'
-        ]);
+    public function storeCampaignGame(StoreCampaignGameRequest $request, $campaign_id) {
+        
 
         try {
             
-            $campGame = CampaignGame::create([
+            $campGame = CampaignGame::updateOrCreate([
                 'campaign_id' => $campaign_id,
-                'game_id' => $validated['game_id'],
-                'details' => $validated['details']
+            ], [
+                'game_id' => $request['game_id'],
+                'details' => $request['details']
             ]);
 
         } catch (\Throwable $throwable) {
@@ -42,7 +40,7 @@ class CampaignGameController extends Controller
 
     public function indexCampaignGame() {
         try {
-            $campGame = CampaignGame::with('game');
+            $campGame = CampaignGame::with('game')->get();
 
         } catch (\Throwable $th) {
             report($th);
@@ -82,4 +80,42 @@ class CampaignGameController extends Controller
             $campGame 
         ], 200);
     }
+
+    public function indexFavorite(Request $request)
+    {   
+        try {
+            $audience = $request->user();
+
+            $favoriteCampaignGames = CampaignGame::whereHas('game', function($query) use($audience){
+                $query->where('user', $audience->id)
+                ->where('is_favorite', true);
+            })->with('game')->get();
+    
+            $response = $favoriteCampaignGames->map(function($campaignGame) {
+                return [
+                    'campaign_id' => $campaignGame->campaign_id,
+                    'game_id' => $campaignGame->game_id,
+                    'name' => $campaignGame->game->name,
+                    'type' => $campaignGame->game->type,
+                    'image_url' => $campaignGame->game->image_url,
+                    'is_favorite' => $campaignGame->game->is_favorite
+                ];
+            });
+
+        } catch(\Throwable $throwable) {
+            
+            report($throwable);
+            response()->json([
+                "error" => "true",
+                "message" => $throwable->getMessage()
+            ], 500);
+        }
+
+        return response()->json([
+            "error" => "false", 
+            $response
+        ], 200);
+    }
+
+    
 }

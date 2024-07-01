@@ -21,7 +21,7 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->string('pin')->nullable();
-            $table->boolean('is_audience')->default(true);
+            $table->boolean('is_audience')->default(false);
             $table->rememberToken();
             $table->timestamps();
         });

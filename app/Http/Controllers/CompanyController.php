@@ -5,15 +5,23 @@ namespace App\Http\Controllers;
 use App\Models\Company;
 use App\Models\CompanyUser;
 use Illuminate\Http\Request;
-use App\Http\Requests\CompanyStoreRequest;
-// use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\User\CompanyStoreRequest;
 
 class CompanyController extends Controller
 {
     public function index(Request $request)
     {
         try {
+            $user = $request->user();
+           
+           if ($user->is_audience) {
+            return response()->json([
+                'error' => true, 
+                'message' => "unauthorized"
+            ], 401);
+
+           }
+           
             $companies = Company::all();
 
             $companyUser = CompanyUser::all();
@@ -37,7 +45,7 @@ class CompanyController extends Controller
             ], 401);
 
            }
-            $company = Company::create($request->validated());
+           $company = Company::create($request->validated());
 
             if ( isset($company->id) ) {
                 $companyUser = CompanyUser::create([
@@ -45,9 +53,13 @@ class CompanyController extends Controller
                     'user_id' =>  $request->user()->id
                 ]);
             } else {
-                echo "company not found";
+                return response()->json([
+                    'error' => true,
+                    'message' => "Company not found"
+
+                ], 404);
             }
-        //    dd($companyUser);
+     
 
         } catch (\Exception $e){
             return response()->json(['error' => true, 'message' => $e->getMessage()], 500);

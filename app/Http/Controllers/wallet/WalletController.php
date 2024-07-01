@@ -7,44 +7,82 @@ use App\Models\Wallet;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\TransactionResource;
+use App\Http\Requests\Wallet\FundWalletRequest;
 
 class WalletController extends Controller
 {
-    //
-    public function histories(Request $request, $wallet_id)
-    {
-        $validated = $request->validate([
-            'range' => 'nullable|integer'
-        ]);
+    public function createWallet(Request $request) {
+        $user = $request->user();
 
         try {
-            $data = Transaction::where('wallet_id', $wallet_id)
-                                    ->when(!is_null($validated['range']), function ($query) use ($validated) {
-                                        $query->whereDate('created_at', '>=', Carbon::today()->subDays($validated['range']));
-                                    })->get();
-        } catch (\Throwable $th) {
+            $userWallet = Wallet::create([
+                'user_id' => $user->id,
+                'revenue_share_group' => 'audience'
+            ]);
+
+        }  catch (\Throwable $th) {
             report($th);
-            return response()->json(["message" => "unable to fetch transaction histories"], 500);
+            return response()->json([ 
+                "error" => true,
+                "message" => "unable to fetch transaction histories"
+            ], 500);
         }
-        return TransactionResource::collection($data);
+
+        return response()->json([
+            "error" => false,
+            $userWallet
+        ], 201);
+
+
     }
+
+
+    public function fundWallet(FundWalletRequest $request, $wallet_id) {
+        
+
+        try {
+            
+            $wallet = Wallet::find($wallet_id);
+            $wallet->balance += (int) $request['amount'];
+            $wallet->save();
+
+        }  catch (\Throwable $th) {
+            report($th);
+            return response()->json([ 
+                "error" => true,
+                "message" => "unable to fetch transaction histories"
+            ], 500);
+        
+        }
+
+        return response()->json([ 
+            "error" => false,
+            "message" => "wallet funded successfully",
+            $wallet
+        ], 500);
+    }
+
+   
 
     public function getWalletBalance(Request $request, $wallet_id)
     {
         try {
-            $data = Wallet::find($wallet_id)->select('balance');
+            $wallet = Wallet::find($wallet_id);
+            $walletBalance = $wallet->balance;
 
             
         } catch (\Throwable $th) {
             report($th);
-            return response()->json(["message" => "unable to fetch transaction histories"], 500);
+            return response()->json([
+                "error" => true,
+                "message" => "unable to fetch transaction histories"
+            ], 500);
         }
 
         return response()->json([
             'error' => false,
             "message" => "wallet balance",
-            $data
+            "walletBalance" => $walletBalance
         ]);
         
     }

@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\leaderboard;
 
 use Illuminate\Http\Request;
 use App\Models\CampaignLeaderboard;
 use App\Http\Controllers\Controller;
-use App\Models\CampaignGameRule;
+use App\Http\Requests\LeaderboardRequest;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -16,8 +16,6 @@ class CampaignLeaderboardController extends Controller
     public function showDaily($campaign_id)
     {
         try {
-            
-            // dd($game_rules);
             // generate leaderboard
             $leaderboard =  CampaignLeaderboard::where('campaign_id', $campaign_id)
                                 ->whereDate('created_at', Carbon::now()->toDateString())
@@ -28,20 +26,17 @@ class CampaignLeaderboardController extends Controller
            
         
         } catch (\Exception $exception) {
-           // report($th);
+           report($exception);
             return response()->json(['error'=>true, 'message' => $exception->getMessage()], 500);
         }
         return response()->json(['error'=>false, 'message' => "Daily leaderboard", 'data' => $leaderboard], 200);
     }
 
     //
-    public function storeLeaderBoard(Request $request, $campaign_id)
+    public function storeLeaderBoard(LeaderboardRequest $request, $campaign_id)
     {
-        $validated = $request->validate([
-            'audience_id' => 'required|string',
-            'play_durations' => 'required|numeric',
-            'play_points' => 'required|numeric'
-        ]);
+
+        $audience = $request->user();
 
         try {
             /*
@@ -50,31 +45,32 @@ class CampaignLeaderboardController extends Controller
              * else create a new leaderboard record for audience for the current campaign_id
              * */
             $leaderboard = CampaignLeaderboard::where('campaign_id', $campaign_id)
-                                ->where('audience_id', $validated['audience_id'])
+                                ->where('audience_id', $audience->id)
                                 ->whereDate('created_at', date('Y-m-d'))->first();
 
             
 
 
             if ($leaderboard) {
-                $leaderboard->play_durations += $validated['play_durations'];
-                $leaderboard->play_points += $validated['play_points'];
-                $leaderboard->total_points += $validated['play_points'];
+              
+                $leaderboard->play_durations += $request['play_durations'];
+                $leaderboard->play_points = $request['play_points'];
+                $leaderboard->total_points += $request['play_points'];
                 $leaderboard->save();
             } else {
 
                 
                 $leaderboard = CampaignLeaderboard::create([
                     'campaign_id' => $campaign_id,
-                    'audience_id' => $validated['audience_id'],
-                    'play_points' => $validated['play_points'],
-                    'play_durations' => $validated['play_durations'],
-                    'total_points' => $validated['play_points']
+                    'audience_id' => $audience->id,
+                    'play_points' => $request['play_points'],
+                    'play_durations' => $request['play_durations'],
+                    'total_points' => $request['play_points']
                 ]);
             }
 
         } catch (\Throwable $th) {
-           // Report($th);
+           Report($th);
             return response()->json(['error' => true, 'message' => 'something went wrong'], 500);
         }
         return response()->json(['error' => false, 'message' => 'Leaderboard record generated', 'data' => $leaderboard], 201);
@@ -111,7 +107,7 @@ class CampaignLeaderboardController extends Controller
                                 ->get();
             
         } catch (\Exception $exception) {
-            //report($th);
+            report($exception);
             return response()->json(['error'=>true, 'message' => $exception->getMessage()], 500);
         }
         return response()->json(['error'=>false, 'message' => "Weekly leaderboard", 'data' => $leaderboard], 200);
@@ -136,7 +132,7 @@ class CampaignLeaderboardController extends Controller
                                 ->get();
            
         } catch (\Throwable $th) {
-            //report($th);
+            report($th);
             return response()->json(['error'=>true, 'message' => 'something went wrong'], 500);
         }
         return response()->json(['error'=> false, 'message' => "Monthly leaderboard", 'data' => $leaderboard], 200);
@@ -169,20 +165,23 @@ class CampaignLeaderboardController extends Controller
         return number_format(($milli_sec / 1000), 2);
     }
 
-    public function leaderboardTopThree() {
+    public function leaderboardTopThree($campaign_id) {
         try {
             $topThree = DB::table('campaign_leaderboards')
                             ->select('audience_id', DB::raw('SUM(total_points) AS total_points, SUM(play_durations) AS play_durations'))
-                            // commented because I am not clear if this will display for all campaigns and not just one
-                            // ->where('campaign_id', $campaign_id)
-                            ->groupBy('audience_id')
                             ->orderBy('total_points', 'DESC')
                             ->orderBy('play_durations', 'ASC')
-                            ->take(3);
+                            ->groupBy('audience_id')
+                            ->take(3)
+                            ->get();
 
         } catch (\Throwable $th) {
             report($th);
-            return response()->json(['error'=>true, 'message' => 'something went wrong'], 500);
+            return response()->json([
+                'error'=>true, 
+                'message' => 'something went wrong',
+                'messages' => $th->getMessage()
+            ], 500);
         }
 
         return response()->json([

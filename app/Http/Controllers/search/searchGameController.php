@@ -2,23 +2,26 @@
 
 namespace App\Http\Controllers\search;
 
-use App\Models\Game;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Search\SearchGameRequest;
+use App\Models\CampaignGame;
 
-class searchGameController extends Controller
+class SearchGameController extends Controller
 {
-    // 
-    public function searchGame(Request $request) {
-        $validated = $request->validate([
-            'search-input' => 'required|string'
-        ]);
+    
+    public function searchGame(SearchGameRequest $request) {
 
         try {
-           $games = Game::whereAny([
-                'title',
-                'type'
-            ], 'LIKE', $validated['search-input']. '%');
+            
+           $campaignGame = CampaignGame::wherehas('game', function ($query) use($request) {
+                $query->whereAny([
+                    'name',
+                    'type'
+                ], 'LIKE', '%'. $request['search-input']. '%');
+                
+           })->with('game')->get();;
+         
 
         } catch(\Throwable $throwable) {
             
@@ -29,9 +32,9 @@ class searchGameController extends Controller
             ], 500);
         }
 
-        response()->json([
+        return response()->json([
             "error" => "false",
-            "message" => $games
+            "campaign_game" => $campaignGame
         ], 200);
 
        

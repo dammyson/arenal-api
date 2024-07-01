@@ -3,13 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Campaign\StoreCampaignRequest;
 use App\Models\Campaign;
 use Illuminate\Http\Request;
 
 class CampaignController extends Controller
 {
-
-
     public function index()
     {
         try {
@@ -44,31 +43,21 @@ class CampaignController extends Controller
     
 
 
-    public function storeInformation(Request $request)
+    public function storeCampaign(StoreCampaignRequest $request)
     {
-        $validated = $request->validate([
-            'type' => 'required|string|min:3',
-            'brand_id' => ['required', 'uuid', 'exists:brands,id'],
-            'client_id' => ['required', 'uuid', 'exists:clients,id'],
-            'company_id' => ['required', 'uuid', 'exists:companies,id'],
-            'created_by' => ['required', 'uuid', 'exists:users,id'],
-            'start_date' => 'required|date|after_or_equal:today',
-            'end_date' => 'required|date|after:start_date',
-            'daily_start' => 'sometimes|required|date_format:H:i:s',
-            'daily_stop' => 'sometimes|required|date_format:H:i:s',
-        ]);
 
         try {
-            $campaign = Campaign::firstOrCreate([
-                'title' => $validated['title'],
-                'client_id' => $validated['client_id'],
-                'brand_id' => $validated['brand_id'],
-                'company_id' => $validated['company_id'],
-                'start_date' => $validated['start_date'],
-                'end_date' => $validated['end_date'],
-                'status' => 'CREATED'
 
-            ], $validated);
+            $user = $request->user();
+
+            if ($user->is_audience) {
+                return response()->json([
+                    'error' => true, 
+                    'message' => "unauthorized"
+                ], 401);
+            }
+
+            $campaign = Campaign::create($request->validated());
 
         } catch (\Throwable $th) {
             report($th);
@@ -78,7 +67,7 @@ class CampaignController extends Controller
     }
 
 
-    public function show($campaign_id)
+    public function showCampaign($campaign_id)
     {
         try {
             $campaign = Campaign::find($campaign_id);

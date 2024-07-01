@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\user;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ProfileEditRequest;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
@@ -28,24 +30,16 @@ class ProfileController extends Controller
         ], 200);
     }
 
-    public function profileEdit(Request $request) 
+    public function profileEdit(ProfileEditRequest $request) 
     {
-        $validated = $request->validate([
-            'first_name'=> 'sometimes|required|string',
-            'last_name'=> 'sometimes|required|string',
-            'email'=> 'sometimes|required|email',
-            'phone_number' => 'sometimes|required|string',
-            'profile_image' => 'sometimes|string'
-        ]);
-
         try {
             $user = $request->user();
 
-            $user->full_name = $validated['first_name'] ?? $user->first_name;
-            $user->full_name = $validated['last_name'] ?? $user->last_name;
-            $user->email = $validated['email'] ?? $user->email;
-            $user->phone_number = $validated['phone_number'] ?? $user->phone_number;
-            $user->profile_image = $validated['profile_image'] ?? $user->profile_image;
+            $user->first_name = $request['first_name'] ?? $user->first_name;
+            $user->last_name = $request['last_name'] ?? $user->last_name;
+            $user->email = $request['email'] ?? $user->email;
+            $user->phone_number = $request['phone_number'] ?? $user->phone_number;
+            $user->profile_image = $request['profile_image'] ?? $user->profile_image;
             
             $user->save();
 
@@ -69,7 +63,7 @@ class ProfileController extends Controller
         try {
 
             $user = $request->user();
-    
+            
             $userInfo = [];
     
           
@@ -78,12 +72,9 @@ class ProfileController extends Controller
                 ->select('total_points')
                 ->sum('total_points');
             
-            // $totalPoint = DB::table('leaderboard')
-            //     ->where('audience_id', $user->id)
-            //     ->select('audience_id', DB::raw('SUM(total_points) AS total_points'))
-            //     ->get();
+        
     
-            array_push($userInfo, $user->full_name, $user->profile_image, $userTotalPoint);
+            array_push($userInfo, $user->first_name, $user->profile_image, $userTotalPoint);
         
         }  catch (\Throwable $throwable) {
             report($throwable);
@@ -95,8 +86,8 @@ class ProfileController extends Controller
 
         return response()->json([
             'error' => false,
-            'message' => 'user data updated successfully',
-            $userInfo
+            'message' => 'user points',
+            "user_info" => $userInfo
         ], 200);
     }
 }
