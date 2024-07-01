@@ -13,7 +13,15 @@ class CampaignGameController extends Controller
         
 
         try {
-            
+            $user = $request->user();
+
+            if ($user->is_audience) {
+                return response()->json([
+                    'error' => true, 
+                    'message' => "unauthorized"
+                ], 401);
+            }
+
             $campGame = CampaignGame::updateOrCreate([
                 'campaign_id' => $campaign_id,
             ], [
