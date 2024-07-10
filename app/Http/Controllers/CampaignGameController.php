@@ -95,9 +95,10 @@ class CampaignGameController extends Controller
             $audience = $request->user();
 
             $favoriteCampaignGames = CampaignGame::whereHas('game', function($query) use($audience){
-                $query->where('user', $audience->id)
+                $query->where('user_id', $audience->id)
                 ->where('is_favorite', true);
             })->with('game')->get();
+
     
             $response = $favoriteCampaignGames->map(function($campaignGame) {
                 return [
@@ -113,7 +114,7 @@ class CampaignGameController extends Controller
         } catch(\Throwable $throwable) {
             
             report($throwable);
-            response()->json([
+            return  response()->json([
                 "error" => "true",
                 "message" => $throwable->getMessage()
             ], 500);
@@ -121,7 +122,7 @@ class CampaignGameController extends Controller
 
         return response()->json([
             "error" => "false", 
-            $response
+            "favorite_games" => $response
         ], 200);
     }
 
