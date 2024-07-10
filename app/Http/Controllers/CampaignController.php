@@ -57,7 +57,7 @@ class CampaignController extends Controller
                 ], 401);
             }
 
-            $campaign = Campaign::create($request->validated());
+            $campaign = Campaign::create([...$request->validated(), 'created_by' => $user->id]);
 
         } catch (\Throwable $th) {
             report($th);
