@@ -165,7 +165,7 @@ class CampaignLeaderboardController extends Controller
         return number_format(($milli_sec / 1000), 2);
     }
 
-    public function leaderboardTopThree($campaign_id) {
+    public function leaderboardTopThree() {
         try {
             $topThree = DB::table('campaign_leaderboards')
                             ->select('audience_id', DB::raw('SUM(total_points) AS total_points, SUM(play_durations) AS play_durations'))

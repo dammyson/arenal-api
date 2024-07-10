@@ -67,7 +67,7 @@ class GameController extends Controller
         return response()->json([
             "error" => "false",         
             "game" => $game
-        ], 200);
+        ], 201);
     }
 
     public function showGame($gameId) {
