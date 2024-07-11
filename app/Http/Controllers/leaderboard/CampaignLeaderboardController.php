@@ -44,7 +44,7 @@ class CampaignLeaderboardController extends Controller
              * if audience is on leaderboard update the record
              * else create a new leaderboard record for audience for the current campaign_id
              * */
-            $leaderboard = CampaignLeaderboard::where('campaign_id', $campaign_id)
+            $leaderboard =  CampaignLeaderboard::where('campaign_id', $campaign_id)
                                 ->where('audience_id', $audience->id)
                                 ->whereDate('created_at', date('Y-m-d'))->first();
 
