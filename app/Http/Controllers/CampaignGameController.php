@@ -98,8 +98,12 @@ class CampaignGameController extends Controller
                 $query->where('user_id', $audience->id)
                 ->where('is_favorite', true);
             })->with('game')->get();
-
     
+            return response()->json([
+                'error' => false,
+                'favorite_games' => $favoriteCampaignGames
+            ], 200);
+
             $response = $favoriteCampaignGames->map(function($campaignGame) {
                 return [
                     'campaign_id' => $campaignGame->campaign_id,
