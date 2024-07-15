@@ -23,9 +23,9 @@ use App\Http\Controllers\CampaignGameRuleController;
 use App\Http\Controllers\TransactionHistoryController;
 use App\Http\Controllers\leaderboard\CampaignLeaderboardController;
 use App\Http\Controllers\leaderboard\GeneralLeaderboardController;
-use App\Http\Controllers\search\FilterGameController;
-use App\Http\Controllers\search\SearchGameController;
-use App\Http\Controllers\search\SearchTransactionController;
+use App\Http\Controllers\Search\FilterGameController;
+use App\Http\Controllers\Search\SearchGameController;
+use App\Http\Controllers\Search\SearchTransactionController;
 use App\Http\Requests\ChangePasswordRequest;
 
 
