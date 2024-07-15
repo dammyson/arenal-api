@@ -1,10 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\search;
+namespace App\Http\Controllers\Search;
 
-use Illuminate\Http\Request;
-use App\Models\TransactionHistory;
 use App\Http\Controllers\Controller;
+use App\Models\TransactionHistory;
 use App\Http\Requests\Wallet\SearchTransactionHistoryRequest;
 
 class SearchTransactionController extends Controller

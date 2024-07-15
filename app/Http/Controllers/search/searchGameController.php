@@ -2,14 +2,12 @@
 
 namespace App\Http\Controllers\Search;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Search\SearchGameRequest;
 use App\Models\CampaignGame;
 
 class SearchGameController extends Controller
 {
-    
     public function searchGame(SearchGameRequest $request) {
 
         try {

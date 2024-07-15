@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\search;
+namespace App\Http\Controllers\Search;
 
+use App\Http\Controllers\Controller;
 use Carbon\Carbon;
 use App\Models\CampaignGame;
-use App\Http\Controllers\Controller;
 use App\Http\Requests\Search\FilterGameRequest;
 
 class FilterGameController extends Controller
@@ -44,3 +44,5 @@ class FilterGameController extends Controller
         ], 200);
     }
 }
+
+
