@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\search;
+namespace App\Http\Controllers\Search;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
