@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Wallet;
 
 use Illuminate\Http\Request;
 use App\Models\Transaction;
@@ -10,6 +10,7 @@ use App\Services\VerifyExternalTransaction;
 use App\Services\GetTransactionCategoryID;
 use App\Services\GetTransactionChannelID;
 use App\Http\Resources\TransactionResource;
+use App\Http\Controllers\Controller;
 use Carbon\Carbon;
 
 class TransactionController extends Controller

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\leaderboard;
+namespace App\Http\Controllers\Leaderboard;
 
 use Illuminate\Http\Request;
 use App\Models\CampaignLeaderboard;

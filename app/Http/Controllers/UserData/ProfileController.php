@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\user;
+namespace App\Http\Controllers\UserData;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProfileEditRequest;
