@@ -12,21 +12,21 @@ use App\Http\Controllers\CampaignController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\UserLoginController;
 use App\Http\Controllers\CompanyUserController;
-use App\Http\Controllers\Wallet\TransactionController;
+use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\CampaignGameController;
-use App\Http\Controllers\UserData\ProfileController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserRegisterController;
 use App\Http\Controllers\AudienceLoginController;
-use App\Http\Controllers\Wallet\WalletController;
+use App\Http\Controllers\WalletController;
 use App\Http\Controllers\AudienceRegisterController;
 use App\Http\Controllers\CampaignGameRuleController;
 use App\Http\Controllers\TransactionHistoryController;
-use App\Http\Controllers\Leaderboard\CampaignLeaderboardController;
-use App\Http\Controllers\Leaderboard\GeneralLeaderboardController;
-use App\Http\Controllers\Password\ChangePasswordController;
-use App\Http\Controllers\Search\FilterGameController;
-use App\Http\Controllers\Search\SearchGameController;
-use App\Http\Controllers\Search\SearchTransactionController;
+use App\Http\Controllers\CampaignLeaderboardController;
+use App\Http\Controllers\GeneralLeaderboardController;
+use App\Http\Controllers\ChangePasswordController;
+use App\Http\Controllers\FilterGameController;
+use App\Http\Controllers\SearchGameController;
+use App\Http\Controllers\SearchTransactionController;
 
 
 

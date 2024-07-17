@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\wallet;
+namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use App\Models\Wallet;
