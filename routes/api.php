@@ -19,17 +19,18 @@ use App\Http\Controllers\UserRegisterController;
 use App\Http\Controllers\AudienceLoginController;
 use App\Http\Controllers\WalletController;
 use App\Http\Controllers\AudienceRegisterController;
+use App\Http\Controllers\CampaignGamePlayController;
+use App\Http\Controllers\CampaignGamePlayLeaderboardController;
 use App\Http\Controllers\CampaignGameRuleController;
 use App\Http\Controllers\TransactionHistoryController;
 use App\Http\Controllers\CampaignLeaderboardController;
 use App\Http\Controllers\GeneralLeaderboardController;
 use App\Http\Controllers\ChangePasswordController;
 use App\Http\Controllers\FilterGameController;
+use App\Http\Controllers\OverallCampaignGamePlayLeaderboardController;
 use App\Http\Controllers\SearchGameController;
 use App\Http\Controllers\SearchTransactionController;
-
-
-
+use App\Models\CampaignGamePlay;
 
 Route::group(['prefix' => 'users'], function ($router) {
     $router->group(['prefix' => 'auth'], function () use ($router) {
@@ -133,30 +134,33 @@ Route::middleware('auth:api')->group(function ($router) {
     $router->group(['prefix' => 'audiences/'], function () use ($router) {
         $router->group(['prefix' => 'home'], function() use ($router) {
             $router->get('user-info', [ProfileController::class, 'userInfo']);
-            $router->get('/top-three', [CampaignLeaderboardController::class, 'leaderboardTopThree']);
+            $router->get('/top-three', [OverallCampaignGamePlayLeaderboardController::class, 'overallGamePlayTopThree']);
             $router->get('/campaigns', [CampaignController::class, 'index']);
             $router->get('/campaigns-game-type', [CampaignGameController::class, 'indexCampaignGame']);
             $router->get('/favorite-games', [CampaignGameController::class, 'indexFavorite']);
 
             $router->group(['prefix' => 'campaigns'], function () use ($router) {
                 $router->group(['prefix' => '{campaign_id}'], function () use($router) {
-                    $router->group(['prefix' => 'leaderboards/'], function() use ($router) {
-                        $router->post('/', [CampaignLeaderboardController::class, 'storeLeaderBoard']);
-                        $router->get('/daily', [CampaignLeaderboardController::class, 'showDaily']);
-                        $router->get('/weekly', [CampaignLeaderboardController::class, 'showWeekly']);
-                        $router->get('/monthly', [CampaignLeaderboardController::class, 'showMonthly']);
-                        $router->get('/alltime', [CampaignLeaderboardController::class, 'showAllTime']);
-            
-                    });
-
                     $router->group(['prefix' => 'games'], function () use ($router) {
+                        $router->get('game-plays', [CampaignGamePlay::class, 'index']); // not seen in UI
                         $router->group(['prefix' => '{game_id}'], function () use ($router) {
                             $router->get('/show-campaign-game', [CampaignGameController::class, 'showCampaignGame']);
-                            
+                            $router->post('/campaign-game-play', [CampaignGamePlayController::class, 'storeCampaignGamePlay']);
+                            $router->get('game-plays', [CampaignGamePlayController::class, 'show']);
+                            $router->put('game-plays', [CampaignGamePlayController::class, 'update']);
+                            $router->delete('game-plays', [CampaignGamePlayController::class, 'destroy']);// not seen in UI
+
+                            $router->group(['prefix' => 'campaign-game-leaderboard'], function () use ($router) {
+                                $router->get('/daily', [CampaignGamePlayLeaderboardController::class, 'gameLeaderboardDaily']);
+                                $router->get('/weekly', [CampaignGamePlayLeaderboardController::class, 'gameLeaderboardWeekly']);
+                                $router->get('/monthly', [CampaignGamePlayLeaderboardController::class, 'gameLeaderboardMonthly']);
+                                $router->get('/alltime', [CampaignGamePlayLeaderboardController::class, 'gameLeaderboardAllTime']);   
+                            });
                         });
                     });
                 });
             });
+            
 
             $router->group(['prefix' => 'gamez'], function() use($router) {
                 $router->get('/{game_id}', [GameController::class, 'showGame']);  
@@ -177,15 +181,15 @@ Route::middleware('auth:api')->group(function ($router) {
         });
 
         $router->group(['prefix' => 'general/'], function() use ($router) {
-            $router->group(['prefix' => 'leaderboards/'], function() use ($router) {
-                $router->get('/daily', [GeneralLeaderboardController::class, 'showDaily']);
-                $router->get('/weekly', [GeneralLeaderboardController::class, 'showWeekly']);
-                $router->get('/monthly', [GeneralLeaderboardController::class, 'showMonthly']);
-                $router->get('/alltime', [GeneralLeaderboardController::class, 'showAllTime']);
+            $router->group(['prefix' => 'overall-leaderboard/'], function() use ($router) {
+                $router->get('/daily', [OverallCampaignGamePlayLeaderboardController::class, 'overallLeaderboardDaily']);
+                $router->get('/weekly', [OverallCampaignGamePlayLeaderboardController::class, 'overallLeaderboardWeekly']);
+                $router->get('/monthly', [OverallCampaignGamePlayLeaderboardController::class, 'overallLeaderboardMonthly']);
+                $router->get('/alltime', [OverallCampaignGamePlayLeaderboardController::class, 'overallLeaderboard']);
 
             });
         });
-
+        
         $router->group(['prefix' => 'campaign' ], function() use ($router) {
             $router->group(['prefix' => '{campaign_id}' ], function() use ($router) {
                 $router->group(['prefix' => 'game'], function() use ($router) {
