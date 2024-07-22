@@ -142,7 +142,7 @@ Route::middleware('auth:api')->group(function ($router) {
             $router->group(['prefix' => 'campaigns'], function () use ($router) {
                 $router->group(['prefix' => '{campaign_id}'], function () use($router) {
                     $router->group(['prefix' => 'games'], function () use ($router) {
-                        $router->get('game-plays', [CampaignGamePlay::class, 'index']); // not seen in UI
+                        $router->get('game-plays', [CampaignGamePlayController::class, 'index']); // not seen in UI
                         $router->group(['prefix' => '{game_id}'], function () use ($router) {
                             $router->get('/show-campaign-game', [CampaignGameController::class, 'showCampaignGame']);
                             $router->post('/campaign-game-play', [CampaignGamePlayController::class, 'storeCampaignGamePlay']);

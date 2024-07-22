@@ -11,7 +11,7 @@ class UpdateCampaignGamePlayRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,8 @@ class UpdateCampaignGamePlayRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'score' => 'required|integer',
+            'played_at' => 'required|date',
         ];
     }
 }
