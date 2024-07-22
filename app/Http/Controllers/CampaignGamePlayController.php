@@ -69,12 +69,18 @@ class CampaignGamePlayController extends Controller
     public function update(UpdateCampaignGamePlayRequest $request,  $gameId, $campaignId)
     {
         try {
+            $user = $request->user();
             $userCampaignGamePlay = CampaignGamePlay::where('campaign_id', $campaignId)
                 ->where('game_id', $gameId)
-                ->where('user_id', $request->user->id)
+                ->where('user_id', $user->id)
                 ->first();
 
-            $userCampaignGamePlay->update($request->validated());
+            $userCampaignGamePlay->update([
+                ...$request->validated(),
+                'campaign_id' => $campaignId,
+                'game_id' => $gameId,
+                'user_id' => $user->id
+            ]);
 
         }  catch (\Throwable $th) {
             return response()->json([
