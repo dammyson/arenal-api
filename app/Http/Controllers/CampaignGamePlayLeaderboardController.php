@@ -104,43 +104,4 @@ class CampaignGamePlayLeaderboardController extends Controller
         return response()->json($leaderboard);
     }
 
-   
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-    public function updateScore(UpdateCampaignGamePlayRequest $request,  $gameId, $campaignId)
-    {
-        try {
-            $userCampaignGamePlay = CampaignGamePlay::where('campaign_id', $campaignId)
-                ->where('game_id', $gameId)
-                ->where('user_id', $request->user->id)
-                ->first();
-            if (!$userCampaignGamePlay) {
-                $userCampaignGamePlay = CampaignGamePlay::create([
-                    ...$request->validated(),
-                    'user_id' => $request->user->id,
-                    'campaign_id' => $campaignId,
-                    'game_id' => $gameId
-                ]);
-                
-            } else {
-                $userCampaignGamePlay->score += $request->validated['score'];
-                $userCampaignGamePlay->played_at = $request->validated['played'];
-                $userCampaignGamePlay->save();
-            } 
-
-        }  catch (\Throwable $th) {
-            return response()->json([
-                'error' => true,
-                'message' => $th->getMessage()
-            ], 500);
-        }
-
-        // $userCampaignGamePlay->update($request->validated());
-
-        return response()->json([
-           'error' => false,
-           'userCampaignGamePlay' => $userCampaignGamePlay
-        ], 201);
-    }
 }
