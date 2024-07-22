@@ -66,7 +66,7 @@ class CampaignGamePlayController extends Controller
         ], 200);
     }
 
-    public function update(UpdateCampaignGamePlayRequest $request,  $gameId, $campaignId)
+    public function update(UpdateCampaignGamePlayRequest $request, $campaignId, $gameId)
     {
         try {
             $user = $request->user();
