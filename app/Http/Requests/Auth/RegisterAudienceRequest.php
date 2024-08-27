@@ -28,6 +28,13 @@ class RegisterAudienceRequest extends FormRequest
             'phone_number' => 'required|numeric|digits:11|unique:users',
             'email' => 'required|email|unique:users',
             'password' => 'required|string|min:6|confirmed',
+            'password' => [
+                'required',
+                'string',
+                'min:6', // At least six characters
+                'regex:/.*_.*$/',  // Ensures at least one underscore
+                'confirmed', // Must match password confirmation
+            ],
 
         ];
     }
