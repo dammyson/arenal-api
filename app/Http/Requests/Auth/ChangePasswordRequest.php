@@ -27,7 +27,7 @@ class ChangePasswordRequest extends FormRequest
                 'required',
                 'string',
                 'min:6', // At least six characters
-                'regex:/.*_.*$/',  // Ensures at least one underscore
+                'regex:/[_!@#$%]/', // Must contain at least one special character
                 'confirmed', // Must match password confirmation
             ],
         ];

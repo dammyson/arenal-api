@@ -27,7 +27,14 @@ class RegisterUserRequest extends FormRequest
             'last_name' => 'required|string',
             'phone_number' => 'required|numeric|digits:11|unique:users',
             'email' => 'required|email|unique:users',
-            'password' => 'required|string|min:6|confirmed',
+            'password' => [
+                'required',
+                'string',
+                'min:6', // At least six characters
+                'regex:/[_!@#$%]/', // Must contain at least one special character
+                'confirmed', // Must match password confirmation
+            ],
+            
 
             // company info 
             'company_name' => ['required', 'string'],
