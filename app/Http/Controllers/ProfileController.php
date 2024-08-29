@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
+use App\Models\Wallet;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProfileEditRequest;
-use App\Models\User;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Http\Request;
 
 class ProfileController extends Controller
 {
@@ -14,6 +15,8 @@ class ProfileController extends Controller
     {
         try {
             $user = $request->user();
+
+            $user = User::with('wallet')->find($user->id);
         
         } catch (\Throwable $throwable) {
             report($throwable);
@@ -26,7 +29,7 @@ class ProfileController extends Controller
         return response()->json([
             'error' => false,
             'message' => 'user data',
-            $user
+            'user_data' => $user
         ], 200);
     }
 

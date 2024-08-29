@@ -43,7 +43,7 @@ Route::group(['prefix' => 'users'], function ($router) {
 
 Route::group(['prefix' => 'audiences'], function ($router) {
     $router->group(['prefix' => 'auth'], function () use ($router) {
-        $router->post('register', [AudienceRegisterController::class, 'registerAudience']); 
+        $router->post('/register', [AudienceRegisterController::class, 'registerAudience']); 
         $router->post('/login', [AudienceLoginController::class, 'login']);
       
     });        
@@ -134,6 +134,7 @@ Route::middleware('auth:api')->group(function ($router) {
     $router->group(['prefix' => 'audiences/'], function () use ($router) {
         $router->group(['prefix' => 'home'], function() use ($router) {
             $router->get('user-info', [ProfileController::class, 'userInfo']);
+            $router->get('user-profile', [ProfileController::class, 'profile']);
             $router->get('/top-three', [OverallCampaignGamePlayLeaderboardController::class, 'overallGamePlayTopThree']);
             $router->get('/campaigns', [CampaignController::class, 'index']);
             $router->get('/campaigns-game-type', [CampaignGameController::class, 'indexCampaignGame']);

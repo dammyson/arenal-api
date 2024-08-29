@@ -22,7 +22,14 @@ class ChangePasswordRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'password' => 'required|string|min:6'
+            'old_password' => 'required|string|min:6',
+            'password' => [
+                'required',
+                'string',
+                'min:6', // At least six characters
+                'regex:/.*_.*$/',  // Ensures at least one underscore
+                'confirmed', // Must match password confirmation
+            ],
         ];
     }
 }

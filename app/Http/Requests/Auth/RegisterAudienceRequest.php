@@ -27,7 +27,6 @@ class RegisterAudienceRequest extends FormRequest
             'last_name' => 'required|string',
             'phone_number' => 'required|numeric|digits:11|unique:users',
             'email' => 'required|email|unique:users',
-            'password' => 'required|string|min:6|confirmed',
             'password' => [
                 'required',
                 'string',
