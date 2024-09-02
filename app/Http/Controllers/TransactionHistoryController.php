@@ -14,8 +14,7 @@ class TransactionHistoryController extends Controller
        
         try{
             $transactionHistory = TransactionHistory::create([
-                ...$request->validated(),
-                'wallet_id' => $wallet_id
+                'transaction_id' => $request->input('transaction_id')
             ]);
             
         } catch (\Throwable $th) {
@@ -36,10 +35,7 @@ class TransactionHistoryController extends Controller
     public function getTxHistory(Request $request, $wallet_id)
     {
         try {
-            $txHistory = TransactionHistory::where('wallet_id', $wallet_id)
-                ->with(['transaction' => function ($query) {
-                    $query->select('is_credit');
-                }])
+            $txHistory = TransactionHistory::with('transaction')
                 ->orderBy('created_at', 'DESC')
                 ->get();
            
