@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Transaction;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class TransactionHistory extends Model
 {
@@ -19,5 +20,9 @@ class TransactionHistory extends Model
 
     public function wallet() {
         return $this->belongsTo(Wallet::class);
+    }
+
+    public function transaction() {
+        return $this->belongsTo(Transaction::class);
     }
 }

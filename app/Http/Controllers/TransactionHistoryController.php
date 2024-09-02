@@ -13,7 +13,7 @@ class TransactionHistoryController extends Controller
     {   
        
         try{
-            $transactionHistory= TransactionHistory::create([
+            $transactionHistory = TransactionHistory::create([
                 ...$request->validated(),
                 'wallet_id' => $wallet_id
             ]);
@@ -37,6 +37,9 @@ class TransactionHistoryController extends Controller
     {
         try {
             $txHistory = TransactionHistory::where('wallet_id', $wallet_id)
+                ->with(['transaction' => function ($query) {
+                    $query->select('is_credit');
+                }])
                 ->orderBy('created_at', 'DESC')
                 ->get();
            
@@ -53,7 +56,7 @@ class TransactionHistoryController extends Controller
         return response()->json([
             'error' => false,
             'message' => "transaction added to history successfully",
-            $txHistory
+            'tx_history' => $txHistory
         ], 200);
 
     }

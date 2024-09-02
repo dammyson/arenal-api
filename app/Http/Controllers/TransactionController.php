@@ -20,6 +20,8 @@ class TransactionController extends Controller
      *
      * @return void
      */
+
+    
     public function __construct()
     {
 
@@ -60,5 +62,15 @@ class TransactionController extends Controller
         return new TransactionResource($transaction);
     }
 
+    // for test purpose
+    public function storeTransaction(Request $request) {
+        $tx = Transaction::create([
+            'is_credit' => $request['is_credit']
+        ]);
+        
+        return response()->json([
+            'tx' => $tx
+        ]);
+    }
 
 }

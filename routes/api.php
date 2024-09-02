@@ -220,6 +220,8 @@ Route::middleware('auth:api')->group(function ($router) {
                 
                 $router->group(['prefix' => '{wallet_id}'], function() use($router) {
                     $router->get('wallet-balance', [WalletController::class, 'getWalletBalance']);
+
+                    $router->post('/transaction', [TransactionController::class, 'storeTransaction']);
                     $router->post('/transaction-history', [TransactionHistoryController::class, 'storeTxHistory']);
                     $router->get('/transaction-history', [TransactionHistoryController::class, 'getTxHistory']);
                     $router->post('/search-transaction', [SearchTransactionController::class, 'searchTransaction']);
