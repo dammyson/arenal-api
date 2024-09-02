@@ -23,7 +23,7 @@ class TransactionHistoryRequest extends FormRequest
     {
         return [
             'receipient_name' => 'required|string',
-            'transaction_id' => 'required|string', //later this will be modified to be validated on the transaction table
+            'transaction_id' => 'required|string|exists:transactions,id', //later this will be modified to be validated on the transaction table
             'amount' => 'required|integer'
         ];
     }
