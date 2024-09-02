@@ -12,10 +12,7 @@ class TransactionHistory extends Model
     use HasFactory, HasUuids;
 
     protected $fillable = [
-        'wallet_id',
-        'receipient_name',
-        'transaction_id',
-        'amount'
+        'transaction_id'
     ];
 
     public function wallet() {
