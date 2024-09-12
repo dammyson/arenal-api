@@ -4,7 +4,7 @@ namespace App\Http\Requests\Wallet;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class SearchTransactionHistoryRequest extends FormRequest
+class FilterTransactionRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,7 +22,11 @@ class SearchTransactionHistoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'transaction-param' => 'sometimes|string'
+            'all' => "sometimes",
+            "credit" => "sometimes",
+            "debit" => "sometimes",
+            "date_from" => "sometimes|date",
+            "date_to" => "sometimes|date"
         ];
     }
 }
