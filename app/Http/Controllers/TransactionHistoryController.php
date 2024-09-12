@@ -51,7 +51,7 @@ class TransactionHistoryController extends Controller
 
         return response()->json([
             'error' => false,
-            'message' => "transaction added to history successfully",
+            'message' => "All Previous transaction",
             'tx_history' => $txHistory
         ], 200);
 
