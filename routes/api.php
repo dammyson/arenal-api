@@ -168,8 +168,6 @@ Route::middleware('auth:api')->group(function ($router) {
                 $router->patch('/{game_id}/favorite', [GameController::class, 'toogleFavorite']);
               
             });
-            
-            
         });
 
         $router->group(['prefix' => 'gameboard'], function() use ($router) {
