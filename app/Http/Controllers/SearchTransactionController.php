@@ -44,6 +44,8 @@ class SearchTransactionController extends Controller
 
     public function filterTransactionHistory(FilterTransactionRequest $request, $wallet_id) {
         try {
+            $perPage = 10;
+
             $transactionHistory = TransactionHistory::whereHas('transaction', function($query) use($request, $wallet_id) {
                 $query->where('wallet_id', $wallet_id);
                 
@@ -60,7 +62,7 @@ class SearchTransactionController extends Controller
                     $toDate = $request->input('to_date') ?? now();
                     $query->whereBetween('created_at', [$fromDate, $toDate]);
                 }
-            })->with('transaction')->get();
+            })->with('transaction')->paginate($perPage);
 
 
             return response()->json([

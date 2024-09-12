@@ -35,9 +35,11 @@ class TransactionHistoryController extends Controller
     public function getTxHistory(Request $request, $wallet_id)
     {
         try {
+            $perPage = 10;
+            
             $txHistory = TransactionHistory::with('transaction')
                 ->orderBy('created_at', 'DESC')
-                ->get();
+                ->paginate($perPage);
            
 
         } catch (\Throwable $th)
