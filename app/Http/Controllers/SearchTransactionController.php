@@ -48,12 +48,10 @@ class SearchTransactionController extends Controller
             $perPage = 10;
             $fromDate = $request->input('from_date');
             $status = $request->input('status');
-
-            $toDate = Carbon::parse($request->input('to_date') ?? now())->endOfDay();
             
-            $transactionHistory = TransactionHistory::whereHas('transaction', function($query) use($request, $wallet_id, $status, $fromDate, $toDate) {
-                $query->where('wallet_id', $wallet_id)
-                    ->whereBetween('created_at', [$fromDate, $toDate]);
+            $transactionHistory = TransactionHistory::whereHas('transaction', function($query) use($request, $wallet_id, $status, $fromDate) {
+                $query->where('wallet_id', $wallet_id);
+                    
                 
                 if ($status == "credit") {
                     $query->where('is_credit', true);
@@ -62,6 +60,11 @@ class SearchTransactionController extends Controller
 
                 if ($status == "debit") {
                     $query->where('is_credit', false);
+                }
+                
+                if ($fromDate) {
+                    $toDate = Carbon::parse($request->input('to_date') ?? now())->endOfDay();
+                    $query->whereBetween('created_at', [$fromDate, $toDate]);
                 }
 
         
