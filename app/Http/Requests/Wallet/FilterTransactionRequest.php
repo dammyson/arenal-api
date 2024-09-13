@@ -22,9 +22,7 @@ class FilterTransactionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'all' => "sometimes",
-            "credit" => "sometimes",
-            "debit" => "sometimes",
+            "status" => "sometimes|string",
             "date_from" => "sometimes|date",
             "date_to" => "sometimes|date"
         ];
