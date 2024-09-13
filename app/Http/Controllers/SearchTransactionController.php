@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Wallet\FilterTransactionRequest;
 use App\Models\TransactionHistory;
 use App\Http\Requests\Wallet\SearchTransactionHistoryRequest;
+use Carbon\Carbon;
 
 class SearchTransactionController extends Controller
 {
@@ -45,23 +46,23 @@ class SearchTransactionController extends Controller
     public function filterTransactionHistory(FilterTransactionRequest $request, $wallet_id) {
         try {
             $perPage = 10;
+            $fromDate = $request->input('from_date');
+            $toDate = Carbon::parse($request->input('to_date') ?? now())->endOfDay();
 
-            $transactionHistory = TransactionHistory::whereHas('transaction', function($query) use($request, $wallet_id) {
-                $query->where('wallet_id', $wallet_id);
+            $transactionHistory = TransactionHistory::whereHas('transaction', function($query) use($request, $wallet_id, $fromDate, $toDate) {
+                $query->where('wallet_id', $wallet_id)
+                    ->whereBetween('created_at', [$fromDate, $toDate]);
                 
                 if ($request->input('credit')) {
                     $query->where('is_credit', true);
+
                 }
 
                 if ($request->input('debit')) {
                     $query->where('is_credit', false);
                 }
 
-                if ($request->input('from_date')) {
-                    $fromDate = $request->input('from_date');
-                    $toDate = $request->input('to_date') ?? now();
-                    $query->whereBetween('created_at', [$fromDate, $toDate]);
-                }
+        
             })->with('transaction')->paginate($perPage);
 
 
