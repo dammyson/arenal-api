@@ -10,21 +10,52 @@ use App\Http\Requests\Campaign\UpdateCampaignGamePlayRequest;
 
 class CampaignGamePlayController extends Controller
 {
+
     public function storeCampaignGamePlay(GamePlayRequest $request, $campaignId, $gameId) {
         try {
-
-            $campaignGamePlay = CampaignGamePlay::create([
-                ...$request->validated(),
-                'user_id' => $request->user()->id,
-                'campaign_id' => $campaignId,
-                'game_id' => $gameId
-            ]);
-        }  catch (\Throwable $th) {
+            $userId = $request->user()->id;
+            $score = (int) $request->input('score');
+            $played_at = $request->input('played_at');
+    
+            // Start a transaction
+            DB::beginTransaction();
+    
+            // Fetch the record and lock it for update
+            $campaignGamePlay = CampaignGamePlay::where('user_id', $userId)
+                ->where('campaign_id', $campaignId)
+                ->where('game_id', $gameId)
+                ->lockForUpdate()  // Apply pessimistic locking
+                ->first();
+    
+            if (!$campaignGamePlay) {
+                // If no record exists, create a new one
+                $campaignGamePlay = CampaignGamePlay::create([
+                    'user_id' => $userId,
+                    'campaign_id' => $campaignId,
+                    'game_id' => $gameId,
+                    'score' => $score,
+                    'played_at' => $played_at
+                ]);
+            } else {
+                // If record exists, increment score and update played_at
+                $campaignGamePlay->score += $score;
+                $campaignGamePlay->played_at = $played_at;
+                $campaignGamePlay->save();
+            }
+    
+            // Commit the transaction after updates
+            DB::commit();
+    
+        } catch (\Throwable $th) {
+            // Rollback transaction in case of any error
+            DB::rollBack();
             return response()->json([
                 'error' => true,
                 'message' => $th->getMessage()
             ], 500);
         }
+    
+        // Return successful response with updated/created data
         return response()->json([
             'error' => false,
             'campaign_game_play' => $campaignGamePlay

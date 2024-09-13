@@ -140,6 +140,7 @@ Route::middleware('auth:api')->group(function ($router) {
             $router->get('/campaigns-game-type', [CampaignGameController::class, 'indexCampaignGame']);
             $router->get('/favorite-games', [CampaignGameController::class, 'indexFavorite']);
 
+            
             $router->group(['prefix' => 'campaigns'], function () use ($router) {
                 $router->group(['prefix' => '{campaign_id}'], function () use($router) {
                     $router->group(['prefix' => 'games'], function () use ($router) {
