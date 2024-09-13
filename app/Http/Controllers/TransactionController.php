@@ -67,6 +67,7 @@ class TransactionController extends Controller
         $tx = Transaction::create([
             'receipient_name' => $request['receipient_name'],
             'is_credit' => $request['is_credit'],
+            'status' => $request['status'],
             'amount' => $request['amount'],
             'wallet_id' => $wallet_id
         ]);

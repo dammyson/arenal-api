@@ -11,7 +11,7 @@ class Transaction extends Model
     use HasFactory, HasUuids;
 
     protected $fillable = [
-        'receipient_name', 'is_credit', 'amount', 'wallet_id'
+        'receipient_name', 'is_credit', 'status', 'amount', 'wallet_id'
     ];
     
 }
