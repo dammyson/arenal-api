@@ -22,7 +22,7 @@ class SearchTransactionHistoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'transaction-param' => 'sometimes|string'
+            'transactio_param' => 'sometimes|string'
         ];
     }
 }

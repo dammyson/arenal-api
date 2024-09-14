@@ -21,7 +21,7 @@ class SearchTransactionController extends Controller
                     ->whereAny([
                         'receipient_name',
                         'transaction_id'
-                    ], 'LIKE', '%'. $request['transaction-param']. '%');
+                    ], 'LIKE', '%'. $request['transaction_param']. '%');
             })->with('transaction')->get();
 
         } catch (\Throwable $th) 
