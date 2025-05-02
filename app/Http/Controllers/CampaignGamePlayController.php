@@ -15,7 +15,7 @@ class CampaignGamePlayController extends Controller
         try {
             $userId = $request->user()->id;
             $score = (int) $request->input('score');
-            $played_at = $request->input('played_at');
+            // $played_at = $request->input('played_at');
     
             // Start a transaction
             DB::beginTransaction();
@@ -34,12 +34,12 @@ class CampaignGamePlayController extends Controller
                     'campaign_id' => $campaignId,
                     'game_id' => $gameId,
                     'score' => $score,
-                    'played_at' => $played_at
+                    'played_at' => now()
                 ]);
             } else {
                 // If record exists, increment score and update played_at
                 $campaignGamePlay->score += $score;
-                $campaignGamePlay->played_at = $played_at;
+                $campaignGamePlay->played_at = now();
                 $campaignGamePlay->save();
             }
     

@@ -22,7 +22,7 @@ class GamePlayRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'played_at' => 'required',
+            // 'played_at' => 'required',
             'score' => 'required'
         ];
     }

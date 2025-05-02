@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Wallet\TransactionHistoryRequest;
-use App\Models\TransactionHistory;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
+use App\Models\TransactionHistory;
+use App\Http\Requests\Wallet\TransactionHistoryRequest;
 
 class TransactionHistoryController extends Controller
 {
@@ -37,8 +38,10 @@ class TransactionHistoryController extends Controller
         try {
             $perPage = 10;
             
-            $txHistory = TransactionHistory::with('transaction')
-                ->orderBy('created_at', 'DESC')
+            // $txHistory = TransactionHistory::with('transaction')
+            //     ->orderBy('created_at', 'DESC')
+            //     ->paginate($perPage);
+            $txHistory = Transaction::orderBy('created_at', 'DESC')
                 ->paginate($perPage);
            
 

@@ -30,36 +30,43 @@ class WalletController extends Controller
 
         return response()->json([
             "error" => false,
-            $userWallet
+            'user_wallet' => $userWallet
         ], 201);
 
 
     }
 
 
-    public function fundWallet(FundWalletRequest $request, $wallet_id) {
+    public function fundWallet(FundWalletRequest $request) {
         
 
         try {
-            
-            $wallet = Wallet::find($wallet_id);
-            $wallet->balance += (int) $request['amount'];
+            $user = $request->user();
+            $wallet = $user->wallet;
+    
+            if (!$wallet) {
+                // Optionally handle case where wallet doesn't exist
+                return response()->json(['message' => 'Wallet not found.'], 404);
+            }
+    
+            $wallet->balance += (int) $request->amount;
             $wallet->save();
+    
+            return response()->json(['message' => 'Wallet funded successfully.']);
+            
+            // $wallet = Wallet::find($wallet_id);
+            // $wallet->balance += (int) $request['amount'];
+            // $wallet->save();
 
         }  catch (\Throwable $th) {
             report($th);
             return response()->json([ 
                 "error" => true,
-                "message" => "unable to fetch transaction histories"
+                "message" => "unable to fund wallet",
+                "actual_message" => $th->getMessage()
             ], 500);
         
         }
-
-        return response()->json([ 
-            "error" => false,
-            "message" => "wallet funded successfully",
-            $wallet
-        ], 500);
     }
 
    
