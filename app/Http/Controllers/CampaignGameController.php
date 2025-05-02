@@ -42,7 +42,7 @@ class CampaignGameController extends Controller
         return response()->json([
             'error' => false,
             'message' => 'campaign Game created successfully',
-            $campGame
+            'campaign_game' => $campGame
         ], 201);
     }
 
@@ -62,7 +62,7 @@ class CampaignGameController extends Controller
         return response()->json([
             'error' => true,
             'message'=> "campaign games",
-            $campGame 
+            'campaign_game' => $campGame 
         ], 200);
     }
 

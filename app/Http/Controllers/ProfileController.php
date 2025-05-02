@@ -70,12 +70,17 @@ class ProfileController extends Controller
             $userInfo = [];
     
           
-            $userTotalPoint = DB::table('campaign_leaderboards')
-                ->where('audience_id', $user->id)
-                ->select('total_points')
-                ->sum('total_points');
+            // $userTotalPoint = DB::table('campaign_leaderboards')
+            //     ->where('audience_id', $user->id)
+            //     ->select('total_points')
+            //     ->sum('total_points');
+
             
-        
+            $userTotalPoint = DB::table('campaign_game_plays')
+                ->where('user_id', $user->id)
+                ->select('score')
+                ->sum('score');
+                
     
             array_push($userInfo, $user->first_name, $user->profile_image, $userTotalPoint);
         

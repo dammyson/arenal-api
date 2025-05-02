@@ -73,22 +73,38 @@ Route::group(["middleware" => ["auth:api"]], function ($router) {
         });
 
         //works
-        $router->group(['prefix' => 'brands/'], function () use ($router) {
-            $router->get('/', [BrandController::class, 'index']);
-            $router->post('/', [BrandController::class, 'storeBrand']);
-        });
-
-        //works
         $router->group(['prefix' => 'clients/'], function () use ($router) {
             $router->get('/', [ClientController::class, 'index']);
             $router->post('/', [ClientController::class, 'storeClient']);
         });
+
+        //works
+        $router->group(['prefix' => 'brands/'], function () use ($router) {
+            $router->get('/', [BrandController::class, 'index']);
+            $router->post('/', [BrandController::class, 'storeBrand']);
+        });        
+        
+
+        //works
+        $router->group(['prefix' => 'games/'], function() use ($router) {
+            // validate if we just have one game to one campaign
+            $router->get('/', [GameController::class, 'index']);
+            $router->post('/', [GameController::class, 'storeGame']);
+
+            $router->group(['prefix' => '{game_id}/'], function() use ($router) {
+                $router->get('show-game', [GameController::class, 'showGame']);
+                $router->patch('update-game', [GameController::class, 'updateGame']);
+            });     
+
+        });
+
 
         $router->group(['prefix' => 'campaigns/'], function () use ($router) {
             $router->get('/', [CampaignController::class,'index']);           
             $router->post('/', [CampaignController::class,'storeCampaign']);
             $router->get('/{campaign_id}', [CampaignController::class,'showCampaign']);
         });
+
 
         $router->group(['prefix' => 'campaign' ], function() use ($router) {
             $router->group(['prefix' => '{campaign_id}' ], function() use ($router) {
@@ -105,18 +121,6 @@ Route::group(["middleware" => ["auth:api"]], function ($router) {
             });
         });
 
-        //works
-        $router->group(['prefix' => 'games/'], function() use ($router) {
-            // validate if we just have one game to one campaign
-            $router->get('/', [GameController::class, 'index']);
-            $router->post('/', [GameController::class, 'storeGame']);
-
-            $router->group(['prefix' => '{game_id}/'], function() use ($router) {
-                $router->get('show-game', [GameController::class, 'showGame']);
-                $router->patch('update-game', [GameController::class, 'updateGame']);
-            });     
-
-        });
 
         $router->group(['prefix' => 'rules/'], function () use ($router) {
             $router->get('/', [CampaignGameRuleController::class, 'index']);

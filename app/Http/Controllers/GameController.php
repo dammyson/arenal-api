@@ -32,7 +32,9 @@ class GameController extends Controller
             ], 500);
         }
 
-        return response()->json(["error" => "false", ...$games], 200);
+        return response()->json(["error" => "false", 
+        
+        "gamees" => $games], 200);
 
     }
 
