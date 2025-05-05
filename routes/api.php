@@ -40,6 +40,11 @@ Route::group(['prefix' => 'users'], function ($router) {
     });
 });
 
+Route::group(['prefix' => 'auth'], function($router) {
+    $router->get('google/callback', [UserRegisterController::class, 'gooogleCallback']);
+    
+});
+
 
 Route::group(['prefix' => 'audiences'], function ($router) {
     $router->group(['prefix' => 'auth'], function () use ($router) {
