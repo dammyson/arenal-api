@@ -108,6 +108,7 @@ Route::group(["middleware" => ["auth:api"]], function ($router) {
             $router->get('/', [CampaignController::class,'index']);           
             $router->post('/', [CampaignController::class,'storeCampaign']);
             $router->get('/{campaign_id}', [CampaignController::class,'showCampaign']);
+            
         });
 
 
