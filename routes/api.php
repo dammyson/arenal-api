@@ -102,9 +102,9 @@ Route::group(["middleware" => ["auth:api"]], function ($router) {
 
 
         $router->group(['prefix' => 'campaigns/'], function () use ($router) {
-            $router->get('/', [CampaignController::class,'index']);           
-            $router->post('/', [CampaignController::class,'storeCampaign']);
-            $router->get('/{campaign_id}', [CampaignController::class,'showCampaign']);
+            $router->get('/', [CampaignController::class, 'index']);           
+            $router->post('/', [CampaignController::class,' storeCampaign']);
+            $router->get('/{campaign_id}', [CampaignController::class, 'showCampaign']);
             
         });
 
