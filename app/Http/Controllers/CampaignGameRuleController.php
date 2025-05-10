@@ -6,69 +6,36 @@ use App\Http\Requests\Campaign\CampaignGameRuleRequest;
 use App\Models\Game;
 use Illuminate\Http\Request;
 use App\Models\CampaignGameRule;
+use App\Services\CampaignGameRule\ShowCampaignGameRuleService;
+use App\Services\CampaignGameRule\StoreCampaignGameRuleService;
 
-class CampaignGameRuleController extends Controller
+class CampaignGameRuleController extends BaseController
 {
     
-    public function store(CampaignGameRuleRequest $request, $campaign_id, $game_id) {
+    public function store(CampaignGameRuleRequest $request, $campaignId, $gameId) {
         try {
-            $user = $request->user();
 
-            if ($user->is_audience) {
-                return response()->json([
-                    'error' => true, 
-                    'message' => "unauthorized"
-                ], 401);
-            }
+            $data = (new StoreCampaignGameRuleService($request, $campaignId, $gameId))->run();
 
-            foreach ($request['rules_descriptions'] as $rules_description) {
-                CampaignGameRule::create([
-                    'campaign_id' => $campaign_id,
-                    'game_id' => $game_id,
-                    'rule_description' => $rules_description["rule"]
-                ]);
-            }
-
-        } catch (\Throwable $throwable) {
-            
-            report($throwable);
-            return response()->json([
-                'error' => true,
-                'message' => $throwable->getMessage()
-            ]);
-        }
-
-        return response()->json([
-            'error' => false,
-            'message' => "Campaign game rule create successfully"
-        ]);
+        } catch (\Exception $e){
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }        
+        return $this->sendResponse($data, "Campaign Games rules created succcessfully", 201);
+   
+    
 
     }
 
-    public function showCampaignGameRules(Request $request, $campaign_id, $game_id) {
+    public function showCampaignGameRules($campaignId, $gameId) {
 
         try {
-            $rules = CampaignGameRule::where('campaign_id', $campaign_id)
-                ->where('game_id', $game_id)
-                ->get();
+            $data = (new ShowCampaignGameRuleService($campaignId, $gameId))->run();
 
-            $game = Game::find($game_id); 
-
-        } catch (\Throwable $throwable) {
-            
-            report($throwable);
-            return response()->json([
-                'error' => true,
-                'message' => $throwable->getMessage()
-            ], 500);
-        }
-
-        return response()->json([
-            'error' => false,
-            'message' => "Game with rules",
-            'campaign_game_rules' => $rules,
-            'game' => $game
-        ]);
+        } catch (\Exception $e){
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }        
+        return $this->sendResponse($data, "Campaign Games rules retrieved succcessfully", 201);
+   
         
     }
 }

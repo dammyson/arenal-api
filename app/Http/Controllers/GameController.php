@@ -4,118 +4,78 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use App\Models\Game;
+use App\Models\CampaignGame;
 use Illuminate\Http\Request;
+use PhpParser\Node\Expr\FuncCall;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreGameRequest;
-use App\Models\CampaignGame;
-use PhpParser\Node\Expr\FuncCall;
+use App\Services\Games\IndexGameService;
+use App\Services\Games\StoreGameService;
+use App\Services\Games\UpdateGameService;
+use App\Services\Games\ToogleFavoriteGame;
+use App\Http\Requests\Game\UpdateGameRequest;
+use App\Services\CampaignGame\FilterCampaignGame;
 
-class GameController extends Controller
+class GameController extends BaseController
 {
     public function index() {
 
         try {
-            $games = Game::get();
+           $data = (new IndexGameService())->run();            
 
-            if ($games->isEmpty()) {
-                return response()->json(['message' => 'No games found.'], 404);
-            }
-            
-
-        } catch(\Throwable $throwable) {
-            
-            report($throwable);
-            response()->json([
-                "error" => "true",
-                "message" => $throwable->getMessage()
-            ], 500);
+        }  catch (\Exception $e){
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
         }
-
-        return response()->json(["error" => "false", 
         
-        "gamees" => $games], 200);
+        return $this->sendResponse($data, "Game info retrieved succcessfully");
 
     }
 
    
     public function storeGame(StoreGameRequest $request) {
-       try {
+       try {         
 
-            $user = $request->user();
+            $data = (new StoreGameService($request))->run();
 
-            if ($user->is_audience) {
-                return response()->json([
-                    'error' => true, 
-                    'message' => "unauthorized"
-                ], 401);
-            }
-         
+        }  catch (\Exception $e){
 
-            $game = Game::create([
-                ...$request->validated(),
-                'user_id' => $user->id
-            ]);
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }        
+        return $this->sendResponse($data, "Game created retrieved succcessfully", 201);
 
-        } catch (\Throwable $throwable) {
-
-            report($throwable);
-            return response()->json([
-                'error' => 'true',
-                'message' => $throwable->getMessage()
-            ], 500);
-        }
-
-        return response()->json([
-            "error" => "false",         
-            "game" => $game
-        ], 201);
     }
 
     public function showGame($gameId) {
         try {
             
-            $game = Game::where('id', $gameId)->with('rules')->first();
+            $data = Game::where('id', $gameId)->with('rules')->first();
 
-           if (!$game) {
-            return response()->json(['error' => 'false', 'message' => 'no game found'], 404);
-           }
+            if (!$data) {
+                return response()->json(['error' => 'false', 'message' => 'no game found'], 404);
+            }
         
-        } catch (\Throwable $throwable) {
+        }  catch (\Exception $e){
 
-            report($throwable);
-            return response()->json([
-                'error' => 'true',
-                'message' => $throwable->getMessage()
-            ], 500);
-        }
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }         
+        return $this->sendResponse($data, "Game retrieved succcessfully");
 
-        return response()->json([
-            "error" => "false",
-            "game_with_rules" => $game
-        ], 200);
     }
 
-    public function updateGame(Request $request, $game_id) {
-        $validated = $request->validate([
-            'name' => 'sometimes',
-            'image_url' => 'sometimes',
-            'type' => 'sometimes'
-        ]);
+    public function updateGame(UpdateGameRequest $request, $gameId) {
+        // try {
 
+        //     $data = (new UpdateGameService($request, $gameId))->run();
 
+        // }  catch (\Exception $e){
+        //     return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        // }         
+        // return $this->sendResponse($data, "Game retrieved succcessfully");
+    
         try {
 
-            $user = $request->user();
-
-            if ($user->is_audience) {
-                return response()->json([
-                    'error' => true, 
-                    'message' => "unauthorized"
-                ], 401);
-            }
-            
-            $game = Game::find($game_id);
+            $game = Game::find($gameId);
 
             if (!$game) {
                 return response()->json(['error' => 'false', 'message' => 'Game not found'], 404);
@@ -147,67 +107,24 @@ class GameController extends Controller
         ]);
 
         try {
+            $data = (new FilterCampaignGame($validated['type']))->run();
 
-            $categoryName = $validated['type'];
-            
-            $start_week = Carbon::now()->startOfWeek()->format('Y-m-d');
-            $end_week = Carbon::now()->endOfWeek()->format('Y-m-d');
-            
+        }  catch (\Exception $e){
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }        
+        return $this->sendResponse($data, "Game retrieved succcessfully");
     
-            if ($categoryName == "all") {
-                $games = CampaignGame::whereHas('game', function ($query) use($start_week, $end_week) {
-                    $query->whereDate('created_at', '>=', $start_week)
-                    ->whereDate('created_at', '<=', $end_week); 
-                   
-                })->with('game')->get();
-                
-        
-            
-            } else {
-                
-                $games = CampaignGame::whereHas('game', function ($query) use($start_week, $end_week, $categoryName) {
-                    $query
-                    ->where('type', $categoryName)
-                    ->whereDate('created_at', '>=', $start_week)
-                    ->whereDate('created_at', '<=', $end_week); 
-                   
-                })->with('game')->get();
-                
-            }
-        } catch(\Throwable $throwable) {
-            
-            report($throwable);
-            response()->json([
-                "error" => "true",
-                "message" => $throwable->getMessage()
-            ], 500);
-        }
-
-        return response()->json(["error" => "false", $games], 200);
-
     }
 
 
-    public function toogleFavorite($game_id) {
+    public function toogleFavorite($gameId) {
         try {
-            $game = Game::find($game_id);
-            $game->is_favorite = !$game->is_favorite;
-            $game->save();
-
-        } catch(\Throwable $throwable) {
-            
-            report($throwable);
-            response()->json([
-                "error" => "true",
-                "message" => $throwable->getMessage()
-            ], 500);
-        }
-
-        return response()->json([
-            "error" => "false", 
-            $game
-        ], 200);
-
+            $data = (new ToogleFavoriteGame($gameId))->run();
+        
+        }  catch (\Exception $e){
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }        
+        return $this->sendResponse($data, "Game state changed succcessfully");
 
     }
 
@@ -216,23 +133,14 @@ class GameController extends Controller
     public function gamesByType() {
          // Retrieve CampaignGame models and join with games to group by game type
         try{
-            $campaignGamesByType = CampaignGame::with('game')
+            $data = CampaignGame::with('game')
                 ->get();
 
-            
+        }  catch (\Exception $e){
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }        
+        return $this->sendResponse($data, "Game retrieved by type");
 
-        } catch(\Throwable $throwable) {
-            report($throwable);
-            return response()->json([
-                "error" => "true",
-                "message" => $throwable->getMessage()
-            ], 500);
-        }
-
-        return response()->json([
-            "error" => "false", 
-            "data" => $campaignGamesByType
-        ], 200);
     }
     
 

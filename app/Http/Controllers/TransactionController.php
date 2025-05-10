@@ -11,6 +11,7 @@ use App\Services\GetTransactionCategoryID;
 use App\Services\GetTransactionChannelID;
 use App\Http\Resources\TransactionResource;
 use App\Http\Controllers\Controller;
+use App\Services\Transactions\ShowTransactionService;
 use Carbon\Carbon;
 
 class TransactionController extends Controller
@@ -53,7 +54,8 @@ class TransactionController extends Controller
     public function show($txId)
     {
         try {
-            $transaction = Transaction::findOrFail($txId);
+            $transaction = new ShowTransactionService($txId);
+            // $transaction = Transaction::findOrFail($txId);
         } catch (\Throwable $th) {
             report($th);
             return response()->json("resource not found", 400);

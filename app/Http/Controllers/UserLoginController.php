@@ -7,7 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
-class UserLoginController extends Controller
+class UserLoginController extends BaseController
 {
     public function login(AudienceLoginRequest $request)
     {
@@ -23,13 +23,15 @@ class UserLoginController extends Controller
                 $data['user'] = $user;
                 $data['token'] = $user->createToken('Nova')->accessToken;
 
-                return response()->json(['is_correct' => true, 'message' => 'Login Successful', 'data' => $data], 200);
+                return $this->sendResponse($data, 'Login Successful');
+                // return response()->json(['is_correct' => true, 'message' => 'Login Successful', 'data' => $data], 200);
 
             } else {
-                return response()->json(['error' => true, 'message' => 'Invalid credentials'], 401);
+                return $this->sendError('Invalid Credentials', null, 401);
+               
             }
-        }catch(\Exception $exception){
-            return response()->json(['message' => $exception->getMessage()], 500);
+        } catch(\Exception $exception) {
+            return $this->sendError('something went wrong', [$exception->getMessage()], 500);
         }
 
     }

@@ -5,51 +5,38 @@ namespace App\Http\Controllers;
 use App\Models\Client;
 use Illuminate\Http\Request;
 use App\Http\Requests\User\ClientStoreRequest;
+use App\Services\Client\IndexClientService;
+use App\Services\Client\StoreClientService;
 
-class ClientController extends Controller
+class ClientController extends BaseController
 {
-    public function index(Request $request)
+    public function index()
     {
         try {
-            $user = $request->user();
            
-            if ($user->is_audience) {
-             return response()->json([
-                 'error' => true, 
-                 'message' => "unauthorized"
-             ], 401);
- 
-            }
+        
+            $data = (new IndexClientService())->run();
 
-            $clients = Client::all();
-
-        }  catch (\Exception $e){
-            return response()->json(['error' => true, 'message' => $e->getMessage()], 500);
+        } catch (\Exception $e){
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
         }
-        return response()->json(['error' => false,  'data' => $clients], 200);
+        
+        return $this->sendResponse($data, "client info retrieved succcessfully");
+    
     }
 
     public function storeClient(ClientStoreRequest $request)
     {
-        try {
-           $user = $request->user();
-           
-           if ($user->is_audience) {
-            return response()->json([
-                'error' => true, 
-                'message' => "unauthorized"
-            ], 401);
+        try {           
 
-           }
-
-            $client = Client::create([
-                ...$request->validated(),
-                'created_by' => $user->id
-            ]);
-
+            $data = (new StoreClientService($request))->run();
+        
         } catch (\Exception $e){
-            return response()->json(['error' => true, 'message' => $e->getMessage()], 500);
+            return $this->sendError("unable to client store", ['error' => $e->getMessage()], 500);
         }
-        return response()->json(['error' => false,  'message' => 'Client created successfully', 'data' => $client], 201);
+        
+        return $this->sendResponse($data, "client created succcessfully", 201);
+  
+        
     }
 }
