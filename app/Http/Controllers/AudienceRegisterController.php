@@ -20,9 +20,7 @@ class AudienceRegisterController extends Controller
             $userWallet = Wallet::create([
                 'user_id' => $user->id,
                 'revenue_share_group' => 'audience'
-            ]);
-
-            
+            ]);         
     
            
         } catch (\Exception $exception) {

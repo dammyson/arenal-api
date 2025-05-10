@@ -20,31 +20,9 @@ class UserRegisterController extends BaseController
     {
     
         try {
-            $userService = new CreateUserService($request);
-            $companyService = new CreateCompanyService($request);
-
-            $user = $userService->run();
-            $company = $companyService->run();
-            
-            // $user = User::create($request->validated());          
-          
-            // $company = Company::create($request->validated());
-
-
-            if ( isset($company->id) ) {
-                // add the company user relation in the table
-                $companyUser = CompanyUser::updateOrCreate([
-                    'company_id' => $company->id,
-                    
-                ], ['user_id' =>  $user->id]);
-            } else {
-
-                return $this->sendError(
-                    "Error creating the company",
-                    ['error' => "company not found"],
-                    404
-                );
-            }
+            $user = (new CreateUserService($request))->run();
+            $companyData = (new CreateCompanyService($request, $user->id))->run();            
+        
            
         } catch (\Exception $exception) {
             return $this->sendError(
@@ -55,18 +33,12 @@ class UserRegisterController extends BaseController
         }
     
         $data['user'] =  $user;
-        $data['company'] = $company;
-        $data['company_user'] = $companyUser;
+        $data['company'] = $companyData['company'];
+        $data['company_user'] = $companyData['companyUser'];
         $data['token'] =  $user->createToken('Nova')->accessToken;
     
         return $this->sendResponse($data, 'User registration successful', 201);
-        // return response()->json([
-        //     'error' => false, 
-        //     'message' => 'User registration successful', 
-        //     'data' => $data, 
-        //     'company' => $company,
-        //     'company_user' => $companyUser
-        // ], 201);
+     
     }
 
 

@@ -8,6 +8,7 @@ use App\Http\Requests\Auth\RegisterUserRequest;
 
 class CreateUserService implements BaseServiceInterface {
     protected $request;
+    protected $isAudience;
     
     public function __construct(RegisterUserRequest $request) {
    
@@ -15,6 +16,8 @@ class CreateUserService implements BaseServiceInterface {
     }
 
     public function run() {
+      // dd($this->request);
+      
       return User::create($this->request->validated());
     }
 }
