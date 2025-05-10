@@ -146,7 +146,7 @@ Route::middleware('auth:api')->group(function ($router) {
             $router->get('user-profile', [ProfileController::class, 'profile']);
             $router->get('/top-three', [OverallCampaignGamePlayLeaderboardController::class, 'overallGamePlayTopThree']);
             $router->get('/campaigns', [CampaignController::class, 'index']);
-            $router->get('/campaigns-game-type', [CampaignGameController::class, 'indexCampaignGame']);
+            $router->get('/campaigns-game', [CampaignGameController::class, 'indexCampaignGame']);
             $router->get('/favorite-games', [CampaignGameController::class, 'indexFavorite']);
 
             
@@ -214,7 +214,7 @@ Route::middleware('auth:api')->group(function ($router) {
 
         $router->group(['prefix' => 'account-settings'], function() use($router) {
             $router->get("profile", [ProfileController::class, "profile"]);
-            $router->post("profile/edit", [ProfileController::class, "profileEdit"]);
+            $router->post("profile/edit", [ProfileController::class, "editProfile"]);
             $router->group(['prefix' => 'security'], function() use ($router) {
                 $router->patch('change-password', [ChangePasswordController::class, 'changePassword']); 
 

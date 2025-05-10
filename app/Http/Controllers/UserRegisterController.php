@@ -11,17 +11,24 @@ use Illuminate\Http\Request;
 use Laravel\Socialite\Facades\Socialite;
 use App\Http\Requests\Auth\RegisterUserRequest;
 use App\Http\Requests\Auth\RegisterAudienceRequest;
+use App\Services\Company\CreateCompanyService;
+use App\Services\users\CreateUserService;
 
-class UserRegisterController extends Controller
+class UserRegisterController extends BaseController
 {
     public function userRegister(RegisterUserRequest $request)
     {
     
         try {
+            $userService = new CreateUserService($request);
+            $companyService = new CreateCompanyService($request);
 
-            $user = User::create($request->validated());          
+            $user = $userService->run();
+            $company = $companyService->run();
+            
+            // $user = User::create($request->validated());          
           
-            $company = Company::create($request->validated());
+            // $company = Company::create($request->validated());
 
 
             if ( isset($company->id) ) {
@@ -31,27 +38,35 @@ class UserRegisterController extends Controller
                     
                 ], ['user_id' =>  $user->id]);
             } else {
-                return response()->json([
-                    'error' => true,
-                    'message' => "Company not found"
 
-                ], 404);
+                return $this->sendError(
+                    "Error creating the company",
+                    ['error' => "company not found"],
+                    404
+                );
             }
            
         } catch (\Exception $exception) {
-            return response()->json(['error' => true, 'message' => $exception->getMessage()], 500);
+            return $this->sendError(
+                "something went wrong",
+                ['error' => $exception->getMessage()],
+                500
+            );
         }
     
         $data['user'] =  $user;
+        $data['company'] = $company;
+        $data['company_user'] = $companyUser;
         $data['token'] =  $user->createToken('Nova')->accessToken;
     
-        return response()->json([
-            'error' => false, 
-            'message' => 'User registration successful', 
-            'data' => $data, 
-            'company' => $company,
-            'company_user' => $companyUser
-        ], 201);
+        return $this->sendResponse($data, 'User registration successful', 201);
+        // return response()->json([
+        //     'error' => false, 
+        //     'message' => 'User registration successful', 
+        //     'data' => $data, 
+        //     'company' => $company,
+        //     'company_user' => $companyUser
+        // ], 201);
     }
 
 
