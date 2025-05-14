@@ -5,42 +5,33 @@ namespace App\Http\Controllers;
 use App\Models\Brand;
 use Illuminate\Http\Request;
 use App\Http\Requests\User\BrandStoreRequest;
+use App\Services\Brand\IndexBrandService;
+use App\Services\Brand\StoreBrandService;
 
-class BrandController extends Controller
+class BrandController extends BaseController
 {
     public function index(Request $request)
     {
         try {
-            $brands = Brand::all();
+            $data = (new IndexBrandService())->run();
 
         }  catch (\Exception $e){
-            return response()->json(['error' => true, 'message' => $e->getMessage()], 500);
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
         }
-        return response()->json(['error' => false,  'data' => $brands], 200);
+        
+        return $this->sendResponse($data, "Brand info retrieved succcessfully");
+    
+    
     }
 
     public function storeBrand(BrandStoreRequest $request)
     {
         try{
+            $data = (new StoreBrandService($request))->run();
 
-            $user = $request->user();
-           
-            if ($user->is_audience) {
-             return response()->json([
-                 'error' => true, 
-                 'message' => "unauthorized"
-             ], 401);
- 
-            }
-            
-            $brand = Brand::create([
-                ...$request->validated(),
-                'created_by' => $user->id
-            ]);
-
-        } catch (\Exception $e){
-            return response()->json(['error' => true, 'message' => $e->getMessage()], 500);
-        }
-        return response()->json(['error' => false,  'message' => 'Brand created successfully', 'data' => $brand], 201);
-        }
+        }  catch (\Exception $e){
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }        
+        return $this->sendResponse($data, "Brand info retrieved succcessfully");
+    }
 }

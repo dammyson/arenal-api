@@ -5,24 +5,24 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Campaign\StoreCampaignRequest;
 use App\Models\Campaign;
+use App\Services\Campaign\IndexCampaign;
+use App\Services\Campaign\ShowCampaign;
+use App\Services\Campaign\StoreCampaign;
 use Illuminate\Http\Request;
 
-class CampaignController extends Controller
+class CampaignController extends BaseController
 {
     public function index()
     {
         try {
-            $campaigns = Campaign::get();
+           $data = (new IndexCampaign())->run();
 
-            if ($campaigns->isEmpty()) {
-                return response()->json(['message' => 'No campaigns found.'], 404);
-            }
-
-        } catch (\Throwable $th) {
-            report($th);
-            return response()->json(['error' => true, 'message' => 'Something went wrong'], 500);
-        }
-        return response()->json(['message' => 'Active campaigns found.', 'campaigns' => $campaigns], 200);
+        } catch (\Exception $e){
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }        
+        return $this->sendResponse($data, "Campaign created succcessfully", 201);
+   
+    
     }
 
     public function fetchCampaigns($title)
@@ -45,36 +45,27 @@ class CampaignController extends Controller
 
     public function storeCampaign(StoreCampaignRequest $request)
     {
-
         try {
+            $data = (new StoreCampaign($request))->run();
 
-            $user = $request->user();
-
-            if ($user->is_audience) {
-                return response()->json([
-                    'error' => true, 
-                    'message' => "unauthorized"
-                ], 401);
-            }
-
-            $campaign = Campaign::create([...$request->validated(), 'created_by' => $user->id]);
-
-        } catch (\Throwable $th) {
-            report($th);
-            return response()->json(['error' => true, 'mesage' => $th->getMessage()], 500);
-        }
-        return response()->json(['error' => false, 'message' => 'Campaigns', 'data' =>  $campaign], 201);
+        }  catch (\Exception $e){
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }        
+        return $this->sendResponse($data, "Campaign created succcessfully", 201);
+   
+    
     }
 
 
-    public function showCampaign($campaign_id)
+    public function showCampaign($campaignId)
     {
         try {
-            $campaign = Campaign::find($campaign_id);
-        } catch (\Throwable $th) {
-            report($th);
-            return response()->json(['error' => true, 'mesage' => 'something went wrong'], 500);
-        }
-        return response()->json(['error' => false, 'message' => 'Campaign information', 'data' =>  $campaign], 200);
+            $data = (new ShowCampaign($campaignId))->run();
+
+        } catch (\Exception $e){
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }        
+        return $this->sendResponse($data, "Campaign retrieved succcessfully", 200);
+   
     }
 }

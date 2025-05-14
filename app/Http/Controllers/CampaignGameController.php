@@ -2,132 +2,64 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Campaign\StoreCampaignGameRequest;
 use App\Models\CampaignGame;
 use Illuminate\Http\Request;
+use App\Services\Campaign\IndexCampaign;
+use App\Services\CampaignGame\IndexCampaignGame;
+use App\Services\CampaignGame\StoreCampaignGame;
+use App\Http\Requests\Campaign\StoreCampaignGameRequest;
+use App\Services\CampaignGame\IndexFavoriteCampaignGame;
+use App\Services\CampaignGame\ShowCampaignGame;
 
-class CampaignGameController extends Controller
+class CampaignGameController extends BaseController
 {
 
-    public function storeCampaignGame(StoreCampaignGameRequest $request, $campaign_id) {
-        
+    public function storeCampaignGame(StoreCampaignGameRequest $request, $campaignId) {
 
-        try {
-            $user = $request->user();
+        try {         
 
-            if ($user->is_audience) {
-                return response()->json([
-                    'error' => true, 
-                    'message' => "unauthorized"
-                ], 401);
-            }
+            $data = (new StoreCampaignGame($request, $campaignId))->run();
 
-            $campGame = CampaignGame::updateOrCreate([
-                'campaign_id' => $campaign_id,
-            ], [
-                'game_id' => $request['game_id'],
-                'details' => $request['details']
-            ]);
-
-        } catch (\Throwable $throwable) {
-            
-            report($throwable);
-            return response()->json([
-                'error' => true,
-                'message' => "something wrong happened",
-                'throwable' => $throwable->getMessage()
-            ], 500);
-        }
-
-        return response()->json([
-            'error' => false,
-            'message' => 'campaign Game created successfully',
-            'campaign_game' => $campGame
-        ], 201);
+        } catch (\Exception $e){
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }        
+        return $this->sendResponse($data, "Campaign created succcessfully", 201);
+   
     }
 
     public function indexCampaignGame() {
         try {
-            $campGame = CampaignGame::with('game')->get();
+            $data = (new IndexCampaignGame())->run();
 
-        } catch (\Throwable $th) {
-            report($th);
-            return response()->json([
-                'error' => false,
-                'message'=> $th->getMessage(),
-            ], 500);
-
-        }
-
-        return response()->json([
-            'error' => true,
-            'message'=> "campaign games",
-            'campaign_game' => $campGame 
-        ], 200);
+        } catch (\Exception $e){
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }        
+        return $this->sendResponse($data, "Campaign Games retrieved succcessfully", 201);
+   
+    
     }
 
     public function showCampaignGame($campaign_id, $game_id) {
         try {
-            $campGame = CampaignGame::where('campaign_id', $campaign_id)
-                ->where('game_id', $game_id)
-                ->with('game')
-                ->get();
+            $data = (new ShowCampaignGame($campaign_id, $game_id))->run();
 
-        } catch (\Throwable $th) {
-            report($th);
-            return response()->json([
-                'error' => false,
-                'message'=> $th->getMessage(),
-            ], 500);
-
-        }
-
-        return response()->json([
-            'error' => true,
-            'message'=> "campaign games",
-            $campGame 
-        ], 200);
+        }   catch (\Exception $e){
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }        
+        return $this->sendResponse($data, "Campaign Game retrieved succcessfully", 200);
+   
     }
 
     public function indexFavorite(Request $request)
     {   
         try {
-            $audience = $request->user();
-
-            $favoriteCampaignGames = CampaignGame::whereHas('game', function($query) use($audience){
-                $query->where('user_id', $audience->id)
-                ->where('is_favorite', true);
-            })->with('game')->get();
+            $data = (new IndexFavoriteCampaignGame($request))->run();
     
-            return response()->json([
-                'error' => false,
-                'favorite_games' => $favoriteCampaignGames
-            ], 200);
-
-            $response = $favoriteCampaignGames->map(function($campaignGame) {
-                return [
-                    'campaign_id' => $campaignGame->campaign_id,
-                    'game_id' => $campaignGame->game_id,
-                    'name' => $campaignGame->game->name,
-                    'type' => $campaignGame->game->type,
-                    'image_url' => $campaignGame->game->image_url,
-                    'is_favorite' => $campaignGame->game->is_favorite
-                ];
-            });
-
-        } catch(\Throwable $throwable) {
-            
-            report($throwable);
-            return  response()->json([
-                "error" => "true",
-                "message" => $throwable->getMessage()
-            ], 500);
-        }
-
-        return response()->json([
-            "error" => "false", 
-            "favorite_games" => $response
-        ], 200);
+        }   catch (\Exception $e){
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }        
+        return $this->sendResponse($data, "Campaign Game retrieved succcessfully", 200);
+   
     }
 
     

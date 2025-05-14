@@ -11,47 +11,34 @@ use Illuminate\Http\Request;
 use Laravel\Socialite\Facades\Socialite;
 use App\Http\Requests\Auth\RegisterUserRequest;
 use App\Http\Requests\Auth\RegisterAudienceRequest;
+use App\Services\Company\CreateCompanyService;
+use App\Services\users\CreateUserService;
 
-class UserRegisterController extends Controller
+class UserRegisterController extends BaseController
 {
     public function userRegister(RegisterUserRequest $request)
     {
     
         try {
-
-            $user = User::create($request->validated());          
-          
-            $company = Company::create($request->validated());
-
-
-            if ( isset($company->id) ) {
-                // add the company user relation in the table
-                $companyUser = CompanyUser::updateOrCreate([
-                    'company_id' => $company->id,
-                    
-                ], ['user_id' =>  $user->id]);
-            } else {
-                return response()->json([
-                    'error' => true,
-                    'message' => "Company not found"
-
-                ], 404);
-            }
+            $user = (new CreateUserService($request))->run();
+            $companyData = (new CreateCompanyService($request, $user->id))->run();            
+        
            
         } catch (\Exception $exception) {
-            return response()->json(['error' => true, 'message' => $exception->getMessage()], 500);
+            return $this->sendError(
+                "something went wrong",
+                ['error' => $exception->getMessage()],
+                500
+            );
         }
     
         $data['user'] =  $user;
+        $data['company'] = $companyData['company'];
+        $data['company_user'] = $companyData['companyUser'];
         $data['token'] =  $user->createToken('Nova')->accessToken;
     
-        return response()->json([
-            'error' => false, 
-            'message' => 'User registration successful', 
-            'data' => $data, 
-            'company' => $company,
-            'company_user' => $companyUser
-        ], 201);
+        return $this->sendResponse($data, 'User registration successful', 201);
+     
     }
 
 
