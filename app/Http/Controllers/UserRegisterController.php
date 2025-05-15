@@ -12,7 +12,7 @@ use Laravel\Socialite\Facades\Socialite;
 use App\Http\Requests\Auth\RegisterUserRequest;
 use App\Http\Requests\Auth\RegisterAudienceRequest;
 use App\Services\Company\CreateCompanyService;
-use App\Services\users\CreateUserService;
+use App\Services\Users\CreateUserService;
 
 class UserRegisterController extends BaseController
 {
