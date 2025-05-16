@@ -55,8 +55,11 @@ Route::group(['prefix' => 'audiences'], function ($router) {
 });
 
 
+
 Route::group(["middleware" => ["auth:api"]], function ($router) {
     $router->group(['prefix' => 'users/'], function () use ($router) {
+
+        Route::get('/play-game/{id}/game/{game_id}/',[CampaignController::class,'goToCampaignGame'])->name('play.game'); 
 
         //  Wallet (works)
         $router->group(['prefix' => 'wallets/'], function () use ($router) {
@@ -107,6 +110,9 @@ Route::group(["middleware" => ["auth:api"]], function ($router) {
             $router->get('/', [CampaignController::class, 'index']);           
             $router->post('/', [CampaignController::class,' storeCampaign']);
             $router->get('/{campaign_id}', [CampaignController::class, 'showCampaign']);
+
+
+            $router->get('/{campaign_id}', [CampaignController::class, 'showCampaign']);
             
         });
 
@@ -115,6 +121,7 @@ Route::group(["middleware" => ["auth:api"]], function ($router) {
                 $router->group(['prefix' => 'campaign-game'], function () use ($router) {
                     $router->post('/', [CampaignGameController::class, 'storeCampaignGame']);
                     $router->get('/', [CampaignGameController::class, 'indexCampaignGame']);
+                    $router->get('/{game_id}/link', [CampaignController::class, 'generateCampaignLink']);
                 });
 
                 $router->group(['prefix' => 'game'], function () use ($router) {
