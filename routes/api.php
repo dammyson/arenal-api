@@ -36,6 +36,8 @@ use App\Models\CampaignGamePlay;
 Route::group(['prefix' => 'users'], function ($router) {
     $router->group(['prefix' => 'auth'], function () use ($router) {
         $router->post('register', [UserRegisterController::class, 'userRegister']);
+        $router->post('new-register', [UserRegisterController::class, 'newRegister']);
+        $router->post('new-login', [UserRegisterController::class, 'newLogin']);
         $router->post('login', [UserLoginController::class, 'login']);
     });
 });
@@ -107,7 +109,6 @@ Route::group(["middleware" => ["auth:api"]], function ($router) {
             $router->get('/{campaign_id}', [CampaignController::class, 'showCampaign']);
             
         });
-
 
         $router->group(['prefix' => 'campaign'], function () use ($router) {
             $router->group(['prefix' => '{campaign_id}'], function () use ($router) {

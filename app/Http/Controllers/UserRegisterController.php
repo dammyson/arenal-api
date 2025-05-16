@@ -8,11 +8,12 @@ use App\Models\Company;
 use App\Models\CompanyUser;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Laravel\Socialite\Facades\Socialite;
+use App\Services\Users\CreateUserService;
+use App\Services\Company\CreateCompanyService;
 use App\Http\Requests\Auth\RegisterUserRequest;
 use App\Http\Requests\Auth\RegisterAudienceRequest;
-use App\Services\Company\CreateCompanyService;
-use App\Services\Users\CreateUserService;
 
 class UserRegisterController extends BaseController
 {
@@ -39,6 +40,40 @@ class UserRegisterController extends BaseController
     
         return $this->sendResponse($data, 'User registration successful', 201);
      
+    }
+
+    public function newRegister(Request $request) {
+        $user = User::where('email', $request['email'])->first();
+
+        if($user) {
+            return $this->sendResponse($user, true, 200);
+        } else {
+
+            $user = $this->generateFourDigitOtp();
+            return $this->sendResponse($user, false, 404);
+        }
+
+    }
+
+    public function generateFourDigitOtp() {
+        $otp = rand(0000, 9999);
+        return $otp;
+    }
+
+    public function newLogin(Request $request) {
+        $user = User::where('email', $request['email'])->first();
+
+        if (Hash::check($request->password_or_pin, $user->password) || $request->password_or_pin === $user->pin) {
+                $data['user'] = $user;
+                $data['token'] = $user->createToken('Nova')->accessToken;
+
+                return $this->sendResponse($data, 'Login Successful');
+                // return response()->json(['is_correct' => true, 'message' => 'Login Successful', 'data' => $data], 200);
+
+        } else {
+            return $this->sendError('Invalid Credentials', null, 401);
+            
+        }
     }
 
 
