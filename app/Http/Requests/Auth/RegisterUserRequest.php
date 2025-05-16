@@ -40,7 +40,7 @@ class RegisterUserRequest extends FormRequest
             
 
             // company info 
-            'company_name' => ['required', 'string'],
+            'company_name' => ['sometimes', 'string'],
             'company_address' => ['nullable', 'string'],
             'company_logo' => ['nullable', 'string'],
             'company_rc' => ['nullable', 'string'],

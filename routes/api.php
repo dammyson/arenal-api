@@ -35,10 +35,11 @@ use App\Models\CampaignGamePlay;
 
 Route::group(['prefix' => 'users'], function ($router) {
     $router->group(['prefix' => 'auth'], function () use ($router) {
-        $router->post('register', [UserRegisterController::class, 'userRegister']);
-        $router->post('new-register', [UserRegisterController::class, 'newRegister']);
-        $router->post('new-login', [UserRegisterController::class, 'newLogin']);
-        $router->post('login', [UserLoginController::class, 'login']);
+        $router->post('create', [UserRegisterController::class, 'userRegister']);
+        $router->post('sign_in', [UserRegisterController::class, 'newRegister']);
+        $router->post('login', [UserRegisterController::class, 'newLogin']);
+        $router->post('verify-otp', [UserRegisterController::class, 'verifyOtp']);
+        // $router->post('login', [UserLoginController::class, 'login']);
     });
 });
 
