@@ -9,6 +9,8 @@ use App\Services\Campaign\IndexCampaign;
 use App\Services\Campaign\ShowCampaign;
 use App\Services\Campaign\StoreCampaign;
 use Illuminate\Http\Request;
+use \Illuminate\Support\Facades\URL;
+use App\Services\CampaignGame\ShowCampaignGame;
 
 class CampaignController extends BaseController
 {
@@ -68,4 +70,56 @@ class CampaignController extends BaseController
         return $this->sendResponse($data, "Campaign retrieved succcessfully", 200);
    
     }
+
+    public function startCampaign($campaignId)
+    {
+        try {
+        
+            $campaign = Campaign::find($campaignId);
+            $campaign->status = "ACTIVE";
+            $campaign->start_date = now();
+            $campaign->save();
+           
+        } catch (\Exception $e){
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }        
+        return $this->sendResponse($campaign, "Campaign started succcessfully", 200);
+    }
+
+    public function generateCampaignLink($campaignId, $gameId)
+    {
+        try {
+
+            $campaign = Campaign::find($campaignId);
+            $expired = now()->addHour(24);
+            $url =  URL::temporarySignedRoute('play.game',  $expired, ['id'=>  $campaignId, 'game_id' => $gameId]);
+            $urlComponents = parse_url($url);
+            $front_url = env('FRONT_END_URL', 24).  "/play-arena/" . $campaignId . '?' . $urlComponents['query'];
+         
+        //     dd($front_url, $url);
+        //    // $campaign->link = $request->link;
+            $campaign->save();
+           
+        } catch (\Exception $e){
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }        
+        return $this->sendResponse($campaign, "Campaign updated succcessfully", 200);
+   
+    }
+
+    public function goToCampaignGame(Request $request, $campaign_id, $game_id) {
+        try {
+            if (!$request->hasValidSignature()) {
+                return response()->json(['status' => false, 'message' => 'Invalid/Expired link, contact admin'], 401);
+            }
+
+            $data = (new ShowCampaignGame($campaign_id, $game_id))->run();
+
+        }   catch (\Exception $e){
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }        
+        return $this->sendResponse($data, "Campaign Game retrieved succcessfully", 200);
+   
+    }
+
 }
