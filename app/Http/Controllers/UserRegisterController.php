@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Throwable;
+use App\Models\Otp;
 use App\Models\User;
 use App\Models\Company;
 use App\Models\CompanyUser;
@@ -22,7 +23,7 @@ class UserRegisterController extends BaseController
     
         try {
             $user = (new CreateUserService($request))->run();
-            $companyData = (new CreateCompanyService($request, $user->id))->run();            
+            // $companyData = (new CreateCompanyService($request, $user->id))->run();            
         
            
         } catch (\Exception $exception) {
@@ -33,9 +34,9 @@ class UserRegisterController extends BaseController
             );
         }
     
-        $data['user'] =  $user;
-        $data['company'] = $companyData['company'];
-        $data['company_user'] = $companyData['companyUser'];
+        // $data['user'] =  $user;
+        // $data['company'] = $companyData['company'];
+        // $data['company_user'] = $companyData['companyUser'];
         $data['token'] =  $user->createToken('Nova')->accessToken;
     
         return $this->sendResponse($data, 'User registration successful', 201);
@@ -43,27 +44,72 @@ class UserRegisterController extends BaseController
     }
 
     public function newRegister(Request $request) {
-        $user = User::where('email', $request['email'])->first();
+        try {
 
-        if($user) {
-            return $this->sendResponse($user, true, 200);
-        } else {
+            $user = User::where('email', $request['email_or_phone_no'])
+                ->orWhere('phone_number', $request['email_or_phone_no'])  
+                ->first();
 
-            $user = $this->generateFourDigitOtp();
-            return $this->sendResponse($user, false, 404);
-        }
+            if($user) {
+                return $this->sendResponse($user, true, 200);
+
+            } else {
+
+                // User::create([
+                //     'email' => $request['email']
+                // ]);
+                $otp = $this->generateFourDigitOtp();
+
+                $otp = Otp::create([
+                    'email_or_phone_no' => $request->email_or_phone_no,
+                    'otp' => $otp
+                ]);
+                return $this->sendResponse($otp, false);
+            }
+        } catch(\Throwable $th) {
+
+            return $this->sendError('something went wrong', $th->getMessage(), 500);
+        }        
 
     }
 
-    public function generateFourDigitOtp() {
-        $otp = rand(0000, 9999);
+    public function generateFourDigitOtp() {          
+        $digits = 4;
+        $otp= str_pad(rand(0, pow(10, $digits)-1), $digits, '0', STR_PAD_LEFT);
         return $otp;
     }
 
-    public function newLogin(Request $request) {
-        $user = User::where('email', $request['email'])->first();
+    public function verifyOtp(Request $request) {
+        
+        try {
+            $otp = Otp::where('email_or_phone_no', $request['email_or_phone_no'])->where('otp', $request->otp)->first();
+            
+            if ($otp->is_verified) {
+                return $this->sendError('otp already verified', null, 400);
 
-        if (Hash::check($request->password_or_pin, $user->password) || $request->password_or_pin === $user->pin) {
+            }
+
+            if ($otp) {
+                $otp->is_verified = true;
+                $otp->save();
+                return $this->sendResponse($otp, 'otp verifcation successfully');
+            } else {
+                return $this->sendError($otp, 'otp verification failed', 422);
+            }
+        } catch(\Throwable $th) {
+
+            return $this->sendError('something went wrong', $th->getMessage(), 500);
+        }
+       
+
+    }
+
+    public function newLogin(Request $request) {
+        $user = User::where('email', $request['email_or_phone_no'])
+            ->orWhere('phone_number', $request['email_or_phone_no'])
+            ->first();
+
+        if (Hash::check($request->password, $user->password)) {
                 $data['user'] = $user;
                 $data['token'] = $user->createToken('Nova')->accessToken;
 
