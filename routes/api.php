@@ -33,218 +33,119 @@ use App\Http\Controllers\SearchTransactionController;
 use App\Http\Controllers\TriviaQuestionController;
 use App\Models\CampaignGamePlay;
 
-Route::group(['prefix' => 'users'], function ($router) {
-    $router->group(['prefix' => 'auth'], function () use ($router) {
-        $router->post('create', [UserRegisterController::class, 'userRegister']);
-        $router->post('sign_in', [UserRegisterController::class, 'newRegister']);
-        $router->post('login', [UserRegisterController::class, 'newLogin']);
-        $router->post('verify-otp', [UserRegisterController::class, 'verifyOtp']);
-        // $router->post('login', [UserLoginController::class, 'login']);
-    });
-});
-
-Route::group(['prefix' => 'auth'], function ($router) {
-    $router->get('google/callback', [UserRegisterController::class, 'gooogleCallback']);
-});
 
 
-Route::group(['prefix' => 'audiences'], function ($router) {
-    $router->group(['prefix' => 'auth'], function () use ($router) {
-        $router->post('/register', [AudienceRegisterController::class, 'registerAudience']);
-        $router->post('/login', [AudienceLoginController::class, 'login']);
-    });
-});
+Route::post('users/auth/create', [UserRegisterController::class, 'userRegister']);
+Route::post('users/auth/sign_in', [UserRegisterController::class, 'newRegister']);
+Route::post('users/auth/login', [UserRegisterController::class, 'newLogin']);
+Route::post('users/auth/verify-otp', [UserRegisterController::class, 'verifyOtp']);
+Route::get('auth/google/callback', [UserRegisterController::class, 'gooogleCallback']);
+
+
+Route::post('audiences/auth/register', [AudienceRegisterController::class, 'registerAudience']);
+Route::post('audiences/auth/login', [AudienceLoginController::class, 'login']);
 
 
 
 Route::group(["middleware" => ["auth:api"]], function ($router) {
-    $router->group(['prefix' => 'users/'], function () use ($router) {
 
-        Route::get('/play-game/{id}/game/{game_id}/',[CampaignController::class,'goToCampaignGame'])->name('play.game'); 
+    Route::get('users/play-game/{id}/game/{game_id}/',[CampaignController::class,'goToCampaignGame'])->name('play.game'); 
 
-        //  Wallet (works)
-        $router->group(['prefix' => 'wallets/'], function () use ($router) {
-            $router->post('create', [WalletController::class, 'createWallet']);
+    Route::post('users/wallets/create', [WalletController::class, 'createWallet']);
 
-            // This route is not completely implemented(awaiting payment system)
-            $router->group(['prefix' => 'transactions/'], function () use ($router) {
-                $router->get('{id}', [TransactionController::class, 'show']);
-            });
-        });
+    Route::get('users/wallets/transactions/{id}', [TransactionController::class, 'show']);
+     
+    Route::get('users/companies', [CompanyController::class, 'index']);
+    Route::post('users/companies', [CompanyController::class, 'storeCompany']);
 
+    Route::get('users/clients', [ClientController::class, 'index']);
+    Route::post('users/clients', [ClientController::class, 'storeClient']);
 
+    Route::get('users/brands', [BrandController::class, 'index']);
+    Route::post('users/brands', [BrandController::class, 'storeBrand']);
+        
 
-        // all the router below should be accessible by only authorized personnel(admin, company staff, superadmin)
-        //works
-        $router->group(['prefix' => 'companies/'], function () use ($router) {
-            $router->get('/', [CompanyController::class, 'index']);
-            $router->post('/', [CompanyController::class, 'storeCompany']);
-        });
+    Route::get('users/games', [GameController::class, 'index']);
+    Route::post('users/games', [GameController::class, 'storeGame']);
+    Route::get('users/games/{game_id}/show-game', [GameController::class, 'showGame']);
+    Route::patch('users/games/{game_id}/update-game', [GameController::class, 'updateGame']);
 
-        //works
-        $router->group(['prefix' => 'clients/'], function () use ($router) {
-            $router->get('/', [ClientController::class, 'index']);
-            $router->post('/', [ClientController::class, 'storeClient']);
-        });
-
-        //works
-        $router->group(['prefix' => 'brands/'], function () use ($router) {
-            $router->get('/', [BrandController::class, 'index']);
-            $router->post('/', [BrandController::class, 'storeBrand']);
-        });
-
-
-        //works
-        $router->group(['prefix' => 'games/'], function () use ($router) {
-            // validate if we just have one game to one campaign
-            $router->get('/', [GameController::class, 'index']);
-            $router->post('/', [GameController::class, 'storeGame']);
-
-            $router->group(['prefix' => '{game_id}/'], function () use ($router) {
-                $router->get('show-game', [GameController::class, 'showGame']);
-                $router->patch('update-game', [GameController::class, 'updateGame']);
-            });
-        });
-
-
-        $router->group(['prefix' => 'campaigns/'], function () use ($router) {
-            $router->get('/', [CampaignController::class, 'index']);           
-            $router->post('/', [CampaignController::class,' storeCampaign']);
-            $router->get('/{campaign_id}', [CampaignController::class, 'showCampaign']);
-
-
-            $router->get('/{campaign_id}', [CampaignController::class, 'showCampaign']);
+        
+    Route::get('users/campaigns', [CampaignController::class, 'index']);           
+    Route::post('users/campaigns', [CampaignController::class,' storeCampaign']);
+    Route::get('users/campaigns/{campaign_id}', [CampaignController::class, 'showCampaign']);
             
-        });
 
-        $router->group(['prefix' => 'campaign'], function () use ($router) {
-            $router->group(['prefix' => '{campaign_id}'], function () use ($router) {
-                $router->group(['prefix' => 'campaign-game'], function () use ($router) {
-                    $router->post('/', [CampaignGameController::class, 'storeCampaignGame']);
-                    $router->get('/', [CampaignGameController::class, 'indexCampaignGame']);
-                    $router->get('/{game_id}/link', [CampaignController::class, 'generateCampaignLink']);
-                });
+            
+    Route::post('users/campaign/{campaign_id}/campaign-game', [CampaignGameController::class, 'storeCampaignGame']);
+    Route::get('users/campaign/{campaign_id}/campaign-game', [CampaignGameController::class, 'indexCampaignGame']);
+    Route::get('users/campaign/{campaign_id}/campaign-game/{game_id}/link', [CampaignController::class, 'generateCampaignLink']);
+    Route::post('users/campaign/{campaign_id}/game/{game_id}/rules', [CampaignGameRuleController::class, 'store']);
+    Route::get('users/campaign/{campaign_id}/game/{game_id}/rules', [CampaignGameRuleController::class, 'showCampaignGameRules']);
 
-                $router->group(['prefix' => 'game'], function () use ($router) {
-                    $router->post('/{game_id}/rules', [CampaignGameRuleController::class, 'store']);
-                    $router->get('/{game_id}/rules', [CampaignGameRuleController::class, 'showCampaignGameRules']);
-                });
-            });
-        });
+          
+    Route::get('users/rules', [CampaignGameRuleController::class, 'index']);
+    Route::post('users/rules', [CampaignGameRuleController::class, 'store']);
+    Route::get('users/rules/{rule_id}', [CampaignGameRuleController::class, 'showCampaignGameRules']);
 
+    Route::get('users/logout', [LogoutController::class, 'logout']);
+   
 
-        $router->group(['prefix' => 'rules/'], function () use ($router) {
-            $router->get('/', [CampaignGameRuleController::class, 'index']);
-            $router->post('/', [CampaignGameRuleController::class, 'store']);
-            $router->get('/{rule_id}', [CampaignGameRuleController::class, 'showCampaignGameRules']);
-        });
+    Route::get('audiences/home/user-info', [ProfileController::class, 'userInfo']);
+    Route::get('audiences/home/user-profile', [ProfileController::class, 'profile']);
+    Route::get('audiences/home/top-three', [OverallCampaignGamePlayLeaderboardController::class, 'overallGamePlayTopThree']);
+    Route::get('audiences/home/campaigns', [CampaignController::class, 'index']);
+    Route::get('audiences/home/campaigns-game', [CampaignGameController::class, 'indexCampaignGame']);
+    Route::get('audiences/home/favorite-games', [CampaignGameController::class, 'indexFavorite']);
 
-        $router->get('/logout', [LogoutController::class, 'logout']);
-    });
-});
+    Route::get('audiences/home/campaigns/{campaign_id}/games/game-plays', [CampaignGamePlayController::class, 'index']); // not seen in UI
+    Route::get('audiences/home/campaigns/{campaign_id}/games/{game_id}/show-campaign-game', [CampaignGameController::class, 'showCampaignGame']);
+    Route::post('audiences/home/campaigns/{campaign_id}/games/{game_id}/campaign-game-play', [CampaignGamePlayController::class, 'storeCampaignGamePlay']);
+    Route::get('audiences/home/campaigns/{campaign_id}/games/{game_id}/game-plays', [CampaignGamePlayController::class, 'show']);
+    Route::put('audiences/home/campaigns/{campaign_id}/games/{game_id}/game-plays', [CampaignGamePlayController::class, 'update']);
+    Route::delete('audiences/home/campaigns/{campaign_id}/games/{game_id}/game-plays', [CampaignGamePlayController::class, 'destroy']); // not seen in UI
 
-
-Route::middleware('auth:api')->group(function ($router) {
-    $router->group(['prefix' => 'audiences/'], function () use ($router) {
-        $router->group(['prefix' => 'home'], function () use ($router) {
-            $router->get('user-info', [ProfileController::class, 'userInfo']);
-            $router->get('user-profile', [ProfileController::class, 'profile']);
-            $router->get('/top-three', [OverallCampaignGamePlayLeaderboardController::class, 'overallGamePlayTopThree']);
-            $router->get('/campaigns', [CampaignController::class, 'index']);
-            $router->get('/campaigns-game', [CampaignGameController::class, 'indexCampaignGame']);
-            $router->get('/favorite-games', [CampaignGameController::class, 'indexFavorite']);
-
-
-            $router->group(['prefix' => 'campaigns'], function () use ($router) {
-                $router->group(['prefix' => '{campaign_id}'], function () use ($router) {
-                    $router->group(['prefix' => 'games'], function () use ($router) {
-                        $router->get('game-plays', [CampaignGamePlayController::class, 'index']); // not seen in UI
-                        $router->group(['prefix' => '{game_id}'], function () use ($router) {
-                            $router->get('/show-campaign-game', [CampaignGameController::class, 'showCampaignGame']);
-                            $router->post('/campaign-game-play', [CampaignGamePlayController::class, 'storeCampaignGamePlay']);
-                            $router->get('game-plays', [CampaignGamePlayController::class, 'show']);
-                            $router->put('game-plays', [CampaignGamePlayController::class, 'update']);
-                            $router->delete('game-plays', [CampaignGamePlayController::class, 'destroy']); // not seen in UI
-
-                            $router->group(['prefix' => 'campaign-game-leaderboard'], function () use ($router) {
-                                $router->get('/daily', [CampaignGamePlayLeaderboardController::class, 'gameLeaderboardDaily']);
-                                $router->get('/weekly', [CampaignGamePlayLeaderboardController::class, 'gameLeaderboardWeekly']);
-                                $router->get('/monthly', [CampaignGamePlayLeaderboardController::class, 'gameLeaderboardMonthly']);
-                                $router->get('/alltime', [CampaignGamePlayLeaderboardController::class, 'gameLeaderboardAllTime']);
-                            });
-                        });
-                    });
-                });
-            });
+    Route::get('audiences/home/campaigns/{campaign_id}/games/{game_id}/campaign-game-leaderboard/daily', [CampaignGamePlayLeaderboardController::class, 'gameLeaderboardDaily']);
+    Route::get('audiences/home/campaigns/{campaign_id}/games/{game_id}/campaign-game-leaderboard/weekly', [CampaignGamePlayLeaderboardController::class, 'gameLeaderboardWeekly']);
+    Route::get('audiences/home/campaigns/{campaign_id}/games/{game_id}/campaign-game-leaderboard/monthly', [CampaignGamePlayLeaderboardController::class, 'gameLeaderboardMonthly']);
+    Route::get('audiences/home/campaigns/{campaign_id}/games/{game_id}/campaign-game-leaderboard/alltime', [CampaignGamePlayLeaderboardController::class, 'gameLeaderboardAllTime']);
+                    
+    Route::get('audiences/home/gamez/{game_id}', [GameController::class, 'showGame']);
+    Route::patch('audiences/home/gamez/{game_id}/favorite', [GameController::class, 'toogleFavorite']);
 
 
-            $router->group(['prefix' => 'gamez'], function () use ($router) {
-                $router->get('/{game_id}', [GameController::class, 'showGame']);
-                $router->patch('/{game_id}/favorite', [GameController::class, 'toogleFavorite']);
-            });
-        });
+    Route::post('audiences/gameboard/search-game', [SearchGameController::class, 'searchGame']);
+    Route::get('audiences/gameboard/user-info', [ProfileController::class, 'userInfo']);
+    Route::post('audiences/gameboard/category', [FilterGameController::class, 'filter']);
+    Route::get('audiences/gameboard', [CampaignGameController::class, 'indexCampaignGame']);
+    Route::patch('audiences/gameboard/{game_id}/favorite', [GameController::class, 'toogleFavorite']);
 
-        $router->group(['prefix' => 'gameboard'], function () use ($router) {
-            $router->post('search-game', [SearchGameController::class, 'searchGame']);
-            $router->get('user-info', [ProfileController::class, 'userInfo']);
-            $router->post('/category', [FilterGameController::class, 'filter']);
-            $router->get('/', [CampaignGameController::class, 'indexCampaignGame']);
-            $router->patch('/{game_id}/favorite', [GameController::class, 'toogleFavorite']);
-        });
+    Route::get('audiences/general/overall-leaderboard/daily', [OverallCampaignGamePlayLeaderboardController::class, 'overallLeaderboardDaily']);
+    Route::get('audiences/general/overall-leaderboard/weekly', [OverallCampaignGamePlayLeaderboardController::class, 'overallLeaderboardWeekly']);
+    Route::get('audiences/general/overall-leaderboard/monthly', [OverallCampaignGamePlayLeaderboardController::class, 'overallLeaderboardMonthly']);
+    Route::get('audiences/general/overall-leaderboard/alltime', [OverallCampaignGamePlayLeaderboardController::class, 'overallLeaderboard']);
+                
+    Route::get('audiences/campaign/{campaign_id}/game/{game_id}/rules', [CampaignGameRuleController::class, 'showCampaignGameRules']);
+    Route::get('audiences/campaign/{campaign_id}/game/campaign-game', [CampaignGameController::class, 'indexCampaignGame']);
 
-        $router->group(['prefix' => 'general/'], function () use ($router) {
-            $router->group(['prefix' => 'overall-leaderboard/'], function () use ($router) {
-                $router->get('/daily', [OverallCampaignGamePlayLeaderboardController::class, 'overallLeaderboardDaily']);
-                $router->get('/weekly', [OverallCampaignGamePlayLeaderboardController::class, 'overallLeaderboardWeekly']);
-                $router->get('/monthly', [OverallCampaignGamePlayLeaderboardController::class, 'overallLeaderboardMonthly']);
-                $router->get('/alltime', [OverallCampaignGamePlayLeaderboardController::class, 'overallLeaderboard']);
-            });
-        });
+    Route::get("audiences/account-settings/profile", [ProfileController::class, "profile"]);
+    Route::post("audiences/account-settings/profile/edit", [ProfileController::class, "profileEdit"]);           
+    Route::patch('audiences/account-settings/security/change-password', [ChangePasswordController::class, 'changePassword']); 
 
-        $router->group(['prefix' => 'campaign'], function () use ($router) {
-            $router->group(['prefix' => '{campaign_id}'], function () use ($router) {
-                $router->group(['prefix' => 'game'], function () use ($router) {
-                    $router->get('/{game_id}/rules', [CampaignGameRuleController::class, 'showCampaignGameRules']);
-                });
+    Route::get('audiences/wallet/fund-wallet', [WalletController::class, 'showAccountNumber']);
+    Route::post('audiences/wallet/fund-wallet', [WalletController::class, 'fundWallet']);
+    Route::post('audiences/wallet/transfer-funds', [WalletController::class, 'transferFund']);
+    Route::post('audiences/wallet/create', [WalletController::class, 'createWallet']);
+    Route::get('audiences/wallet/{wallet_id}/wallet-balance', [WalletController::class, 'getWalletBalance']);
+    Route::post('audiences/wallet/{wallet_id}/transaction', [TransactionController::class, 'storeTransaction']);
+    Route::post('audiences/wallet/{wallet_id}/transaction-history', [TransactionHistoryController::class, 'storeTxHistory']);
+    Route::get('audiences/wallet/{wallet_id}/transaction-history', [TransactionHistoryController::class, 'getTxHistory']);
+    Route::post('audiences/wallet/{wallet_id}/search-transaction', [SearchTransactionController::class, 'searchTransactionHistory']);
+    Route::post('audiences/wallet/{wallet_id}/filter-transaction', [SearchTransactionController::class, 'filterTransactionHistory']);
+        
 
-                $router->group(['prefix' => 'campaign-game'], function () use ($router) {
-                    $router->get('/', [CampaignGameController::class, 'indexCampaignGame']);
-                });
-            });
-        });
+    Route::get('audiences/logout', [LogoutController::class, 'logout']);      
 
-        $router->group(['prefix' => 'account-settings'], function () use ($router) {
-            $router->get("profile", [ProfileController::class, "profile"]);
-            $router->post("profile/edit", [ProfileController::class, "profileEdit"]);
-            $router->group(['prefix' => 'security'], function() use ($router) {
-                $router->patch('change-password', [ChangePasswordController::class, 'changePassword']); 
-
-            });
-
-            $router->group(['prefix' => 'wallet'], function () use ($router) {
-                $router->get('/fund-wallet', [WalletController::class, 'showAccountNumber']);
-                $router->post('/fund-wallet', [WalletController::class, 'fundWallet']);
-                $router->post('/transfer-funds', [WalletController::class, 'transferFund']);
-                $router->post('create', [WalletController::class, 'createWallet']);
-
-                $router->group(['prefix' => '{wallet_id}'], function () use ($router) {
-                    $router->get('wallet-balance', [WalletController::class, 'getWalletBalance']);
-
-                    $router->post('/transaction', [TransactionController::class, 'storeTransaction']);
-                    $router->post('/transaction-history', [TransactionHistoryController::class, 'storeTxHistory']);
-                    $router->get('/transaction-history', [TransactionHistoryController::class, 'getTxHistory']);
-                    $router->post('/search-transaction', [SearchTransactionController::class, 'searchTransactionHistory']);
-                    $router->post('/filter-transaction', [SearchTransactionController::class, 'filterTransactionHistory']);
-                });
-            });
-
-            $router->get('/logout', [LogoutController::class, 'logout']);
-        });
-    });
-});
-
-
-Route::prefix('trivia')->middleware('auth:api')->group(function () {
-    Route::get('/questions', [TriviaQuestionController::class, 'index']);
-    Route::post('/questions', [TriviaQuestionController::class, 'storeMultiple']);
+    Route::get('trivia/questions', [TriviaQuestionController::class, 'index']);
+    Route::post('trivia/questions', [TriviaQuestionController::class, 'storeMultiple']);
 });

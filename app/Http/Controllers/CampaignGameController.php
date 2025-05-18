@@ -4,12 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\CampaignGame;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use App\Services\Campaign\IndexCampaign;
+use App\Services\CampaignGame\ShowCampaignGame;
 use App\Services\CampaignGame\IndexCampaignGame;
 use App\Services\CampaignGame\StoreCampaignGame;
 use App\Http\Requests\Campaign\StoreCampaignGameRequest;
 use App\Services\CampaignGame\IndexFavoriteCampaignGame;
-use App\Services\CampaignGame\ShowCampaignGame;
 
 class CampaignGameController extends BaseController
 {
@@ -17,7 +18,7 @@ class CampaignGameController extends BaseController
     public function storeCampaignGame(StoreCampaignGameRequest $request, $campaignId) {
 
         try {         
-
+            Gate::authorize('is-audience');
             $data = (new StoreCampaignGame($request, $campaignId))->run();
 
         } catch (\Exception $e){
@@ -29,6 +30,7 @@ class CampaignGameController extends BaseController
 
     public function indexCampaignGame() {
         try {
+            Gate::authorize('is-audience');
             $data = (new IndexCampaignGame())->run();
 
         } catch (\Exception $e){
@@ -41,6 +43,7 @@ class CampaignGameController extends BaseController
 
     public function showCampaignGame($campaign_id, $game_id) {
         try {
+            Gate::authorize('is-audience');
             $data = (new ShowCampaignGame($campaign_id, $game_id))->run();
 
         }   catch (\Exception $e){
@@ -53,6 +56,7 @@ class CampaignGameController extends BaseController
     public function indexFavorite(Request $request)
     {   
         try {
+            Gate::authorize('is-audience');
             $data = (new IndexFavoriteCampaignGame($request))->run();
     
         }   catch (\Exception $e){

@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\CampaignGamePlay;
-use App\Services\CampaignGamePlay\OverallCampaignGamePlayService;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
+use App\Services\CampaignGamePlay\OverallCampaignGamePlayService;
 
 class OverallCampaignGamePlayLeaderboardController extends BaseController
 {
@@ -19,7 +20,7 @@ class OverallCampaignGamePlayLeaderboardController extends BaseController
     public function overallLeaderboard()
     {
         try {
-
+            Gate::authorize('is-audience');
             $data = $this->overallGamePlayService->overallLeaderboard();
             
         }  catch (\Exception $e){
@@ -32,6 +33,7 @@ class OverallCampaignGamePlayLeaderboardController extends BaseController
     public function overallGamePlayTopThree() 
     {
         try {
+            Gate::authorize('is-audience');
             $data = $this->overallGamePlayService->overallGamePlayTopThree();
 
         }  catch (\Exception $e){
@@ -44,7 +46,7 @@ class OverallCampaignGamePlayLeaderboardController extends BaseController
     public function overallLeaderboardDaily()
     {
          try {
-
+            Gate::authorize('is-audience');
             $data = $this->overallGamePlayService->overallLeaderboardDaily();
 
 
@@ -58,7 +60,7 @@ class OverallCampaignGamePlayLeaderboardController extends BaseController
     public function overallLeaderboardWeekly()
     {
         try { 
-            // dd("i ran");
+            Gate::authorize('is-audience');
             $data = $this->overallGamePlayService->overallLeaderboardWeekly();
 
 
@@ -73,6 +75,7 @@ class OverallCampaignGamePlayLeaderboardController extends BaseController
     {
       
         try { 
+            Gate::authorize('is-audience');
             $data = $this->overallGamePlayService->overallLeaderboardMonthly();
 
 

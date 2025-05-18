@@ -2,21 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Campaign\StoreCampaignRequest;
 use App\Models\Campaign;
-use App\Services\Campaign\IndexCampaign;
-use App\Services\Campaign\ShowCampaign;
-use App\Services\Campaign\StoreCampaign;
 use Illuminate\Http\Request;
 use \Illuminate\Support\Facades\URL;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Gate;
+use App\Services\Campaign\ShowCampaign;
+use App\Services\Campaign\IndexCampaign;
+use App\Services\Campaign\StoreCampaign;
 use App\Services\CampaignGame\ShowCampaignGame;
+use App\Http\Requests\Campaign\StoreCampaignRequest;
 
 class CampaignController extends BaseController
 {
     public function index()
     {
         try {
+            Gate::authorize('is-audience');
+
            $data = (new IndexCampaign())->run();
 
         } catch (\Exception $e){
@@ -30,6 +33,8 @@ class CampaignController extends BaseController
     public function fetchCampaigns($title)
     {
         try {
+            Gate::authorize('is-audience');
+
             $fetchedCampaign = Campaign::where('title', $title)->first();
     
             if (!$fetchedCampaign) {
@@ -48,6 +53,8 @@ class CampaignController extends BaseController
     public function storeCampaign(StoreCampaignRequest $request)
     {
         try {
+            Gate::authorize('is-audience');
+
             $data = (new StoreCampaign($request))->run();
 
         }  catch (\Exception $e){
@@ -62,6 +69,7 @@ class CampaignController extends BaseController
     public function showCampaign($campaignId)
     {
         try {
+            Gate::authorize('is-audience');
             $data = (new ShowCampaign($campaignId))->run();
 
         } catch (\Exception $e){
@@ -74,7 +82,8 @@ class CampaignController extends BaseController
     public function startCampaign($campaignId)
     {
         try {
-        
+            Gate::authorize('is-audience');
+
             $campaign = Campaign::find($campaignId);
             $campaign->status = "ACTIVE";
             $campaign->start_date = now();
@@ -89,6 +98,7 @@ class CampaignController extends BaseController
     public function generateCampaignLink($campaignId, $gameId)
     {
         try {
+            Gate::authorize('is-audience');
 
             $campaign = Campaign::find($campaignId);
             $expired = now()->addHour(24);
@@ -109,6 +119,8 @@ class CampaignController extends BaseController
 
     public function goToCampaignGame(Request $request, $campaign_id, $game_id) {
         try {
+            Gate::authorize('is-audience');
+            
             if (!$request->hasValidSignature()) {
                 return response()->json(['status' => false, 'message' => 'Invalid/Expired link, contact admin'], 401);
             }

@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use App\Services\Users\ProfileService;
 use App\Http\Requests\ProfileEditRequest;
 
@@ -21,7 +22,8 @@ class ProfileController extends BaseController
     public function profile() 
     {
         try {
-           $data = $this->profileService->getProfile();
+            Gate::authorize('is-audience');
+            $data = $this->profileService->getProfile();
         
         } catch (\Exception $e){
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
@@ -33,7 +35,7 @@ class ProfileController extends BaseController
     public function editProfile(ProfileEditRequest $request) 
     {
         try {
-        
+            Gate::authorize('is-audience');
             $data = $this->profileService->editProfile($request);
 
 
@@ -46,7 +48,8 @@ class ProfileController extends BaseController
     
     public function userInfo(Request $request)
     {
-        try {        
+        try {   
+            Gate::authorize('is-audience');     
             $data = $this->profileService->userInfo();
 
         }  catch (\Exception $e){

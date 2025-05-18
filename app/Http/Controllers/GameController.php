@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use PhpParser\Node\Expr\FuncCall;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Gate;
 use App\Http\Requests\StoreGameRequest;
 use App\Services\Games\IndexGameService;
 use App\Services\Games\StoreGameService;
@@ -22,6 +23,7 @@ class GameController extends BaseController
     public function index() {
 
         try {
+           Gate::authorize('is-user');
            $data = (new IndexGameService())->run();            
 
         }  catch (\Exception $e){
@@ -35,7 +37,7 @@ class GameController extends BaseController
    
     public function storeGame(StoreGameRequest $request) {
        try {         
-
+            Gate::authorize('is-user');
             $data = (new StoreGameService($request))->run();
 
         }  catch (\Exception $e){
@@ -48,7 +50,8 @@ class GameController extends BaseController
 
     public function showGame($gameId) {
         try {
-            
+
+            Gate::authorize('is-user');
             $data = Game::where('id', $gameId)->with('rules')->first();
 
             if (!$data) {
@@ -65,7 +68,7 @@ class GameController extends BaseController
 
     public function updateGame(UpdateGameRequest $request, $gameId) {
         // try {
-
+        //   Gate::authorize('is-audience');
         //     $data = (new UpdateGameService($request, $gameId))->run();
 
         // }  catch (\Exception $e){
@@ -74,7 +77,7 @@ class GameController extends BaseController
         // return $this->sendResponse($data, "Game retrieved succcessfully");
     
         try {
-
+            Gate::authorize('is-user');
             $game = Game::find($gameId);
 
             if (!$game) {
@@ -107,6 +110,7 @@ class GameController extends BaseController
         ]);
 
         try {
+            Gate::authorize('is-audience');
             $data = (new FilterCampaignGame($validated['type']))->run();
 
         }  catch (\Exception $e){
@@ -119,6 +123,7 @@ class GameController extends BaseController
 
     public function toogleFavorite($gameId) {
         try {
+            Gate::authorize('is-audience');
             $data = (new ToogleFavoriteGame($gameId))->run();
         
         }  catch (\Exception $e){
@@ -133,6 +138,7 @@ class GameController extends BaseController
     public function gamesByType() {
          // Retrieve CampaignGame models and join with games to group by game type
         try{
+            Gate::authorize('is-audience');
             $data = CampaignGame::with('game')
                 ->get();
 

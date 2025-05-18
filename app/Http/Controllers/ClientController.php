@@ -4,16 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Models\Client;
 use Illuminate\Http\Request;
-use App\Http\Requests\User\ClientStoreRequest;
+use Illuminate\Support\Facades\Gate;
 use App\Services\Client\IndexClientService;
 use App\Services\Client\StoreClientService;
+use App\Http\Requests\User\ClientStoreRequest;
 
 class ClientController extends BaseController
 {
     public function index()
     {
         try {
-           
+            Gate::authorize('is-user');
         
             $data = (new IndexClientService())->run();
 
@@ -28,7 +29,7 @@ class ClientController extends BaseController
     public function storeClient(ClientStoreRequest $request)
     {
         try {           
-
+            Gate::authorize('is-user');
             $data = (new StoreClientService($request))->run();
         
         } catch (\Exception $e){

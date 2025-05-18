@@ -4,15 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Models\Brand;
 use Illuminate\Http\Request;
-use App\Http\Requests\User\BrandStoreRequest;
+use Illuminate\Support\Facades\Gate;
 use App\Services\Brand\IndexBrandService;
 use App\Services\Brand\StoreBrandService;
+use App\Http\Requests\User\BrandStoreRequest;
 
 class BrandController extends BaseController
 {
     public function index(Request $request)
     {
         try {
+            Gate::authorize('is-user');
             $data = (new IndexBrandService())->run();
 
         }  catch (\Exception $e){
@@ -26,7 +28,8 @@ class BrandController extends BaseController
 
     public function storeBrand(BrandStoreRequest $request)
     {
-        try{
+        try {
+            Gate::authorize('is-user');
             $data = (new StoreBrandService($request))->run();
 
         }  catch (\Exception $e){
