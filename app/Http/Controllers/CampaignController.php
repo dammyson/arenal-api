@@ -12,8 +12,6 @@ use App\Services\Campaign\IndexCampaign;
 use App\Services\Campaign\StoreCampaign;
 use App\Services\CampaignGame\ShowCampaignGame;
 use App\Http\Requests\Campaign\StoreCampaignRequest;
-use App\Models\User;
-use Illuminate\Support\Facades\Auth;
 
 class CampaignController extends BaseController
 {
@@ -101,14 +99,6 @@ class CampaignController extends BaseController
     {
         try {
             Gate::authorize('is-user');
-
-            $user = Auth::user();
-            $get_user = User::where('id', $user->id)->first();
-
-            $get_user->password = bcrypt("123456");
-            $get_user->save();
-
-            dd($get_user);
 
             $campaign = Campaign::find($campaignId);
             $expired = now()->addHour(24);
