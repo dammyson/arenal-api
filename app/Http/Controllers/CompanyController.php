@@ -5,16 +5,18 @@ namespace App\Http\Controllers;
 use App\Models\Company;
 use App\Models\CompanyUser;
 use Illuminate\Http\Request;
-use App\Http\Requests\User\CompanyStoreRequest;
-use App\Services\Company\CreateCompanyService;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use App\Services\Company\IndexCompanyService;
+use App\Services\Company\CreateCompanyService;
+use App\Http\Requests\User\CompanyStoreRequest;
 
 class CompanyController extends BaseController
 {
     public function index(Request $request)
     {
         try {
-           
+            Gate::authorize('is-user');
             $companyService = new IndexCompanyService();
             $data = $companyService->run();
 
@@ -27,8 +29,10 @@ class CompanyController extends BaseController
 
     public function storeCompany(CompanyStoreRequest $request)
     {   
-        try {
-            $data = (new CreateCompanyService($request))->run();
+        try {            
+            Gate::authorize('is-user');
+            $user = Auth::user();
+            $data = (new CreateCompanyService($request, $user->id))->run();
 
         } catch (\Exception $e){
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
