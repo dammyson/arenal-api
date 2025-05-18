@@ -48,7 +48,6 @@ Route::post('audiences/auth/login', [AudienceLoginController::class, 'login']);
 
 Route::post('auth/verify-otp', [UserRegisterController::class, 'verifyOtp']);
 
-Route::get('users/play-game',[CampaignController::class,'goToCampaignGame'])->name('play.game'); 
 
 Route::group(["middleware" => ["auth:api"]], function ($router) {
 
@@ -116,6 +115,8 @@ Route::group(["middleware" => ["auth:api"]], function ($router) {
                     
     Route::get('audiences/home/gamez/{game_id}', [GameController::class, 'showGame']);
     Route::patch('audiences/home/gamez/{game_id}/favorite', [GameController::class, 'toogleFavorite']);
+
+    Route::get('audiences/play-game',[CampaignController::class,'goToCampaignGame'])->name('play.game'); 
 
 
     Route::post('audiences/gameboard/search-game', [SearchGameController::class, 'searchGame']);

@@ -104,7 +104,7 @@ class CampaignController extends BaseController
             $expired = now()->addHour(24);
 
             $url =  URL::temporarySignedRoute('play.game',  $expired, ['campaign_id'=>  $campaignId, 'game_id' => $gameId]);
-
+dd($url);
             $urlComponents = parse_url($url);
             $front_url = env('FRONT_END_URL', 24) .'?' . $urlComponents['query'];
            
