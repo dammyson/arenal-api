@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Auth\AudienceLoginRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -9,11 +10,13 @@ use App\Http\Requests\Auth\UserLoginRequest;
 
 class AudienceLoginController extends Controller
 {
-    public function login(UserLoginRequest $request)
+    public function login(AudienceLoginRequest $request)
     {
 
         try{
-            $user = User::where('email', $request->email)->first();
+            $user = User::where('email', $request['email_or_phone'])
+                ->orWhere('phone_number', $request['email_or_phone'])  
+                ->first();
 
             if (is_null($user)) {
                 return response()->json(['error' => true, 'message' => 'Invalid credentials'], 401);

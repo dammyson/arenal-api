@@ -43,9 +43,10 @@ Route::get('auth/google/callback', [UserRegisterController::class, 'gooogleCallb
 
 
 Route::post('audiences/auth/register', [AudienceRegisterController::class, 'registerAudience']);
-
 Route::post('audiences/check-audience', [AudienceRegisterController::class, 'checkAudience']);
 Route::post('audiences/auth/login', [AudienceLoginController::class, 'login']);
+
+Route::post('auth/verify-otp', [UserRegisterController::class, 'verifyOtp']);
 
 Route::get('users/play-game',[CampaignController::class,'goToCampaignGame'])->name('play.game'); 
 

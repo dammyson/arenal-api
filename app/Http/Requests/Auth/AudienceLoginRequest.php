@@ -22,8 +22,21 @@ class AudienceLoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => 'required',
-            'password_or_pin' => 'required',
+            'email_or_phone' => [
+                'required',
+                function ($attribute, $value, $fail) {
+                    $isEmail = filter_var($value, FILTER_VALIDATE_EMAIL);
+                    $isPhone = preg_match('/^\d{11}$/', $value); // Nigerian phone number format
+
+                    if (!$isEmail && !$isPhone) {
+                        $fail('The ' . $attribute . ' must be a valid email address or 11-digit phone number.');
+                    }
+                }
+            ],
+            'password' => [
+                'required',
+                'string',
+            ],
         ];
     }
 }
