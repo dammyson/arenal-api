@@ -12,6 +12,8 @@ use App\Services\Campaign\IndexCampaign;
 use App\Services\Campaign\StoreCampaign;
 use App\Services\CampaignGame\ShowCampaignGame;
 use App\Http\Requests\Campaign\StoreCampaignRequest;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class CampaignController extends BaseController
 {
@@ -98,34 +100,45 @@ class CampaignController extends BaseController
     public function generateCampaignLink($campaignId, $gameId)
     {
         try {
-            Gate::authorize('is-audience');
+            Gate::authorize('is-user');
+
+            $user = Auth::user();
+            $get_user = User::where('id', $user->id)->first();
+
+            $get_user->password = bcrypt("123456");
+            $get_user->save();
+
+            dd($get_user);
 
             $campaign = Campaign::find($campaignId);
             $expired = now()->addHour(24);
-            $url =  URL::temporarySignedRoute('play.game',  $expired, ['id'=>  $campaignId, 'game_id' => $gameId]);
+
+            $url =  URL::temporarySignedRoute('play.game',  $expired, ['campaign_id'=>  $campaignId, 'game_id' => $gameId]);
+
             $urlComponents = parse_url($url);
-            $front_url = env('FRONT_END_URL', 24).  "/play-arena/" . $campaignId . '?' . $urlComponents['query'];
-         
-        //     dd($front_url, $url);
-        //    // $campaign->link = $request->link;
-            $campaign->save();
+            $front_url = env('FRONT_END_URL', 24) .'?' . $urlComponents['query'];
            
         } catch (\Exception $e){
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
         }        
-        return $this->sendResponse($campaign, "Campaign updated succcessfully", 200);
+        return $this->sendResponse($front_url, "Campaign updated succcessfully", 200);
    
     }
 
-    public function goToCampaignGame(Request $request, $campaign_id, $game_id) {
+    public function goToCampaignGame(Request $request) {
         try {
-            Gate::authorize('is-audience');
+           // Gate::authorize('is-audience');
+
+           $campaignId = $request->query('campaign_id');
+           $expires = $request->query('expires');
+           $gameId = $request->query('game_id');
+           $signature = $request->query('signature');
             
             if (!$request->hasValidSignature()) {
                 return response()->json(['status' => false, 'message' => 'Invalid/Expired link, contact admin'], 401);
             }
 
-            $data = (new ShowCampaignGame($campaign_id, $game_id))->run();
+            $data = (new ShowCampaignGame($campaignId, $gameId))->run();
 
         }   catch (\Exception $e){
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);

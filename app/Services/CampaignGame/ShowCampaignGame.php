@@ -21,7 +21,7 @@ class ShowCampaignGame implements BaseServiceInterface{
     public function run() {
        return CampaignGame::where('campaign_id', $this->campaignId)
        ->where('game_id', $this->gameId)
-       ->with('game')
+       ->with(['game', 'campaign'])
        ->get();
     
     }

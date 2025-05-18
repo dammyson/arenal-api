@@ -108,7 +108,7 @@ class UserRegisterController extends BaseController
         $user = User::where('email', $request['email_or_phone_no'])
             ->orWhere('phone_number', $request['email_or_phone_no'])
             ->first();
-
+            
         if (Hash::check($request->password, $user->password)) {
                 $data['user'] = $user;
                 $data['token'] = $user->createToken('Nova')->accessToken;

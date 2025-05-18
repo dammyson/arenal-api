@@ -43,13 +43,13 @@ Route::get('auth/google/callback', [UserRegisterController::class, 'gooogleCallb
 
 
 Route::post('audiences/auth/register', [AudienceRegisterController::class, 'registerAudience']);
+
+Route::post('audiences/check-audience', [AudienceRegisterController::class, 'checkAudience']);
 Route::post('audiences/auth/login', [AudienceLoginController::class, 'login']);
 
-
+Route::get('users/play-game',[CampaignController::class,'goToCampaignGame'])->name('play.game'); 
 
 Route::group(["middleware" => ["auth:api"]], function ($router) {
-
-    Route::get('users/play-game/{id}/game/{game_id}/',[CampaignController::class,'goToCampaignGame'])->name('play.game'); 
 
     Route::post('users/wallets/create', [WalletController::class, 'createWallet']);
 
@@ -90,6 +90,9 @@ Route::group(["middleware" => ["auth:api"]], function ($router) {
 
     Route::get('users/logout', [LogoutController::class, 'logout']);
    
+
+    // Audience routes
+
 
     Route::get('audiences/home/user-info', [ProfileController::class, 'userInfo']);
     Route::get('audiences/home/user-profile', [ProfileController::class, 'profile']);

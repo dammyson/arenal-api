@@ -22,22 +22,33 @@ class RegisterAudienceRequest extends FormRequest
     public function rules(): array
     {
         return [
-             // user info 
-            'first_name' => 'required|string',
-            'last_name' => 'required|string',
-            'phone_number' => 'required|numeric|digits:11|unique:users',
-            'email' => 'required|email|unique:users',
+            'email_or_phone' => [
+                'required',
+                function ($attribute, $value, $fail) {
+                    $isEmail = filter_var($value, FILTER_VALIDATE_EMAIL);
+                    $isPhone = preg_match('/^\d{11}$/', $value); // Nigerian phone number format
+    
+                    if (!$isEmail && !$isPhone) {
+                        $fail('The ' . $attribute . ' must be a valid email address or 11-digit phone number.');
+                    }
+    
+                    if ($isEmail && \App\Models\User::where('email', $value)->exists()) {
+                        $fail('The email has already been taken.');
+                    } elseif ($isPhone && \App\Models\User::where('phone_number', $value)->exists()) {
+                        $fail('The phone number has already been taken.');
+                    }
+                }
+            ],
             'password' => [
                 'required',
                 'string',
-                'min:6', // At least six characters
-                'regex:/[A-Z]/', // Must contain at least one uppercase letter
-                'regex:/[a-z]/', // Must contain at least one lowercase letter
-                'regex:/[0-9]/', // Must contain at least one number
-                'regex:/[_!@#$%]/', // Must contain at least one special character
-                'confirmed', // Must match password confirmation
+                'min:6',
+                'regex:/[A-Z]/',
+                'regex:/[a-z]/',
+                'regex:/[0-9]/',
+                'regex:/[_!@#$%]/',
+                'confirmed',
             ]
-
         ];
     }
 }
