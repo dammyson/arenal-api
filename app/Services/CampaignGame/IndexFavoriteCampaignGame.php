@@ -18,10 +18,10 @@ class IndexFavoriteCampaignGame implements BaseServiceInterface{
     }
 
     public function run() {
-        $audience = $this->request->user();
+        $audience = $this->request->user('audience');
 
         $favoriteCampaignGames = CampaignGame::whereHas('game', function($query) use($audience){
-            $query->where('user_id', $audience->id)
+            $query->where('audience_id', $audience->id)
             ->where('is_favorite', true);
         })->with('game')->get();
       

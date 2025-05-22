@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('email_or_phone_no');
             $table->string('otp');
+            $table->boolean('is_verified')->default(false);
             $table->timestamps();
         });
     }

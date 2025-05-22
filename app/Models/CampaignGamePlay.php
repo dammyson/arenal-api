@@ -10,16 +10,16 @@ class CampaignGamePlay extends Model
 {
     use HasFactory, HasUuids;
 
-    protected $fillable = ['campaign_id', 'game_id', 'user_id', 'played_at', 'score'];
+    protected $fillable = ['campaign_id', 'game_id', 'audience_id', 'played_at', 'score'];
 
     public function game()
     {
         return $this->belongsTo(Game::class);
     }
 
-    public function user()
+    public function Audience()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Audience::class);
     }
 
     public function campaign()

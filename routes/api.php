@@ -49,7 +49,7 @@ Route::post('audiences/auth/login', [AudienceLoginController::class, 'login']);
 Route::post('auth/verify-otp', [UserRegisterController::class, 'verifyOtp']);
 
 
-Route::group(["middleware" => ["auth:api"]], function ($router) {
+Route::group(["middleware" => ["auth:api"]], function () {
 
     Route::post('users/wallets/create', [WalletController::class, 'createWallet']);
 
@@ -90,10 +90,12 @@ Route::group(["middleware" => ["auth:api"]], function ($router) {
 
     Route::get('users/logout', [LogoutController::class, 'logout']);
    
+    Route::get('trivia/questions', [TriviaQuestionController::class, 'index']);
+    Route::post('trivia/questions', [TriviaQuestionController::class, 'storeMultiple']);
+});
 
-    // Audience routes
-
-
+// Audience routes
+Route::middleware('auth:audience')->group(function () {
     Route::get('audiences/home/user-info', [ProfileController::class, 'userInfo']);
     Route::get('audiences/home/user-profile', [ProfileController::class, 'profile']);
     Route::get('audiences/home/top-three', [OverallCampaignGamePlayLeaderboardController::class, 'overallGamePlayTopThree']);
@@ -149,8 +151,5 @@ Route::group(["middleware" => ["auth:api"]], function ($router) {
     Route::post('audiences/wallet/{wallet_id}/filter-transaction', [SearchTransactionController::class, 'filterTransactionHistory']);
         
 
-    Route::get('audiences/logout', [LogoutController::class, 'logout']);      
-
-    Route::get('trivia/questions', [TriviaQuestionController::class, 'index']);
-    Route::post('trivia/questions', [TriviaQuestionController::class, 'storeMultiple']);
+    Route::get('audiences/logout', [LogoutController::class, 'logout']); 
 });

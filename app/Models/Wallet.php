@@ -11,13 +11,13 @@ class Wallet extends Model
     use HasFactory, HasUuids;
     
     protected $fillable = [
-        'user_id',
+        'audience_id',
         'balance',
         'revenue_share_group'
     ];
 
-    public function user() {
-        return $this->belongsTo(User::class);
+    public function audience() {
+        return $this->belongsTo(Audience::class);
     }
 
     public function transactionsHistory() {

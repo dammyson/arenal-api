@@ -3,23 +3,24 @@
 namespace App\Services\Users;
 
 use App\Models\User;
+use App\Models\Audience;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\ProfileEditRequest;
 
 class ProfileService   {
-    protected $user;
+    protected $audience;
     
-    public function __construct(User $user) {
-        $this->user = $user;
+    public function __construct(Audience $audience) {
+        $this->audience = $audience;
     }
 
     public function getProfile() {
-      return User::with('wallet')->find($this->user->id);
+      return Audience::with('wallet')->find($this->audience->id);
 
     }
 
 	public function editProfile(ProfileEditRequest $req) {
-		return $this->user->update($req->validated());
+		return $this->audience->update($req->validated());
 	}
 
 	public function userInfo() {	
@@ -32,13 +33,13 @@ class ProfileService   {
 		//     ->sum('total_points');
 
 		
-		$userTotalPoint = DB::table('campaign_game_plays')
-			->where('user_id', $this->user->id)
+		$audienceTotalPoint = DB::table('campaign_game_plays')
+			->where('audience_id', $this->audience->id)
 			->select('score')
 			->sum('score');
 			
 
-		array_push($userInfo, $this->user->first_name, $this->user->profile_image, $userTotalPoint);
+		array_push($userInfo, $this->audience->first_name, $this->audience->profile_image, $audienceTotalPoint);
 		
 		return $userInfo;
 	}

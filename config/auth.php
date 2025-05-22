@@ -45,6 +45,11 @@ return [
             'driver' => 'passport',
             'provider' => 'users',
         ],
+
+        'audience' => [
+            'driver' => 'passport', // Using Passport for API tokens
+            'provider' => 'audiences',
+        ],
     ],
 
     /*
@@ -69,6 +74,11 @@ return [
             'driver' => 'eloquent',
             'model' => env('AUTH_MODEL', App\Models\User::class),
         ],
+
+        'audiences' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Audience::class,
+         ],
 
         // 'users' => [
         //     'driver' => 'database',

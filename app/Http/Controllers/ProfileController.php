@@ -49,7 +49,7 @@ class ProfileController extends BaseController
     public function userInfo(Request $request)
     {
         try {   
-            Gate::authorize('is-audience');     
+            // Gate::authorize('is-audience');     
             $data = $this->profileService->userInfo();
 
         }  catch (\Exception $e){

@@ -15,8 +15,9 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->uuid('wallet_id');
             $table->foreign('wallet_id')->references('id')->on('wallets')
-            ->onUpdate('cascade')
-            ->onDelete('cascade');
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
+            $table->enum('status', ['success', 'pending', 'failed']);
             $table->boolean('is_credit');
             $table->string('receipient_name');
             $table->integer('amount');

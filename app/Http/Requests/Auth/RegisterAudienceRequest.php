@@ -32,9 +32,9 @@ class RegisterAudienceRequest extends FormRequest
                         $fail('The ' . $attribute . ' must be a valid email address or 11-digit phone number.');
                     }
     
-                    if ($isEmail && \App\Models\User::where('email', $value)->exists()) {
+                    if ($isEmail && \App\Models\Audience::where('email', $value)->exists()) {
                         $fail('The email has already been taken.');
-                    } elseif ($isPhone && \App\Models\User::where('phone_number', $value)->exists()) {
+                    } elseif ($isPhone && \App\Models\Audience::where('phone_number', $value)->exists()) {
                         $fail('The phone number has already been taken.');
                     }
                 }
