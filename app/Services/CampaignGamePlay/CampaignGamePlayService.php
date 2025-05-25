@@ -20,7 +20,7 @@ class CampaignGamePlayService {
 
     public function storeCampaignGamePlay(GamePlayRequest $request, $campaignId, $gameId) {
        
-        $userId = $request->user()->id;
+        $audienceId = $request->user('audience')->id;
         $score = (int) $request->input('score');
         // $played_at = $request->input('played_at');
 
@@ -28,7 +28,7 @@ class CampaignGamePlayService {
         DB::beginTransaction();
 
         // Fetch the record and lock it for update
-        $campaignGamePlay = CampaignGamePlay::where('user_id', $userId)
+        $campaignGamePlay = CampaignGamePlay::where('audience_id', $audienceId)
             ->where('campaign_id', $campaignId)
             ->where('game_id', $gameId)
             ->lockForUpdate()  // Apply pessimistic locking
@@ -37,7 +37,7 @@ class CampaignGamePlayService {
         if (!$campaignGamePlay) {
             // If no record exists, create a new one
             $campaignGamePlay = CampaignGamePlay::create([
-                'user_id' => $userId,
+                'audience_id' => $audienceId,
                 'campaign_id' => $campaignId,
                 'game_id' => $gameId,
                 'score' => $score,
@@ -63,24 +63,24 @@ class CampaignGamePlayService {
     {        
         return CampaignGamePlay::where('campaign_id', $campaignId)
             ->where('game_id', $gameId)
-            ->with('game', 'user', 'campaign')->get();
+            ->with('game', 'audience', 'campaign')->get();
 
        
     }
     
     public function update(UpdateCampaignGamePlayRequest $request, $campaignId, $gameId)
     {
-        $user = $request->user();
+        $audience = $request->user('audience');
         $userCampaignGamePlay = CampaignGamePlay::where('campaign_id', $campaignId)
             ->where('game_id', $gameId)
-            ->where('user_id', $user->id)
+            ->where('audience_id', $audience->id)
             ->first();
 
         return  $userCampaignGamePlay->update([
             ...$request->validated(),
             'campaign_id' => $campaignId,
             'game_id' => $gameId,
-            'user_id' => $user->id
+            'audience_id' => $audience->id
         ]);
 
     }

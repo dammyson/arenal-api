@@ -23,8 +23,7 @@ class UserRegisterController extends BaseController
     
         try {
             $user = (new CreateUserService($request))->run();
-            // $companyData = (new CreateCompanyService($request, $user->id))->run();            
-        
+            $companyData = (new CreateCompanyService($request, $user->id))->run();  
            
         } catch (\Exception $exception) {
             return $this->sendError(
@@ -34,9 +33,9 @@ class UserRegisterController extends BaseController
             );
         }
     
-        // $data['user'] =  $user;
-        // $data['company'] = $companyData['company'];
-        // $data['company_user'] = $companyData['companyUser'];
+        $data['user'] =  $user;
+        $data['company'] = $companyData['company'];
+        $data['company_user'] = $companyData['companyUser'];
         $data['token'] =  $user->createToken('Nova')->accessToken;
     
         return $this->sendResponse($data, 'User registration successful', 201);

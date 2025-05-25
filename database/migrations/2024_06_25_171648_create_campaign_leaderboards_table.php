@@ -15,7 +15,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->uuid('campaign_id');
             $table->uuid('audience_id');
-            $table->foreign('audience_id')->references('id')->on('users')
+            $table->foreign('audience_id')->references('id')->on('audiences')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
             $table->double('play_durations');

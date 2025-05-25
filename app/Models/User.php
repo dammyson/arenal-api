@@ -52,9 +52,6 @@ class User extends Authenticatable
         ];
     }
 
-    public function leaderboards() {
-      return  $this->hasMany(CampaignLeaderboard::class, 'audience_id');
-    }
 
     public function wallet() {
         return $this->hasOne(Wallet::class);

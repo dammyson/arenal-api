@@ -11,14 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-
-        
-        Schema::create('transaction_histories', function (Blueprint $table) {
+        Schema::create('audiences', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->uuid('transaction_id');
-            $table->foreign('transaction_id')->references('id')->on('transactions')
-                ->onUpdate('cascade')
-                ->onDelete('cascade');
+            $table->string('first_name')->nullable();
+            $table->string('last_name')->nullable();
+            $table->string('email')->unique()->nullable();
+            $table->string('phone_number')->unique()->nullable();
+            $table->string('profile_image')->nullable();
             $table->timestamps();
         });
     }
@@ -28,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('transaction_histories');
+        Schema::dropIfExists('audiences');
     }
 };

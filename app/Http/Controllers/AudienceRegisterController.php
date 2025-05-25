@@ -7,6 +7,7 @@ use App\Models\Wallet;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\Auth\RegisterAudienceRequest;
+use App\Models\Audience;
 use App\Models\Otp;
 use Illuminate\Support\Facades\Validator;
 
@@ -27,10 +28,10 @@ class AudienceRegisterController extends BaseController
                 $userData['phone_number'] = $data['email_or_phone'];
             }
             
-            $user = User::create($userData);
+            $audience = Audience::create($userData);
            
             $userWallet = Wallet::create([
-                'user_id' => $user->id,
+                'audience_id' => $audience->id,
                 'revenue_share_group' => 'audience'
             ]);         
     
@@ -39,8 +40,9 @@ class AudienceRegisterController extends BaseController
             return response()->json(['error' => true, 'message' => $exception->getMessage()], 500);
         }
     
-        $data['user'] =  $user;
-        $data['token'] =  $user->createToken('Nova')->accessToken;
+        $data['user'] =  $audience;
+        $data['token'] =  $audience->createToken('Nova')->accessToken;
+        $data['password'] = null;
     
         return response()->json([
             'error' => false, 
@@ -68,7 +70,7 @@ class AudienceRegisterController extends BaseController
                 return response()->json(['errors' => $validator->errors()], 422);
             }
         
-            $user = User::where('email', $request['email_or_phone'])
+            $user = Audience::where('email', $request['email_or_phone'])
                 ->orWhere('phone_number', $request['email_or_phone'])  
                 ->first();
 

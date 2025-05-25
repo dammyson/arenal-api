@@ -41,7 +41,7 @@ class FilterCampaignGame implements BaseServiceInterface{
                 ->where('type', $this->categoryName)
                 ->whereDate('created_at', '>=', $start_week)
                 ->whereDate('created_at', '<=', $end_week); 
-               
+                
             })->with('game')->get();
             
         }

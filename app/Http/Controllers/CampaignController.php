@@ -18,7 +18,6 @@ class CampaignController extends BaseController
     public function index()
     {
         try {
-            Gate::authorize('is-audience');
 
            $data = (new IndexCampaign())->run();
 
@@ -33,7 +32,6 @@ class CampaignController extends BaseController
     public function fetchCampaigns($title)
     {
         try {
-            Gate::authorize('is-audience');
 
             $fetchedCampaign = Campaign::where('title', $title)->first();
     
@@ -53,7 +51,6 @@ class CampaignController extends BaseController
     public function storeCampaign(StoreCampaignRequest $request)
     {
         try {
-            Gate::authorize('is-audience');
 
             $data = (new StoreCampaign($request))->run();
 
@@ -69,7 +66,7 @@ class CampaignController extends BaseController
     public function showCampaign($campaignId)
     {
         try {
-            Gate::authorize('is-audience');
+
             $data = (new ShowCampaign($campaignId))->run();
 
         } catch (\Exception $e){
@@ -82,7 +79,6 @@ class CampaignController extends BaseController
     public function startCampaign($campaignId)
     {
         try {
-            Gate::authorize('is-audience');
 
             $campaign = Campaign::find($campaignId);
             $campaign->status = "ACTIVE";
@@ -98,8 +94,6 @@ class CampaignController extends BaseController
     public function generateCampaignLink($campaignId, $gameId)
     {
         try {
-            Gate::authorize('is-user');
-
             $campaign = Campaign::find($campaignId);
             $expired = now()->addHour(24);
 
@@ -116,7 +110,6 @@ class CampaignController extends BaseController
 
     public function goToCampaignGame(Request $request) {
         try {
-           // Gate::authorize('is-audience');
 
            $campaignId = $request->query('campaign_id');
            $expires = $request->query('expires');

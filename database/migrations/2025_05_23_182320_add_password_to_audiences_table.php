@@ -11,8 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('transactions', function (Blueprint $table) {
-            $table->enum('status', ['success', 'pending', 'failed']);
+        Schema::table('audiences', function (Blueprint $table) {
+            $table->string('password');
+
         });
     }
 
@@ -21,8 +22,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('transactions', function (Blueprint $table) {
-            $table->dropColumn('status');
+        Schema::table('audiences', function (Blueprint $table) {
+            //
         });
     }
 };

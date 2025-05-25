@@ -17,7 +17,7 @@ class StoreCampaignGame implements BaseServiceInterface{
     }
 
     public function run() {
-       return CampaignGame::updateOrCreate([
+        return CampaignGame::updateOrCreate([
             'campaign_id' => $this->campaignId,
         ], [
             'game_id' => $this->request['game_id'],

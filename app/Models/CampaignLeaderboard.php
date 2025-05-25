@@ -24,7 +24,7 @@ class CampaignLeaderboard extends Model
 
     ];
     public function audience() {
-        return $this->belongsTo(User::class, 'audience_id', 'id');
+        return $this->belongsTo(Audience::class);
     }
 
     public function campaign() {

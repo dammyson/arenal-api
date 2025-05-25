@@ -22,7 +22,6 @@ class ProfileController extends BaseController
     public function profile() 
     {
         try {
-            Gate::authorize('is-audience');
             $data = $this->profileService->getProfile();
         
         } catch (\Exception $e){
@@ -35,7 +34,6 @@ class ProfileController extends BaseController
     public function editProfile(ProfileEditRequest $request) 
     {
         try {
-            Gate::authorize('is-audience');
             $data = $this->profileService->editProfile($request);
 
 
@@ -49,7 +47,6 @@ class ProfileController extends BaseController
     public function userInfo(Request $request)
     {
         try {   
-            Gate::authorize('is-audience');     
             $data = $this->profileService->userInfo();
 
         }  catch (\Exception $e){

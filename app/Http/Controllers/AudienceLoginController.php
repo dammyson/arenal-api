@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\Auth\UserLoginRequest;
+use App\Models\Audience;
 
 class AudienceLoginController extends Controller
 {
@@ -14,7 +15,7 @@ class AudienceLoginController extends Controller
     {
 
         try{
-            $user = User::where('email', $request['email_or_phone'])
+            $user = Audience::where('email', $request['email_or_phone'])
                 ->orWhere('phone_number', $request['email_or_phone'])  
                 ->first();
 
@@ -22,7 +23,7 @@ class AudienceLoginController extends Controller
                 return response()->json(['error' => true, 'message' => 'Invalid credentials'], 401);
             }
     
-            if (Hash::check($request->password_or_pin, $user->password) || $request->password_or_pin === $user->pin) {
+            if (Hash::check($request->password, $user->password) || $request->password === $user->pin) {
                 $data['user'] = $user;
                 $data['token'] = $user->createToken('Nova')->accessToken;
 
