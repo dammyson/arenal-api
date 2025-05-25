@@ -37,7 +37,6 @@ class GameController extends BaseController
    
     public function storeGame(StoreGameRequest $request) {
        try {         
-            Gate::authorize('is-user');
             $data = (new StoreGameService($request))->run();
 
         }  catch (\Exception $e){
@@ -51,7 +50,6 @@ class GameController extends BaseController
     public function showGame($gameId) {
         try {
 
-            Gate::authorize('is-user');
             $data = Game::where('id', $gameId)->with('rules')->first();
 
             if (!$data) {
@@ -77,7 +75,6 @@ class GameController extends BaseController
         // return $this->sendResponse($data, "Game retrieved succcessfully");
     
         try {
-            Gate::authorize('is-user');
             $game = Game::find($gameId);
 
             if (!$game) {
@@ -110,7 +107,6 @@ class GameController extends BaseController
         ]);
 
         try {
-            Gate::authorize('is-audience');
             $data = (new FilterCampaignGame($validated['type']))->run();
 
         }  catch (\Exception $e){
@@ -123,7 +119,6 @@ class GameController extends BaseController
 
     public function toogleFavorite($gameId) {
         try {
-            Gate::authorize('is-audience');
             $data = (new ToogleFavoriteGame($gameId))->run();
         
         }  catch (\Exception $e){
@@ -138,7 +133,6 @@ class GameController extends BaseController
     public function gamesByType() {
          // Retrieve CampaignGame models and join with games to group by game type
         try{
-            Gate::authorize('is-audience');
             $data = CampaignGame::with('game')
                 ->get();
 

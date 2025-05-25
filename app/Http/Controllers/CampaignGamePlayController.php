@@ -21,7 +21,6 @@ class CampaignGamePlayController extends BaseController
     
     public function storeCampaignGamePlay(GamePlayRequest $request, $campaignId, $gameId) {
         try {
-            Gate::authorize('is-audience');
             $data =  $this->campaignGamePlayService->storeCampaignGamePlay($request, $campaignId, $gameId);
     
         } catch (\Exception $e){
@@ -34,7 +33,6 @@ class CampaignGamePlayController extends BaseController
     public function index()
     {
         try {
-            Gate::authorize('is-audience');
             return response()->json(CampaignGamePlay::with('game', 'user', 'campaign')->get());
 
         } catch (\Throwable $th) {
@@ -50,7 +48,6 @@ class CampaignGamePlayController extends BaseController
     public function show($campaignId, $gameId)
     {
         try {
-            Gate::authorize('is-audience');
             $data =  $this->campaignGamePlayService->show($campaignId, $gameId);
     
         } catch (\Exception $e){
@@ -63,7 +60,6 @@ class CampaignGamePlayController extends BaseController
     public function update(UpdateCampaignGamePlayRequest $request, $campaignId, $gameId)
     {
         try {
-            Gate::authorize('is-audience');
             $data =  $this->campaignGamePlayService->update($request, $campaignId, $gameId);
     
         } catch (\Exception $e){

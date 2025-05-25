@@ -72,7 +72,7 @@ Route::group(["middleware" => ["auth:api"]], function () {
 
         
     Route::get('users/campaigns', [CampaignController::class, 'index']);           
-    Route::post('users/campaigns', [CampaignController::class,' storeCampaign']);
+    Route::post('users/campaigns', [CampaignController::class, 'storeCampaign']);
     Route::get('users/campaigns/{campaign_id}', [CampaignController::class, 'showCampaign']);
             
 
@@ -118,7 +118,7 @@ Route::middleware('auth:audience')->group(function () {
     Route::get('audiences/home/gamez/{game_id}', [GameController::class, 'showGame']);
     Route::patch('audiences/home/gamez/{game_id}/favorite', [GameController::class, 'toogleFavorite']);
 
-    Route::get('audiences/play-game',[CampaignController::class,'goToCampaignGame'])->name('play.game'); 
+    Route::get('audiences/play-game',[CampaignController::class, 'goToCampaignGame'])->name('play.game'); 
 
 
     Route::post('audiences/gameboard/search-game', [SearchGameController::class, 'searchGame']);
@@ -136,7 +136,7 @@ Route::middleware('auth:audience')->group(function () {
     Route::get('audiences/campaign/{campaign_id}/game/campaign-game', [CampaignGameController::class, 'indexCampaignGame']);
 
     Route::get("audiences/account-settings/profile", [ProfileController::class, "profile"]);
-    Route::post("audiences/account-settings/profile/edit", [ProfileController::class, "profileEdit"]);           
+    Route::post("audiences/account-settings/profile/edit", [ProfileController::class, "editProfile"]);           
     Route::patch('audiences/account-settings/security/change-password', [ChangePasswordController::class, 'changePassword']); 
 
     Route::get('audiences/wallet/fund-wallet', [WalletController::class, 'showAccountNumber']);

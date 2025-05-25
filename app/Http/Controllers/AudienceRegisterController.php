@@ -42,6 +42,7 @@ class AudienceRegisterController extends BaseController
     
         $data['user'] =  $audience;
         $data['token'] =  $audience->createToken('Nova')->accessToken;
+        $data['password'] = null;
     
         return response()->json([
             'error' => false, 

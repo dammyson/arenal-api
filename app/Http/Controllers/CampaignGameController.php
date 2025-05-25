@@ -18,7 +18,6 @@ class CampaignGameController extends BaseController
     public function storeCampaignGame(StoreCampaignGameRequest $request, $campaignId) {
 
         try {         
-            Gate::authorize('is-audience');
             $data = (new StoreCampaignGame($request, $campaignId))->run();
 
         } catch (\Exception $e){
@@ -30,7 +29,6 @@ class CampaignGameController extends BaseController
 
     public function indexCampaignGame() {
         try {
-            Gate::authorize('is-audience');
             $data = (new IndexCampaignGame())->run();
 
         } catch (\Exception $e){
@@ -43,7 +41,6 @@ class CampaignGameController extends BaseController
 
     public function showCampaignGame($campaign_id, $game_id) {
         try {
-            Gate::authorize('is-audience');
             $data = (new ShowCampaignGame($campaign_id, $game_id))->run();
 
         }   catch (\Exception $e){
@@ -56,7 +53,6 @@ class CampaignGameController extends BaseController
     public function indexFavorite(Request $request)
     {   
         try {
-            Gate::authorize('is-audience');
             $data = (new IndexFavoriteCampaignGame($request))->run();
     
         }   catch (\Exception $e){

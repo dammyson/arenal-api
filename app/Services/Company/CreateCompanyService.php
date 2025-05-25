@@ -12,7 +12,7 @@ class CreateCompanyService implements BaseServiceInterface{
     protected $request;
     protected $userId;
 
-    public function __construct(CompanyStoreRequest $request, $userId)
+    public function __construct(RegisterUserRequest $request, $userId)
     {
         $this->request = $request;
         $this->userId = $userId;
