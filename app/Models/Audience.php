@@ -11,7 +11,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 class Audience extends Authenticatable
 {
     use HasFactory, HasApiTokens, HasUuids;
-    protected $fillable = ['first_name', 'last_name', 'email', 'phone_number', 'profile_image', 'password'];
+    protected $fillable = ['first_name', 'last_name', 'email', 'phone_number', 'profile_image', 'password', 'user_id'];
     protected $hidden = ['password', 'remember_token'];
 
     public function leaderboards() {
@@ -19,6 +19,6 @@ class Audience extends Authenticatable
     }
 
     public function wallet() {
-      return $this->hasOne(Wallet::class);
+      return $this->hasOne(AudienceWallet::class);
     }
 }

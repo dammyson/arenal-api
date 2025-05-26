@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\Auth\RegisterAudienceRequest;
 use App\Models\Audience;
+use App\Models\AudienceWallet;
 use App\Models\Otp;
 use Illuminate\Support\Facades\Validator;
 
@@ -30,7 +31,7 @@ class AudienceRegisterController extends BaseController
             
             $audience = Audience::create($userData);
            
-            $userWallet = Wallet::create([
+            $userWallet = AudienceWallet::create([
                 'audience_id' => $audience->id,
                 'revenue_share_group' => 'audience'
             ]);         

@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Run the migrations.
+     * Run the migrations.  docker-compose run --rm artisan migrate:refresh --path=/database/migrations/2024_06_22_125504_create_audiences_table.php
      */
     public function up(): void
     {
@@ -16,8 +16,10 @@ return new class extends Migration
             $table->string('first_name')->nullable();
             $table->string('last_name')->nullable();
             $table->string('email')->unique()->nullable();
+            $table->string('password');
             $table->string('phone_number')->unique()->nullable();
             $table->string('profile_image')->nullable();
+             $table->uuid('user_id')->nullable();
             $table->timestamps();
         });
     }

@@ -12,6 +12,7 @@ use App\Services\Campaign\IndexCampaign;
 use App\Services\Campaign\StoreCampaign;
 use App\Services\CampaignGame\ShowCampaignGame;
 use App\Http\Requests\Campaign\StoreCampaignRequest;
+use App\Models\Audience;
 
 class CampaignController extends BaseController
 {
@@ -19,14 +20,11 @@ class CampaignController extends BaseController
     {
         try {
 
-           $data = (new IndexCampaign())->run();
-
-        } catch (\Exception $e){
+            $data = (new IndexCampaign())->run();
+        } catch (\Exception $e) {
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
-        }        
+        }
         return $this->sendResponse($data, "Campaign created succcessfully", 201);
-   
-    
     }
 
     public function fetchCampaigns($title)
@@ -34,18 +32,17 @@ class CampaignController extends BaseController
         try {
 
             $fetchedCampaign = Campaign::where('title', $title)->first();
-    
+
             if (!$fetchedCampaign) {
                 return response()->json(['error' => true, 'message' => 'Campaign not found'], 404);
             }
-    
+
             return response()->json(['error' => false, 'data' => $fetchedCampaign->id], 200);
-    
         } catch (\Exception $exception) {
             return response()->json(['error' => true, 'message' => $exception->getMessage()], 500);
         }
     }
-    
+
 
 
     public function storeCampaign(StoreCampaignRequest $request)
@@ -53,13 +50,10 @@ class CampaignController extends BaseController
         try {
 
             $data = (new StoreCampaign($request))->run();
-
-        }  catch (\Exception $e){
+        } catch (\Exception $e) {
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
-        }        
+        }
         return $this->sendResponse($data, "Campaign created succcessfully", 201);
-   
-    
     }
 
 
@@ -68,12 +62,10 @@ class CampaignController extends BaseController
         try {
 
             $data = (new ShowCampaign($campaignId))->run();
-
-        } catch (\Exception $e){
+        } catch (\Exception $e) {
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
-        }        
+        }
         return $this->sendResponse($data, "Campaign retrieved succcessfully", 200);
-   
     }
 
     public function startCampaign($campaignId)
@@ -84,10 +76,9 @@ class CampaignController extends BaseController
             $campaign->status = "ACTIVE";
             $campaign->start_date = now();
             $campaign->save();
-           
-        } catch (\Exception $e){
+        } catch (\Exception $e) {
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
-        }        
+        }
         return $this->sendResponse($campaign, "Campaign started succcessfully", 200);
     }
 
@@ -96,37 +87,44 @@ class CampaignController extends BaseController
         try {
             $campaign = Campaign::find($campaignId);
             $expired = now()->addHour(24);
+            $user = auth()->user()->id;
 
-            $url =  URL::temporarySignedRoute('play.game',  $expired, ['campaign_id'=>  $campaignId, 'game_id' => $gameId]);
+            $payload = "{$campaignId}|{$gameId}|{$user}";
+            $encoded = base64_encode($payload);
+
+            $url =  URL::temporarySignedRoute('play.game',  $expired, ['data' => $encoded]);
+            dd($url);
             $urlComponents = parse_url($url);
-            $front_url = env('FRONT_END_URL', 24) .'?' . $urlComponents['query'];
-           
-        } catch (\Exception $e){
+            $front_url = env('FRONT_END_URL', 24) . '?' . $urlComponents['query'];
+        } catch (\Exception $e) {
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
-        }        
+        }
         return $this->sendResponse($front_url, "Campaign updated succcessfully", 200);
-   
     }
 
-    public function goToCampaignGame(Request $request) {
+    public function goToCampaignGame(Request $request)
+    {
         try {
 
-           $campaignId = $request->query('campaign_id');
-           $expires = $request->query('expires');
-           $gameId = $request->query('game_id');
-           $signature = $request->query('signature');
-            
             if (!$request->hasValidSignature()) {
                 return response()->json(['status' => false, 'message' => 'Invalid/Expired link, contact admin'], 401);
             }
 
-            $data = (new ShowCampaignGame($campaignId, $gameId))->run();
+            $decodedPayload = explode('|', base64_decode($request->query('data')));
+            $campaignId = $decodedPayload[0];
+            $gameId = $decodedPayload[1];
+            $user = $decodedPayload[2];
 
-        }   catch (\Exception $e){
+            $audience=  Audience::where('id', auth()->user()->id)->firstOrFail();
+            $audience->user_id = $user;
+            $audience->save();
+          
+            $data = (new ShowCampaignGame($campaignId, $gameId))->run();
+        } catch (\Exception $e) {
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
-        }        
+        }
         return $this->sendResponse($data, "Campaign Game retrieved succcessfully", 200);
-   
     }
 
+    
 }
