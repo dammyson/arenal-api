@@ -81,11 +81,10 @@ class UserRegisterController extends BaseController
     public function verifyOtp(Request $request) {
         
         try {
-            $otp = Otp::where('email_or_phone_no', $request['email_or_phone_no'])->where('otp', $request->otp)->first();
-            
+            $otp = Otp::where('email_or_phone_no', $request['email_or_phone_no'])->where('otp', $request['otp'])->first();
+
             if ($otp->is_verified) {
                 return $this->sendError('otp already verified', null, 400);
-
             }
 
             if ($otp) {
