@@ -93,7 +93,6 @@ class CampaignController extends BaseController
             $encoded = base64_encode($payload);
 
             $url =  URL::temporarySignedRoute('play.game',  $expired, ['data' => $encoded]);
-            dd($url);
             $urlComponents = parse_url($url);
             $front_url = env('FRONT_END_URL', 24) . '?' . $urlComponents['query'];
         } catch (\Exception $e) {
