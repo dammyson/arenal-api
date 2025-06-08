@@ -8,24 +8,26 @@ use App\Models\CompanyUser;
 use App\Services\BaseServiceInterface;
 use App\Http\Requests\User\CompanyStoreRequest;
 
-class CreateCompanyService implements BaseServiceInterface{
+class CreateCompanyService implements BaseServiceInterface
+{
     protected $request;
     protected $userId;
 
-    public function __construct(RegisterUserRequest $request, $userId)
+    public function __construct($request, $userId)
     {
         $this->request = $request;
         $this->userId = $userId;
     }
 
-    public function run() {
-      $company = Company::create($this->request->validated());
-     
-      $companyUser =  CompanyUser::create([
-                    'company_id' => $company->id,
-                    'user_id' =>  $this->userId
-                ]);
+    public function run()
+    {
+        $company = Company::create($this->request);
 
-      return ["company" => $company, "companyUser" => $companyUser];
+        $companyUser =  CompanyUser::create([
+            'company_id' => $company->id,
+            'user_id' =>  $this->userId
+        ]);
+
+        return ["company" => $company, "companyUser" => $companyUser];
     }
 }

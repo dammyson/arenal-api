@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('wallets', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->uuid('user_id')->nullable();
-            $table->uuid('audience_id')->nullable();
             $table->decimal('balance', 8, 2)->default(0);
             $table->enum('revenue_share_group', ['platform_owner', 'partner', 'audience'])->nullable();
             $table->timestamps();

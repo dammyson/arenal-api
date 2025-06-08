@@ -35,16 +35,14 @@ use App\Models\CampaignGamePlay;
 
 
 
-Route::post('users/auth/create', [UserRegisterController::class, 'userRegister']);
-Route::post('users/auth/sign_in', [UserRegisterController::class, 'newRegister']);
-Route::post('users/auth/login', [UserRegisterController::class, 'newLogin']);
+Route::post('users/auth/register', [UserRegisterController::class, 'userRegister']);
+Route::post('users/auth/login', [UserRegisterController::class, 'login']);
 Route::post('users/auth/verify-otp', [UserRegisterController::class, 'verifyOtp']);
-Route::get('auth/google/callback', [UserRegisterController::class, 'gooogleCallback']);
 
 
 Route::post('audiences/auth/register', [AudienceRegisterController::class, 'registerAudience']);
 Route::post('audiences/check-audience', [AudienceRegisterController::class, 'checkAudience']);
-Route::post('audiences/auth/login', [AudienceLoginController::class, 'login']);
+Route::post('audiences/auth/login', [AudienceRegisterController::class, 'login']);
 
 Route::post('auth/verify-otp', [UserRegisterController::class, 'verifyOtp']);
 

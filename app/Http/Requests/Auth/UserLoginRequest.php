@@ -23,7 +23,7 @@ class UserLoginRequest extends FormRequest
     {
         return [
             'email' => 'required',
-            'password_or_pin' => 'required',
+            'password' => 'required',
         ];
     }
 }
