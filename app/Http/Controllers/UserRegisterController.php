@@ -92,9 +92,11 @@ class UserRegisterController extends BaseController
                 $otp->is_verified = true;
                 $otp->save();
                 return $this->sendResponse($otp, 'otp verifcation successfully');
+            
             } else {
                 return $this->sendError($otp, 'otp verification failed', 422);
             }
+            
         } catch(\Throwable $th) {
 
             return $this->sendError('something went wrong', $th->getMessage(), 500);
