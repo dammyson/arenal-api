@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\TriviaQuestion\StoreTriviaQuestionsRequest;
 use App\Models\TriviaQuestion;
 use App\Models\TriviaQuestionChoice;
-use App\Services\Trivia\CreateService;
 use Illuminate\Support\Facades\Auth;
+use App\Services\Trivia\CreateService;
+use App\Services\Trivia\IndexTrivaService;
+use App\Http\Requests\TriviaQuestion\StoreTriviaQuestionsRequest;
 
 class TriviaQuestionController extends Controller
 {
@@ -31,6 +32,17 @@ class TriviaQuestionController extends Controller
                 'data' => $result
             ], 201);
 
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'An error occurred while processing your request.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function index(){
+        try {
+            return (new IndexTrivaService())->run();
         } catch (\Throwable $e) {
             return response()->json([
                 'message' => 'An error occurred while processing your request.',
