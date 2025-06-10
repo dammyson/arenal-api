@@ -55,12 +55,18 @@ Route::group(["middleware" => ["auth:api"]], function () {
      
     Route::get('users/companies', [CompanyController::class, 'index']);
     Route::post('users/companies', [CompanyController::class, 'storeCompany']);
+    Route::put('users/companies/{company}', [CompanyController::class, 'updateCompany']);
+    Route::delete('users/companies/{company}', [CompanyController::class, 'deleteCompany']);
 
     Route::get('users/clients', [ClientController::class, 'index']);
     Route::post('users/clients', [ClientController::class, 'storeClient']);
+    Route::put('users/clients/{client}', [ClientController::class, 'updateClient']);
+    Route::delete('users/clients/{client}', [ClientController::class, 'deleteClient']);
 
     Route::get('users/brands', [BrandController::class, 'index']);
     Route::post('users/brands', [BrandController::class, 'storeBrand']);
+    Route::put('users/brands/{brand}', [BrandController::class, 'updateBrand']);
+    Route::delete('users/brands/{brand}', [BrandController::class, 'deleteBrand']);
         
 
     Route::get('users/games', [GameController::class, 'index']);
