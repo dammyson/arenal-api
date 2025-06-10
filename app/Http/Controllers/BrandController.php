@@ -7,7 +7,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use App\Services\Brand\IndexBrandService;
 use App\Services\Brand\StoreBrandService;
+use App\Services\Brand\DeleteBrandService;
+use App\Services\Brand\UpdateBrandService;
 use App\Http\Requests\User\BrandStoreRequest;
+use App\Http\Requests\User\BrandUpdateRequest;
 
 class BrandController extends BaseController
 {
@@ -36,5 +39,27 @@ class BrandController extends BaseController
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
         }        
         return $this->sendResponse($data, "Brand info retrieved succcessfully");
+    }
+
+    public function updateBrand(BrandUpdateRequest $request, $id) {
+          try {
+            Gate::authorize('is-user');
+            $data = (new UpdateBrandService($request, $id))->run();
+
+        }  catch (\Exception $e){
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }        
+        return $this->sendResponse($data, "Brand updated succcessfully");
+    }
+
+     public function deleteBrand(Request $request, $id) {
+          try {
+            Gate::authorize('is-user');
+            $data = (new DeleteBrandService($request, $id))->run();
+
+        }  catch (\Exception $e){
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }        
+        return $this->sendResponse($data, "Brand delete succcessfully");
     }
 }
