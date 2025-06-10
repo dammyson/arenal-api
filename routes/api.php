@@ -133,9 +133,9 @@ Route::middleware('auth:audience')->group(function () {
     Route::get('audiences/campaign/{campaign_id}/game/{game_id}/rules', [CampaignGameRuleController::class, 'showCampaignGameRules']);
     Route::get('audiences/campaign/{campaign_id}/game/campaign-game', [CampaignGameController::class, 'indexCampaignGame']);
 
-    Route::get("audiences/account-settings/profile", [ProfileController::class, "profile"]);
-    Route::post("audiences/account-settings/profile/edit", [ProfileController::class, "editProfile"]);           
-    Route::patch('audiences/account-settings/security/change-password', [ChangePasswordController::class, 'changePassword']); 
+    Route::get("account-settings/profile", [ProfileController::class, "profile"]);
+    Route::post("account-settings/profile/edit", [ProfileController::class, "editProfile"]);           
+    Route::patch('account-settings/security/change-password', [ChangePasswordController::class, 'changePassword']); 
 
     Route::get('audiences/wallet/fund-wallet', [WalletController::class, 'showAccountNumber']);
     Route::post('audiences/wallet/fund-wallet', [WalletController::class, 'fundWallet']);
