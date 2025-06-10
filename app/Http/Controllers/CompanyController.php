@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Gate;
 use App\Services\Company\IndexCompanyService;
 use App\Services\Company\CreateCompanyService;
 use App\Http\Requests\User\CompanyStoreRequest;
+use App\Services\Company\CreateCompanyUserService;
 
 class CompanyController extends BaseController
 {
@@ -32,7 +33,7 @@ class CompanyController extends BaseController
         try {            
             Gate::authorize('is-user');
             $user = Auth::user();
-            $data = (new CreateCompanyService($request, $user->id))->run();
+            $data = (new CreateCompanyUserService($request, $user->id))->run();
 
         } catch (\Exception $e){
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);

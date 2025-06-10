@@ -21,4 +21,5 @@ class Audience extends Authenticatable
     public function wallet() {
       return $this->hasOne(AudienceWallet::class);
     }
+    
 }
