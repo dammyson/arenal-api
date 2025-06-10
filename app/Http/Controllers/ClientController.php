@@ -33,7 +33,7 @@ class ClientController extends BaseController
             $data = (new StoreClientService($request))->run();
         
         } catch (\Exception $e){
-            return $this->sendError("unable to client store", ['error' => $e->getMessage()], 500);
+            return $this->sendError("unable to store client", ['error' => $e->getMessage()], 500);
         }
         
         return $this->sendResponse($data, "client created succcessfully", 201);

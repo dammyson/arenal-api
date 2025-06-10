@@ -20,7 +20,6 @@ class FilterCampaignGame implements BaseServiceInterface{
     }
 
     public function run() {
-            
         $start_week = Carbon::now()->startOfWeek()->format('Y-m-d');
         $end_week = Carbon::now()->endOfWeek()->format('Y-m-d');
         

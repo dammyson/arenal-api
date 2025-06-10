@@ -16,8 +16,8 @@ return new class extends Migration
             $table->string('name');
             $table->string('type');
             $table->string('image_url');
-            $table->boolean('is_favorite')->default(false);
             $table->uuid('user_id');
+            $table->decimal('price', 8, 2)->nullable()->default(null);
             $table->foreign('user_id')->references('id')->on('users')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');

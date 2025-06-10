@@ -15,62 +15,52 @@ use App\Services\Users\CreateUserService;
 use App\Services\Company\CreateCompanyService;
 use App\Http\Requests\Auth\RegisterUserRequest;
 use App\Http\Requests\Auth\RegisterAudienceRequest;
+use App\Http\Requests\Auth\UserLoginRequest;
 
 class UserRegisterController extends BaseController
 {
-    public function userRegister(RegisterUserRequest $request)
-    {
-    
-        try {
-            $user = (new CreateUserService($request))->run();
-            $companyData = (new CreateCompanyService($request, $user->id))->run();  
-           
-        } catch (\Exception $exception) {
+  public function userRegister(RegisterUserRequest $request)
+{
+    try {
+        $validated = $request->validated();
+
+        $user = (new CreateUserService($validated))->run();
+        if (!$user) {
             return $this->sendError(
-                "something went wrong",
-                ['error' => $exception->getMessage()],
+                "User creation failed",
+                [],
                 500
             );
         }
-    
-        $data['user'] =  $user;
-        $data['company'] = $companyData['company'];
-        $data['company_user'] = $companyData['companyUser'];
-        $data['token'] =  $user->createToken('Nova')->accessToken;
-    
+
+        $companyData = (new CreateCompanyService($validated, $user->id))->run();
+        if (!$companyData) {
+            return $this->sendError(
+                "Company creation failed",
+                [],
+                500
+            );
+        }
+
+        $data = [
+            'user' => $user,
+            'company' => $companyData['company'] ?? null,
+            'company_user' => $companyData['companyUser'] ?? null,
+            'token' => $user->createToken('Nova')->accessToken,
+        ];
+
         return $this->sendResponse($data, 'User registration successful', 201);
-     
+
+    } catch (\Exception $exception) {
+        // Optionally, log the exception: \Log::error($exception);
+        return $this->sendError(
+            "Something went wrong",
+            ['error' => $exception->getMessage()],
+            500
+        );
     }
+}
 
-    public function newRegister(Request $request) {
-        try {
-
-            $user = User::where('email', $request['email_or_phone_no'])
-                ->orWhere('phone_number', $request['email_or_phone_no'])  
-                ->first();
-
-            if($user) {
-                return $this->sendResponse($user, true, 200);
-
-            } else {
-
-                // User::create([
-                //     'email' => $request['email']
-                // ]);
-                $otp = $this->generateFourDigitOtp();
-
-                $otp = Otp::create([
-                    'email_or_phone_no' => $request->email_or_phone_no,
-                    'otp' => $otp
-                ]);
-                return $this->sendResponse($otp, false);
-            }
-        } catch(\Throwable $th) {
-
-            return $this->sendError('something went wrong', $th->getMessage(), 500);
-        }        
-
-    }
 
     public function generateFourDigitOtp() {          
         $digits = 4;
@@ -81,11 +71,10 @@ class UserRegisterController extends BaseController
     public function verifyOtp(Request $request) {
         
         try {
-            $otp = Otp::where('email_or_phone_no', $request['email_or_phone_no'])->where('otp', $request->otp)->first();
-            
+            $otp = Otp::where('email_or_phone_no', $request['email_or_phone_no'])->where('otp', $request['otp'])->first();
+
             if ($otp->is_verified) {
                 return $this->sendError('otp already verified', null, 400);
-
             }
 
             if ($otp) {
@@ -105,71 +94,38 @@ class UserRegisterController extends BaseController
 
     }
 
-    public function newLogin(Request $request) {
-        $user = User::where('email', $request['email_or_phone_no'])
-            ->orWhere('phone_number', $request['email_or_phone_no'])
-            ->first();
-            
-            
-        if (Hash::check($request->password, $user->password)) {
+    public function login(UserLoginRequest $request)
+    {
+
+        try{
+            $user = User::where('email', $request->email)->first();
+
+            if (is_null($user)) {
+                return response()->json(['error' => true, 'message' => 'Invalid credentials'], 401);
+            }
+    
+            if (Hash::check($request->password_or_pin, $user->password) || $request->password_or_pin === $user->pin) {
                 $data['user'] = $user;
                 $data['token'] = $user->createToken('Nova')->accessToken;
 
                 return $this->sendResponse($data, 'Login Successful');
                 // return response()->json(['is_correct' => true, 'message' => 'Login Successful', 'data' => $data], 200);
 
-        } else {
-            return $this->sendError('Invalid Credentials', null, 401);
-            
+            } else {
+                return $this->sendError('Invalid Credentials', null, 401);
+               
+            }
+        } catch(\Exception $exception) {
+            return $this->sendError('something went wrong', [$exception->getMessage()], 500);
         }
+
     }
 
-
-    public function googleRedirect(){
-        return Socialite::driver('google')->redirect();
-    }
-
-    public function gooogleCallback() {
-
-        // dd("I ran");
-        try {
-            $user = Socialite::driver('google')->stateless()->user();
-          
-        } catch (Throwable $e) {
-            return response()->json([
-                "error" => true,
-                "message" => $e->getMessage()
-            ], 500);
-            // return redirect('/')->with('error', 'Google authentication failed.');
-        }
-
-        $existingUser = User::where('email', $user->email)->first();
-
-        if ($existingUser) {
-            $data['user'] =  $existingUser;
-            $data['token'] =  $existingUser->createToken('Nova')->accessToken;
-      
-        } else {
-            [$firstName, $lastName] = explode(" ", $user->name);
-            $newUser = User::updateOrCreate([
-                'email' => $user->email
-            ], [
-                'first_name' => $firstName,
-                'last_name' => $lastName,
-                'password' => bcrypt(Str::random(16)), // Set a random password
-                'email_verified_at' => now()
-            ]);
-
-
-            $data['user'] =  $newUser;
-            $data['token'] =  $newUser->createToken('Nova')->accessToken;
-        }
-
+    public function logout(Request $request)
+    {
+        $request->user()->token()->revoke();
         return response()->json([
-            "error" => false,
-            "data" => $data
-        ], 200);
-
-
+            'message' => 'Successfully logged out'
+        ], 204);
     }
 }

@@ -11,12 +11,30 @@ class Campaign extends Model
 {
     use HasFactory, HasUuids;
 
-    protected $fillable = ['type', 'title', 'created_by', 'client_id', 'brand_id', 'company_id',
-    'start_date', 'end_date', 'status', 'daily_ads_budget', 'total_ads_budget',
-    'total_rewards_budget', 'overall_campaign_budget', 'daily_start', 'daily_stop', 'vendor_id'];
+    protected $fillable = [
+        'type',
+        'title',
+        'created_by',
+        'client_id',
+        'brand_id',
+        'company_id',
+        'start_date',
+        'end_date',
+        'status',
+        'daily_ads_budget',
+        'total_ads_budget',
+        'total_rewards_budget',
+        'overall_campaign_budget',
+        'daily_start',
+        'daily_stop',
+        'vendor_id'
+    ];
 
     public function games()
     {
-        return $this->hasMany(Game::class);
+        return $this->belongsToMany(Game::class, 'campaign_games')
+            ->using(CampaignGame::class)
+            ->withPivot('details')
+            ->withTimestamps();
     }
 }

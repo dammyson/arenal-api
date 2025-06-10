@@ -10,7 +10,7 @@ class Game extends Model
 {
     use HasFactory, HasUuids;
 
-    protected $fillable = ['name', 'type', 'image_url', 'is_favorite', 'user_id'];
+    protected $fillable = ['name', 'type', 'image_url', 'is_favorite', 'price', 'user_id'];
 
     public function user()
     {
@@ -21,4 +21,12 @@ class Game extends Model
     {
         return $this->hasMany(CampaignGameRule::class);
     }
+
+    public function campaigns()
+{
+    return $this->belongsToMany(Campaign::class, 'campaign_games')
+        ->using(CampaignGame::class)
+        ->withPivot('details')
+        ->withTimestamps();
+}
 }

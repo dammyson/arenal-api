@@ -5,19 +5,28 @@ namespace App\Services\Users;
 use App\Models\User;
 use App\Services\BaseServiceInterface;
 use App\Http\Requests\Auth\RegisterUserRequest;
+use App\Models\Wallet;
 
-class CreateUserService implements BaseServiceInterface {
-    protected $request;
-    protected $isAudience;
-    
-    public function __construct(RegisterUserRequest $request) {
-   
-        $this->request = $request;
-    }
+class CreateUserService implements BaseServiceInterface
+{
+  protected $request;
 
-    public function run() {
-      // dd($this->request);
-      
-      return User::create($this->request->validated());
-    }
+  public function __construct($request)
+  {
+
+    $this->request = $request;
+  }
+
+  public function run()
+  {
+    $user = User::create($this->request);
+
+
+    $userWallet = Wallet::create([
+      'user_id' => $user->id,
+      'revenue_share_group' => 'audience'
+    ]);
+
+    return $user;
+  }
 }

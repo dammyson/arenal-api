@@ -32,6 +32,7 @@ class ProfileService   {
 		//     ->select('total_points')
 		//     ->sum('total_points');
 
+		// $userTotalPoint = DB::table('campaign_game_plays')
 		
 		$audienceTotalPoint = DB::table('campaign_game_plays')
 			->where('audience_id', $this->audience->id)
