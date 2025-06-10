@@ -88,8 +88,8 @@ Route::group(["middleware" => ["auth:api"]], function () {
 
     Route::get('users/logout', [LogoutController::class, 'logout']);
    
-    Route::get('trivia/questions', [TriviaQuestionController::class, 'index']);
-    Route::post('trivia/questions', [TriviaQuestionController::class, 'storeMultiple']);
+    Route::get('users/trivia/questions', [TriviaQuestionController::class, 'index']);
+    Route::post('users/trivia/questions', [TriviaQuestionController::class, 'storeMultiple']);
 });
 
 // Audience routes
