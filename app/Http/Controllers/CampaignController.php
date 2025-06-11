@@ -13,6 +13,7 @@ use App\Services\Campaign\StoreCampaign;
 use App\Services\CampaignGame\ShowCampaignGame;
 use App\Http\Requests\Campaign\StoreCampaignRequest;
 use App\Models\Audience;
+use App\Notifications\CampaignGameLink;
 
 class CampaignController extends BaseController
 {
@@ -87,14 +88,16 @@ class CampaignController extends BaseController
         try {
             $campaign = Campaign::find($campaignId);
             $expired = now()->addHour(24);
-            $user = auth()->user()->id;
+            $user = auth()->user();
 
-            $payload = "{$campaignId}|{$gameId}|{$user}";
+            $payload = "{$campaignId}|{$gameId}|{$user->id}";
             $encoded = base64_encode($payload);
 
             $url =  URL::temporarySignedRoute('play.game',  $expired, ['data' => $encoded]);
             $urlComponents = parse_url($url);
             $front_url = env('FRONT_END_URL', 24) . '?' . $urlComponents['query'];
+
+            $user->notify(new CampaignGameLink($front_url));
         } catch (\Exception $e) {
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
         }
