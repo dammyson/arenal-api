@@ -43,6 +43,8 @@ Route::post('users/auth/verify-otp', [UserRegisterController::class, 'verifyOtp'
 Route::post('audiences/auth/register', [AudienceRegisterController::class, 'registerAudience']);
 Route::post('audiences/check-audience', [AudienceRegisterController::class, 'checkAudience']);
 Route::post('audiences/auth/login', [AudienceRegisterController::class, 'login']);
+Route::post('audiences/auth/forget-password', [AudienceRegisterController::class, 'forgotPasswordPost']);
+Route::post('audiences/auth/change-password', [AudienceRegisterController::class, 'changePassword']);
 
 Route::post('auth/verify-otp', [UserRegisterController::class, 'verifyOtp']);
 
