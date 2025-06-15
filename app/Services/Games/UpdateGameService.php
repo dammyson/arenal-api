@@ -25,7 +25,9 @@ class UpdateGameService implements BaseServiceInterface{
             return response()->json(['error' => 'false', 'message' => 'Game not found'], 404);
         }
 
-        return $game->update($this->request->validated);
+       $game->update($this->request->validated());
+
+       return $game;
 
     }
 }

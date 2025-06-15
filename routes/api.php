@@ -75,11 +75,12 @@ Route::group(["middleware" => ["auth:api"]], function () {
     Route::post('users/games', [GameController::class, 'storeGame']);
     Route::get('users/games/{game_id}/show-game', [GameController::class, 'showGame']);
     Route::patch('users/games/{game_id}/update-game', [GameController::class, 'updateGame']);
+    Route::post('users/games/{game_id}/upload-images',  [GameController::class, 'uploadImages']);
 
         
     Route::get('users/campaigns', [CampaignController::class, 'index']);           
     Route::post('users/campaigns', [CampaignController::class, 'storeCampaign']);
-    Route::get('users/upload-images',  [ProfileController::class, 'uploadImages']);
+
 
     
             
@@ -145,6 +146,7 @@ Route::middleware('auth:audience')->group(function () {
 
     Route::get("audiences/account-settings/profile", [ProfileController::class, "profile"]);
     Route::post("audiences/account-settings/profile/edit", [ProfileController::class, "editProfile"]);           
+    Route::post("audiences/account-settings/profile/upload-image", [ProfileController::class, "uploadImage"]);           
     Route::patch('audiences/account-settings/security/change-password', [ChangePasswordController::class, 'changePassword']); 
 
     Route::get('audiences/wallet/fund-wallet', [WalletController::class, 'showAccountNumber']);

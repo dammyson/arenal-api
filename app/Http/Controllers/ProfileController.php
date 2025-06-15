@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use App\Services\Users\ProfileService;
 use App\Http\Requests\ProfileEditRequest;
+use App\Http\Requests\UploadImageRequest;
+use App\Services\Images\UploadImageService;
 
 class ProfileController extends BaseController
 {   
@@ -44,6 +46,20 @@ class ProfileController extends BaseController
         return $this->sendResponse($data, "user profile updated succcessfully", 200);
    
     }
+
+    public function uploadImage(UploadImageRequest $request) 
+    {
+        try {
+            $url = (new UploadImageService($request))->run();
+            $data = $this->profileService->uploadProfilePhoto($url);
+
+
+        }  catch (\Exception $e){
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }        
+        return $this->sendResponse($data, "user profile updated succcessfully", 200);
+   
+    }
     
     public function userInfo(Request $request)
     {
@@ -59,25 +75,5 @@ class ProfileController extends BaseController
 
             
             
-     public function uploadImages(Request $request)
-    {
-        $validateRequest = $request->validate([
-            'image' => ['required', 'image', 'max:2048'],
-        ]);
-
-        $file = $request->file('image');
-        $path = Storage::disk('cloudinary')->putFile('uploads', $file);
-        $url = Storage::disk('cloudinary')->url($path);
-
-        
-        $this->activityLoggerService
-            ->setLogName('images')
-            ->setDescription("user with id {$request->user()->id} uploaded images")
-            ->setEvent('upload')
-            ->log();
-
-        return response()->json([
-            "url"=> $url,
-        ]);
-    }
+   
 }
