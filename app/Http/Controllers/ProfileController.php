@@ -9,8 +9,11 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
 use App\Services\Users\ProfileService;
 use App\Http\Requests\ProfileEditRequest;
+use App\Http\Requests\UploadImageRequest;
+use App\Services\Images\UploadImageService;
 
 class ProfileController extends BaseController
 {   
@@ -43,6 +46,20 @@ class ProfileController extends BaseController
         return $this->sendResponse($data, "user profile updated succcessfully", 200);
    
     }
+
+    public function uploadImage(UploadImageRequest $request) 
+    {
+        try {
+            $url = (new UploadImageService($request))->run();
+            $data = $this->profileService->uploadProfilePhoto($url);
+
+
+        }  catch (\Exception $e){
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }        
+        return $this->sendResponse($data, "user profile updated succcessfully", 200);
+   
+    }
     
     public function userInfo(Request $request)
     {
@@ -55,4 +72,8 @@ class ProfileController extends BaseController
         return $this->sendResponse($data, "user info retrieved succcessfully", 200);
    
     }
+
+            
+            
+   
 }

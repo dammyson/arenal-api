@@ -23,6 +23,12 @@ class ProfileService   {
 		return $this->audience->update($req->validated());
 	}
 
+	public function uploadProfilePhoto($url) {
+		$this->audience->profile_image = $url;
+		$this->audience->save();
+		return $this->audience;
+	}
+
 	public function userInfo() {	
             
 		$userInfo = [];

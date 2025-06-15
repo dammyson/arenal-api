@@ -5,6 +5,8 @@ namespace App\Services\Games;
 use App\Models\Game;
 use App\Services\BaseServiceInterface;
 use App\Http\Requests\StoreGameRequest;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Symfony\Component\Translation\Exception\NotFoundResourceException;
 
 class ShowGameService implements BaseServiceInterface{
     protected $gameId;
@@ -15,7 +17,14 @@ class ShowGameService implements BaseServiceInterface{
     }
 
     public function run() {
-       return Game::where('id', $this->gameId)->with('rules')->first();
+      $game = Game::where('id', $this->gameId)->with('rules')->first();
+
+      if (!$game) {
+        throw new ModelNotFoundException("Game is not found");
+      }
+      
+      return $game;
+
 
     }
 }

@@ -11,12 +11,17 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Gate;
 use App\Http\Requests\StoreGameRequest;
+use Illuminate\Support\Facades\Storage;
 use App\Services\Games\IndexGameService;
 use App\Services\Games\StoreGameService;
 use App\Services\Games\UpdateGameService;
 use App\Services\Games\ToogleFavoriteGame;
 use App\Http\Requests\Game\UpdateGameRequest;
+use App\Http\Requests\UploadImageRequest;
 use App\Services\CampaignGame\FilterCampaignGame;
+use App\Services\Games\ShowGameService;
+use App\Services\Games\UploadGameImageService;
+use App\Services\Images\UploadImageService;
 
 class GameController extends BaseController
 {
@@ -49,12 +54,7 @@ class GameController extends BaseController
 
     public function showGame($gameId) {
         try {
-
-            $data = Game::where('id', $gameId)->with('rules')->first();
-
-            if (!$data) {
-                return response()->json(['error' => 'false', 'message' => 'no game found'], 404);
-            }
+            $data = (new ShowGameService($gameId))->run();
         
         }  catch (\Exception $e){
 
@@ -65,38 +65,15 @@ class GameController extends BaseController
     }
 
     public function updateGame(UpdateGameRequest $request, $gameId) {
-        // try {
-        //   Gate::authorize('is-audience');
-        //     $data = (new UpdateGameService($request, $gameId))->run();
-
-        // }  catch (\Exception $e){
-        //     return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
-        // }         
-        // return $this->sendResponse($data, "Game retrieved succcessfully");
-    
         try {
-            $game = Game::find($gameId);
+            $data = (new UpdateGameService($request, $gameId))->run();
 
-            if (!$game) {
-                return response()->json(['error' => 'false', 'message' => 'Game not found'], 404);
-            }
-
-            $game->name = $validated['name'] ?? $game->name;
-            $game->image_url = $validated['image_url'] ?? $game->image_url;
-            $game->type =$validated['type'] ?? $game->type;
-            $game->save();
-
-        } catch (\Throwable $throwable) {
-            report($throwable);
-            return response()->json([
-                'error' => 'true',
-                'message' => $throwable->getMessage()
-            ], 500);
-
-        }
-
-        return response()->json(["error" => "false", 'message' => 'Game updated successfully', $game], 200);
-        
+        }  catch (\Exception $e){
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }  
+               
+        return $this->sendResponse($data, "Game retrieved succcessfully");
+         
     }
 
 
@@ -141,6 +118,24 @@ class GameController extends BaseController
         }        
         return $this->sendResponse($data, "Game retrieved by type");
 
+    }
+    
+
+    public function uploadImages(UploadImageRequest $request,  $gameId)
+    {   
+        try {
+            $game = (new ShowGameService($gameId))->run();
+
+            $url = (new UploadImageService($request))->run();
+
+            $data = (new UploadGameImageService($game, $url))->run();
+
+        } catch (\Exception $e){
+
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }         
+        return $this->sendResponse($data, "Game image upload succcessfully");
+        
     }
     
 
