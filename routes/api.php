@@ -79,7 +79,9 @@ Route::group(["middleware" => ["auth:api"]], function () {
         
     Route::get('users/campaigns', [CampaignController::class, 'index']);           
     Route::post('users/campaigns', [CampaignController::class, 'storeCampaign']);
-    Route::get('users/campaigns/{campaign_id}', [CampaignController::class, 'showCampaign']);
+    Route::get('users/upload-images',  [ProfileController::class, 'uploadImages']);
+
+    
             
 
             

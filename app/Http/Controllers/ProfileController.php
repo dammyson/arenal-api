@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
 use App\Services\Users\ProfileService;
 use App\Http\Requests\ProfileEditRequest;
 
@@ -54,5 +55,29 @@ class ProfileController extends BaseController
         }        
         return $this->sendResponse($data, "user info retrieved succcessfully", 200);
    
+    }
+
+            
+            
+     public function uploadImages(Request $request)
+    {
+        $validateRequest = $request->validate([
+            'image' => ['required', 'image', 'max:2048'],
+        ]);
+
+        $file = $request->file('image');
+        $path = Storage::disk('cloudinary')->putFile('uploads', $file);
+        $url = Storage::disk('cloudinary')->url($path);
+
+        
+        $this->activityLoggerService
+            ->setLogName('images')
+            ->setDescription("user with id {$request->user()->id} uploaded images")
+            ->setEvent('upload')
+            ->log();
+
+        return response()->json([
+            "url"=> $url,
+        ]);
     }
 }
