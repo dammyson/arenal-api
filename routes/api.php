@@ -54,7 +54,7 @@ Route::group(["middleware" => ["auth:api"]], function () {
     Route::post('users/wallets/create', [WalletController::class, 'createWallet']);
 
     Route::get('users/wallets/transactions/{id}', [TransactionController::class, 'show']);
-     
+
     Route::get('users/companies', [CompanyController::class, 'index']);
     Route::post('users/companies', [CompanyController::class, 'storeCompany']);
     Route::put('users/companies/{company}', [CompanyController::class, 'updateCompany']);
@@ -69,7 +69,7 @@ Route::group(["middleware" => ["auth:api"]], function () {
     Route::post('users/brands', [BrandController::class, 'storeBrand']);
     Route::put('users/brands/{brand}', [BrandController::class, 'updateBrand']);
     Route::delete('users/brands/{brand}', [BrandController::class, 'deleteBrand']);
-        
+
 
     Route::get('users/games', [GameController::class, 'index']);
     Route::post('users/games', [GameController::class, 'storeGame']);
@@ -77,30 +77,36 @@ Route::group(["middleware" => ["auth:api"]], function () {
     Route::patch('users/games/{game_id}/update-game', [GameController::class, 'updateGame']);
     Route::post('users/games/{game_id}/upload-images',  [GameController::class, 'uploadImages']);
 
-        
-    Route::get('users/campaigns', [CampaignController::class, 'index']);           
+
+    Route::get('users/campaigns', [CampaignController::class, 'index']);
     Route::post('users/campaigns', [CampaignController::class, 'storeCampaign']);
 
 
     
             
+    Route::get('users/campaigns/{campaign_id}', [CampaignController::class, 'showCampaign']);
 
-            
+
+
     Route::post('users/campaign/{campaign_id}/campaign-game', [CampaignGameController::class, 'storeCampaignGame']);
     Route::get('users/campaign/{campaign_id}/campaign-game', [CampaignGameController::class, 'indexCampaignGame']);
     Route::get('users/campaign/{campaign_id}/campaign-game/{game_id}/link', [CampaignController::class, 'generateCampaignLink']);
     Route::post('users/campaign/{campaign_id}/game/{game_id}/rules', [CampaignGameRuleController::class, 'store']);
     Route::get('users/campaign/{campaign_id}/game/{game_id}/rules', [CampaignGameRuleController::class, 'showCampaignGameRules']);
 
-          
+
     Route::get('users/rules', [CampaignGameRuleController::class, 'index']);
     Route::post('users/rules', [CampaignGameRuleController::class, 'store']);
     Route::get('users/rules/{rule_id}', [CampaignGameRuleController::class, 'showCampaignGameRules']);
 
     Route::get('users/logout', [LogoutController::class, 'logout']);
-   
+
     Route::get('users/trivia/questions', [TriviaQuestionController::class, 'index']);
     Route::post('users/trivia/questions', [TriviaQuestionController::class, 'storeMultiple']);
+
+    Route::prefix('users')->group(function () {
+        require __DIR__ . '/shared.php';
+    });
 });
 
 // Audience routes
@@ -123,11 +129,11 @@ Route::middleware('auth:audience')->group(function () {
     Route::get('audiences/home/campaigns/{campaign_id}/games/{game_id}/campaign-game-leaderboard/weekly', [CampaignGamePlayLeaderboardController::class, 'gameLeaderboardWeekly']);
     Route::get('audiences/home/campaigns/{campaign_id}/games/{game_id}/campaign-game-leaderboard/monthly', [CampaignGamePlayLeaderboardController::class, 'gameLeaderboardMonthly']);
     Route::get('audiences/home/campaigns/{campaign_id}/games/{game_id}/campaign-game-leaderboard/alltime', [CampaignGamePlayLeaderboardController::class, 'gameLeaderboardAllTime']);
-                    
+
     Route::get('audiences/home/gamez/{game_id}', [GameController::class, 'showGame']);
     Route::patch('audiences/home/gamez/{game_id}/favorite', [GameController::class, 'toogleFavorite']);
 
-    Route::get('audiences/play-game',[CampaignController::class, 'goToCampaignGame'])->name('play.game'); 
+    Route::get('audiences/play-game', [CampaignController::class, 'goToCampaignGame'])->name('play.game');
 
 
     Route::post('audiences/gameboard/search-game', [SearchGameController::class, 'searchGame']);
@@ -140,7 +146,7 @@ Route::middleware('auth:audience')->group(function () {
     Route::get('audiences/general/overall-leaderboard/weekly', [OverallCampaignGamePlayLeaderboardController::class, 'overallLeaderboardWeekly']);
     Route::get('audiences/general/overall-leaderboard/monthly', [OverallCampaignGamePlayLeaderboardController::class, 'overallLeaderboardMonthly']);
     Route::get('audiences/general/overall-leaderboard/alltime', [OverallCampaignGamePlayLeaderboardController::class, 'overallLeaderboard']);
-                
+
     Route::get('audiences/campaign/{campaign_id}/game/{game_id}/rules', [CampaignGameRuleController::class, 'showCampaignGameRules']);
     Route::get('audiences/campaign/{campaign_id}/game/campaign-game', [CampaignGameController::class, 'indexCampaignGame']);
 
@@ -148,6 +154,8 @@ Route::middleware('auth:audience')->group(function () {
     Route::post("audiences/account-settings/profile/edit", [ProfileController::class, "editProfile"]);           
     Route::post("audiences/account-settings/profile/upload-image", [ProfileController::class, "uploadImage"]);           
     Route::patch('audiences/account-settings/security/change-password', [ChangePasswordController::class, 'changePassword']); 
+    Route::post("audiences/account-settings/profile/edit", [ProfileController::class, "editProfile"]);
+    Route::patch('audiences/account-settings/security/change-password', [ChangePasswordController::class, 'changePassword']);
 
     Route::get('audiences/wallet/fund-wallet', [WalletController::class, 'showAccountNumber']);
     Route::post('audiences/wallet/fund-wallet', [WalletController::class, 'fundWallet']);
@@ -159,7 +167,7 @@ Route::middleware('auth:audience')->group(function () {
     Route::get('audiences/wallet/{wallet_id}/transaction-history', [TransactionHistoryController::class, 'getTxHistory']);
     Route::post('audiences/wallet/{wallet_id}/search-transaction', [SearchTransactionController::class, 'searchTransactionHistory']);
     Route::post('audiences/wallet/{wallet_id}/filter-transaction', [SearchTransactionController::class, 'filterTransactionHistory']);
-        
 
-    Route::get('audiences/logout', [LogoutController::class, 'logout']); 
+
+    Route::get('audiences/logout', [LogoutController::class, 'logout']);
 });

@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('trivia_questions', function (Blueprint $table) {
             $table->uuid('id')->primary();
+            $table->uuid('trivia_id');
             $table->text('question');
             $table->boolean('is_general')->default(true);
             $table->decimal('points')->default(1.0);
