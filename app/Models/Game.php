@@ -23,10 +23,22 @@ class Game extends Model
     }
 
     public function campaigns()
-{
-    return $this->belongsToMany(Campaign::class, 'campaign_games')
-        ->using(CampaignGame::class)
-        ->withPivot('details')
-        ->withTimestamps();
-}
+    {
+        return $this->belongsToMany(Campaign::class, 'campaign_games')
+            ->using(CampaignGame::class)
+            ->withPivot('details')
+            ->withTimestamps();
+    }
+
+    public function spinTheWheels()
+    {
+        return $this->hasMany(SpinTheWheel::class);
+    }
+
+
+    public function trivias()
+    {
+        return $this->hasMany(Trivia::class);
+    }
+
 }
