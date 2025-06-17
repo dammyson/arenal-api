@@ -89,7 +89,7 @@ class AudienceRegisterController extends BaseController
                     'email_or_phone_no' => $request->email_or_phone,
                     'otp' => $otp
                 ]);
-                // $user->notify(new ArenaOtp($otp));
+                $user->notify(new ArenaOtp($otp));
                 return $this->sendResponse($otp, false);
             }
         } catch (\Throwable $th) {
