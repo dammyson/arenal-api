@@ -36,7 +36,7 @@ class ArenaOtp extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->greeting("Hello!, {$notifiable->first_name}")
+            ->greeting("Hello!")
             ->line('Welcome to Arena, below is your OTP')
             ->line($this->otp)
             ->line('Thank you for using our application!');;
