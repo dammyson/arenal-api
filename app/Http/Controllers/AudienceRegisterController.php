@@ -2,18 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Auth\AudienceLoginRequest;
+use App\Models\Otp;
 use App\Models\User;
 use App\Models\Wallet;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use App\Http\Requests\Auth\RegisterAudienceRequest;
 use App\Models\Audience;
+use Illuminate\Http\Request;
 use App\Models\AudienceWallet;
-use App\Models\Otp;
-use Illuminate\Support\Facades\Validator;
-use App\Http\Requests\Auth\ChangeAudiencePasswordRequest;
 use App\Notifications\ArenaOtp;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Notification;
+use App\Http\Requests\Auth\AudienceLoginRequest;
+use App\Http\Requests\Auth\RegisterAudienceRequest;
+use App\Http\Requests\Auth\ChangeAudiencePasswordRequest;
 
 class AudienceRegisterController extends BaseController
 {
@@ -83,12 +84,21 @@ class AudienceRegisterController extends BaseController
                 return $this->sendResponse($user, true, 200);
             } else {
 
-                $otp = $this->generateFourDigitOtp();
+                $otpCode = $this->generateFourDigitOtp();
 
                 $otp = Otp::create([
                     'email_or_phone_no' => $request->email_or_phone,
-                    'otp' => $otp
+                    'otp' => $otpCode
                 ]);
+
+                  // Send notification to email or phone
+                if (filter_var($request->email_or_phone, FILTER_VALIDATE_EMAIL)) {
+                    Notification::route('mail', $request->email_or_phone)
+                        ->notify(new ArenaOtp($otpCode));
+                } else {
+                    Notification::route('nexmo', $request->email_or_phone) // or 'vonage' depending on your SMS driver
+                        ->notify(new ArenaOtp($otpCode));
+                }
                 // $user->notify(new ArenaOtp($otp));
                 return $this->sendResponse($otp, false);
             }
