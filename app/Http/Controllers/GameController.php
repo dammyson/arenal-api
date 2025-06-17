@@ -28,7 +28,6 @@ class GameController extends BaseController
     public function index() {
 
         try {
-           Gate::authorize('is-user');
            $data = (new IndexGameService())->run();            
 
         }  catch (\Exception $e){
@@ -71,7 +70,7 @@ class GameController extends BaseController
         }  catch (\Exception $e){
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
         }  
-               
+
         return $this->sendResponse($data, "Game retrieved succcessfully");
          
     }
