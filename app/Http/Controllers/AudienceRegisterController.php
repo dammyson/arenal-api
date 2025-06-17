@@ -13,6 +13,7 @@ use App\Models\AudienceWallet;
 use App\Models\Otp;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\Auth\ChangeAudiencePasswordRequest;
+use App\Notifications\ArenaOtp;
 
 class AudienceRegisterController extends BaseController
 {
@@ -59,7 +60,6 @@ class AudienceRegisterController extends BaseController
     public function checkAudience(Request $request)
     {
         try {
-
             $validator = Validator::make($request->all(), [
                 'email_or_phone' => ['required', function ($attribute, $value, $fail) {
                     if (
@@ -89,6 +89,7 @@ class AudienceRegisterController extends BaseController
                     'email_or_phone_no' => $request->email_or_phone,
                     'otp' => $otp
                 ]);
+                $user->notify(new ArenaOtp($otp));
                 return $this->sendResponse($otp, false);
             }
         } catch (\Throwable $th) {
