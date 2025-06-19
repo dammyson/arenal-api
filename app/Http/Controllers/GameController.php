@@ -47,7 +47,7 @@ class GameController extends BaseController
 
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
         }        
-        return $this->sendResponse($data, "Game created retrieved succcessfully", 201);
+        return $this->sendResponse($data, "Game created succcessfully", 201);
 
     }
 

@@ -13,7 +13,12 @@ class StoreTriviaQuestionsRequest extends FormRequest
 
     public function rules(): array
     {
+
         return [
+            // "trivia_name" => "required",
+            // "game_id" => "required|exists:games,id",
+            // "image_url" => "sometimes|string",
+            'trivia_id' => 'required|exists:trivia,id',
             'questions' => 'required|array|min:1',
             'questions.*.question' => 'required|string',
             'questions.*.is_general' => 'boolean',

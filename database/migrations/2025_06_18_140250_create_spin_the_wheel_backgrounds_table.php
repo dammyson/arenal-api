@@ -11,15 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-      
-        Schema::create('spin_the_wheel_sectors', function (Blueprint $table) {
+        Schema::create('spin_the_wheel_backgrounds', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->uuid('spin_the_wheels_id');
-            $table->string('text')->nullable();
-            $table->string('color')->nullable();
-            $table->string('value')->nullable();
-            $table->string('image_url');
-            $table->uuid('user_id');
+            $table->uuid('spin_the_wheel_id');
+            $table->string('backgound_gradient')->nullable();
+            $table->string('background_color')->nullable();
+            $table->string('background_image')->nullable();
+            $table->string('interactive_component')->nullable();
             $table->timestamps();
         });
     }
@@ -29,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('spin_the_wheel_sectors');
+        Schema::dropIfExists('spin_the_wheel_backgrounds');
     }
 };

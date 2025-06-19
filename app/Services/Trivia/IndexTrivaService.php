@@ -2,11 +2,12 @@
 
 namespace App\Services\Trivia;
 
-use App\Models\TriviaQuestion;
-use App\Models\TriviaQuestionChoice;
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
+use App\Models\Trivia;
 use Illuminate\Support\Str;
+use App\Models\TriviaQuestion;
+use Illuminate\Support\Facades\DB;
+use App\Models\TriviaQuestionChoice;
 use App\Services\BaseServiceInterface;
 
 class IndexTrivaService implements BaseServiceInterface
@@ -19,7 +20,9 @@ class IndexTrivaService implements BaseServiceInterface
 
     public function run()
     {
-       return TriviaQuestion::with('choices')->get();
+        return Trivia::whereHas('questions')
+            ->with(['questions.choices'])    // Eager loads questions and their choices
+            ->get();
     }
     
 }

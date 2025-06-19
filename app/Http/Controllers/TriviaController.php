@@ -2,29 +2,28 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Trivia\StoreTriviaRequest;
+use App\Models\Trivia;
+use Illuminate\Http\Request;
 use App\Models\TriviaQuestion;
 use App\Models\TriviaQuestionChoice;
 use Illuminate\Support\Facades\Auth;
 use App\Services\Trivia\CreateService;
 use App\Services\Trivia\IndexTrivaService;
+use App\Services\Trivia\CreateTriviaService;
 use App\Http\Requests\TriviaQuestion\StoreTriviaQuestionsRequest;
-use Illuminate\Http\Request;
 
-class TriviaController extends Controller
+class TriviaController extends BaseController
 {
-    public function create(Request $request)
+    public function store(StoreTriviaRequest $request)
     {
-        $questionsData = $request->validated()['questions'];
 
         try {
-           $user = Auth::user();
 
+            $data = (new CreateTriviaService($request))->run();
            
             // Success response
-            return response()->json([
-                'message' => 'Questions created successfully',
-                'data' => $user
-            ], 201);
+           return $this->sendResponse($data, "trivia created successfully", 201);
 
         } catch (\Throwable $e) {
             return response()->json([
