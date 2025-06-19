@@ -2,6 +2,7 @@
 
 namespace App\Services\Trivia;
 
+use App\Models\Trivia;
 use App\Models\TriviaQuestion;
 use App\Models\TriviaQuestionChoice;
 use App\Models\User;
@@ -26,12 +27,20 @@ class CreateService implements BaseServiceInterface
         DB::beginTransaction();
     
         try {
-            $createdQuestions = [];
-    
+
+            // $trivia = Trivia::create([
+            //     "name" => $this->data["trivia_name"],
+            //     "game_id" => $this->data["game_id"],
+            //     "image_url" => $this->data["game_image_url"],
+            //     "user_id" => $this->user->id
+            // ]);
+
+            $createdQuestions = [];   
            
-            foreach ($this->data as $questionData) {
+            foreach ($this->data['questions'] as $questionData) {
                 $question = TriviaQuestion::create([
                     'id' => Str::uuid(),
+                    'trivia_id' => $this->data['trivia_id'], //$trivia->id,
                     'question' => $questionData['question'],
                     'is_general' => $questionData['is_general'] ?? true,
                     'points' => $questionData['points'] ?? 0,
