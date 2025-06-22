@@ -27,6 +27,7 @@ class TriviaQuestion extends Model
         'difficulty_level',
         'company_id',
         'user_id',
+        'trivia_id'
     ];
 
     protected $casts = [

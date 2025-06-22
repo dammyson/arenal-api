@@ -13,7 +13,8 @@ class TriviaQuestionController extends Controller
 {
     public function storeMultiple(StoreTriviaQuestionsRequest $request)
     {
-        $questionsData = $request->validated()['questions'];
+        $questionsData = $request->validated();
+
 
         try {
            $user = Auth::user();
