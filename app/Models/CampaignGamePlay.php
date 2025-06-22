@@ -17,7 +17,7 @@ class CampaignGamePlay extends Model
         return $this->belongsTo(Game::class);
     }
 
-    public function Audience()
+    public function audience()
     {
         return $this->belongsTo(Audience::class);
     }
