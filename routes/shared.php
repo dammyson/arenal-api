@@ -15,7 +15,7 @@ use App\Http\Controllers\OverallCampaignGamePlayLeaderboardController;
 
 Route::get('/',  [TriviaController::class, 'index'])->name('index');
 Route::post('/upload-image',  [ImageUploadController::class, 'uploadImage'])->name('upload.image');
- Route::get('user-spin-the-wheel', [SpinTheWheelController::class, 'userIndex'])->name('user.index');
+Route::get('user-spin-the-wheel', [SpinTheWheelController::class, 'userIndex'])->name('user.index');
 Route::get('spin-the-wheel', [SpinTheWheelController::class, 'index'])->name('index');
 Route::get('spin-the-wheel/{id}', [SpinTheWheelController::class, 'show'])->name('index');
 
@@ -27,7 +27,6 @@ Route::get('campaign/{campaign_id}', [CampaignController::class, 'showCampaign']
 Route::get('campaign-game', [CampaignGameController::class, 'indexCampaignGame']);
 Route::get('campaign/{campaign_id}/campaign-game/{game_id}/link', [CampaignController::class, 'generateCampaignLink']);
 Route::get('campaign/{campaign_id}/game/{game_id}/rules', [CampaignGameRuleController::class, 'showCampaignGameRules']);
-
 
 Route::get('campaign/games/game-plays', [CampaignGamePlayController::class, 'index']); // not seen in UI
 Route::get('campaign/{campaign_id}/games/{game_id}/show-campaign-game', [CampaignGameController::class, 'showCampaignGame']);
