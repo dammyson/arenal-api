@@ -33,7 +33,7 @@ class CampaignGamePlayController extends BaseController
     public function index()
     {
         try {
-            return response()->json(CampaignGamePlay::with('game', 'user', 'campaign')->get());
+            return response()->json(CampaignGamePlay::with('game', 'audience', 'campaign')->get());
 
         } catch (\Throwable $th) {
             return response()->json([
@@ -72,7 +72,7 @@ class CampaignGamePlayController extends BaseController
     public function destroy($campaignId, $gameId)
     {
         try {
-            Gate::authorize('is-user');
+            
             $data =  $this->campaignGamePlayService->destroy($campaignId, $gameId);
     
         } catch (\Exception $e){

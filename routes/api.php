@@ -59,7 +59,12 @@ Route::group(["middleware" => ["auth:api"]], function () {
         Route::delete('brands/{brand}', [BrandController::class, 'deleteBrand']);
 
         
-        Route::post('campaign', [CampaignController::class, 'storeCampaign']);
+        Route::post('campaign', [CampaignController::class, 'storeCampaign']);   
+        Route::post('campaign/{campaign_id}/campaign-game', [CampaignGameController::class, 'storeCampaignGame']);     
+        Route::post('games', [GameController::class, 'storeGame']);        
+        Route::patch('games/{game_id}/update-game', [GameController::class, 'updateGame']);
+        Route::post('games/{game_id}/upload-images',  [GameController::class, 'uploadImages']);        
+        Route::post('campaign/{campaign_id}/game/{game_id}/rules', [CampaignGameRuleController::class, 'store']);
         Route::post('trivia', [TriviaController::class, 'store'])->name('create');
         Route::post('trivia/questions', [TriviaQuestionController::class, 'storeMultiple']);
         Route::get('user-spin-the-wheel', [SpinTheWheelController::class, 'userIndex'])->name('user.index');
@@ -92,33 +97,20 @@ Route::middleware('auth:audience')->group(function () {
         Route::get('home/user-info', [ProfileController::class, 'userInfo']);
         Route::get('home/user-profile', [ProfileController::class, 'profile']);
         Route::get('home/top-three', [OverallCampaignGamePlayLeaderboardController::class, 'overallGamePlayTopThree']);
-        Route::get('home/campaigns-game', [CampaignGameController::class, 'indexCampaignGame']);
         Route::get('home/favorite-games', [CampaignGameController::class, 'indexFavorite']);
 
-        Route::get('home/gamez/{game_id}', [GameController::class, 'showGame']);
         Route::patch('home/gamez/{game_id}/favorite', [GameController::class, 'toogleFavorite']);
 
         Route::get('play-game', [CampaignController::class, 'goToCampaignGame'])->name('play.game');
 
         Route::post('gameboard/search-game', [SearchGameController::class, 'searchGame']);
-        Route::get('gameboard/user-info', [ProfileController::class, 'userInfo']);
         Route::post('gameboard/category', [FilterGameController::class, 'filter']);
         Route::get('gameboard', [CampaignGameController::class, 'indexCampaignGame']);
         Route::patch('gameboard/{game_id}/favorite', [GameController::class, 'toogleFavorite']);
-
-        Route::get('general/overall-leaderboard/daily', [OverallCampaignGamePlayLeaderboardController::class, 'overallLeaderboardDaily']);
-        Route::get('general/overall-leaderboard/weekly', [OverallCampaignGamePlayLeaderboardController::class, 'overallLeaderboardWeekly']);
-        Route::get('general/overall-leaderboard/monthly', [OverallCampaignGamePlayLeaderboardController::class, 'overallLeaderboardMonthly']);
-        Route::get('general/overall-leaderboard/alltime', [OverallCampaignGamePlayLeaderboardController::class, 'overallLeaderboard']);
-
-        Route::get('campaign/{campaign_id}/game/{game_id}/rules', [CampaignGameRuleController::class, 'showCampaignGameRules']);
-        Route::get('campaign/{campaign_id}/game/campaign-game', [CampaignGameController::class, 'indexCampaignGame']);
-
+                
         Route::get("account-settings/profile", [ProfileController::class, "profile"]);
         Route::post("account-settings/profile/edit", [ProfileController::class, "editProfile"]);
         Route::post("account-settings/profile/upload-image", [ProfileController::class, "uploadImage"]);
-        Route::patch('account-settings/security/change-password', [ChangePasswordController::class, 'changePassword']);
-        Route::post("account-settings/profile/edit", [ProfileController::class, "editProfile"]);
         Route::patch('account-settings/security/change-password', [ChangePasswordController::class, 'changePassword']);
 
         Route::get('wallet/fund-wallet', [WalletController::class, 'showAccountNumber']);
