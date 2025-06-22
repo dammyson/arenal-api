@@ -94,12 +94,12 @@ Route::group(["middleware" => ["auth:api"]], function () {
 Route::middleware('auth:audience')->group(function () {
 
     Route::prefix('audiences/')->group(function () {
-        Route::get('home/user-info', [ProfileController::class, 'userInfo']);
-        Route::get('home/user-profile', [ProfileController::class, 'profile']);
-        Route::get('home/top-three', [OverallCampaignGamePlayLeaderboardController::class, 'overallGamePlayTopThree']);
-        Route::get('home/favorite-games', [CampaignGameController::class, 'indexFavorite']);
+        Route::get('user-info', [ProfileController::class, 'userInfo']);
+        Route::get('user-profile', [ProfileController::class, 'profile']);
+        Route::get('top-three', [OverallCampaignGamePlayLeaderboardController::class, 'overallGamePlayTopThree']);
+        Route::get('favorite-games', [CampaignGameController::class, 'indexFavorite']);
 
-        Route::patch('home/gamez/{game_id}/favorite', [GameController::class, 'toogleFavorite']);
+        Route::patch('gamez/{game_id}/favorite', [GameController::class, 'toogleFavorite']);
 
         Route::get('play-game', [CampaignController::class, 'goToCampaignGame'])->name('play.game');
 
