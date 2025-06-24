@@ -110,6 +110,7 @@ Route::middleware('auth:audience')->group(function () {
                 
         Route::get("account-settings/profile", [ProfileController::class, "profile"]);
         Route::post("account-settings/profile/edit", [ProfileController::class, "editProfile"]);
+        Route::post("account-settings/profile/pin", [ProfileController::class, "changePin"]);
         Route::post("account-settings/profile/upload-image", [ProfileController::class, "uploadImage"]);
         Route::patch('account-settings/security/change-password', [ChangePasswordController::class, 'changePassword']);
 

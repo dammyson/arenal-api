@@ -7,6 +7,8 @@ use App\Models\Wallet;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ChangeAudienceTransactionPin;
+use App\Http\Requests\ChangePinRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
@@ -22,6 +24,7 @@ class ProfileController extends BaseController
         $user = Auth::user();
         $this->profileService = new ProfileService($user);
     }
+
     public function profile() 
     {
         try {
@@ -34,6 +37,7 @@ class ProfileController extends BaseController
    
     }
 
+
     public function editProfile(ProfileEditRequest $request) 
     {
         try {
@@ -44,6 +48,19 @@ class ProfileController extends BaseController
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
         }        
         return $this->sendResponse($data, "user profile updated succcessfully", 200);
+   
+    }
+
+    public function changePin(ChangeAudienceTransactionPin $request) 
+    {
+        try {
+            $data = $this->profileService->changeAudiencePin($request->pin);
+
+
+        }  catch (\Exception $e){
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }        
+        return $this->sendResponse($data, "user pin updated succcessfully", 200);
    
     }
 
