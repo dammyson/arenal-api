@@ -107,7 +107,7 @@ class CampaignController extends BaseController
     public function goToCampaignGame(Request $request)
     {
         try {
-
+                
             if (!$request->hasValidSignature()) {
                 return response()->json(['status' => false, 'message' => 'Invalid/Expired link, contact admin'], 401);
             }

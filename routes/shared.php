@@ -28,6 +28,7 @@ Route::get('campaign-game', [CampaignGameController::class, 'indexCampaignGame']
 Route::get('campaign/{campaign_id}/campaign-game/{game_id}/link', [CampaignController::class, 'generateCampaignLink']);
 Route::get('campaign/{campaign_id}/game/{game_id}/rules', [CampaignGameRuleController::class, 'showCampaignGameRules']);
 
+
 Route::get('campaign/games/game-plays', [CampaignGamePlayController::class, 'index']); // not seen in UI
 Route::get('campaign/{campaign_id}/games/{game_id}/show-campaign-game', [CampaignGameController::class, 'showCampaignGame']);
 Route::post('campaign/{campaign_id}/games/{game_id}/campaign-game-play', [CampaignGamePlayController::class, 'storeCampaignGamePlay']);

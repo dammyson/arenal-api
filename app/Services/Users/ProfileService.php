@@ -50,4 +50,10 @@ class ProfileService   {
 		
 		return $userInfo;
 	}
+
+	public function changeAudiencePin($pin) {
+		$this->audience->pin = $pin;
+		$this->audience->save();
+		return $this->audience;
+	}
 }

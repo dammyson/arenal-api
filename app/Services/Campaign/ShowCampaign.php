@@ -5,6 +5,7 @@ namespace App\Services\Campaign;
 use App\Models\Campaign;
 use App\Services\BaseServiceInterface;
 use App\Http\Requests\Campaign\StoreCampaignRequest;
+use App\Models\CampaignGame;
 
 class ShowCampaign implements BaseServiceInterface{
     protected $campaignId;
@@ -15,6 +16,8 @@ class ShowCampaign implements BaseServiceInterface{
     }
 
     public function run() {
-       return Campaign::with('games')->find($this->campaignId);
+        
+       return CampaignGame::where("campaign_id", $this->campaignId);
+    //    return Campaign::where("id", $this->campaignId)->with('games');
     }
 }
