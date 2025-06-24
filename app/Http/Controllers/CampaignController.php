@@ -6,6 +6,7 @@ use App\Models\Campaign;
 use Illuminate\Http\Request;
 use \Illuminate\Support\Facades\URL;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Campaign\PlayCampaignGameRequest;
 use Illuminate\Support\Facades\Gate;
 use App\Services\Campaign\ShowCampaign;
 use App\Services\Campaign\IndexCampaign;
@@ -14,6 +15,7 @@ use App\Services\CampaignGame\ShowCampaignGame;
 use App\Http\Requests\Campaign\StoreCampaignRequest;
 use App\Models\Audience;
 use App\Notifications\CampaignGameLink;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class CampaignController extends BaseController
 {
@@ -104,31 +106,37 @@ class CampaignController extends BaseController
         return $this->sendResponse($front_url, "Campaign updated succcessfully", 200);
     }
 
-    public function goToCampaignGame(Request $request)
+    public function goToCampaignGame(PlayCampaignGameRequest $request)
     {
         try {
-                
-            if (!$request->hasValidSignature()) {
-                return response()->json(['status' => false, 'message' => 'Invalid/Expired link, contact admin'], 401);
+
+            $validated = $request->validated();
+
+            if ($validated['is_link']) {
+                if (!$request->hasValidSignature()) {
+                    return response()->json([
+                        'status'  => false,
+                        'message' => 'Invalid/Expired link, contact admin'
+                    ], 401);
+                }
             }
 
-            $decodedPayload = explode('|', base64_decode($request->query('data')));
-            $campaignId = $decodedPayload[0];
-            $gameId = $decodedPayload[1];
-            $user = $decodedPayload[2];
+            $gameId = $validated['game_id'];
+            $campaignId = $validated['campaign_id'];
 
-            $audience=  Audience::where('id', auth()->user()->id)->firstOrFail();
-            $audience->user_id = $user;
-            $audience->save();
-          
+            if ($validated['is_link']) {
+                $user = $validated['user_id'];
+                $audience =  Audience::where('id', auth()->user()->id)->firstOrFail();
+                $audience->user_id = $user;
+                $audience->save();
+            }
+
             $data = (new ShowCampaignGame($campaignId, $gameId))->run();
+        } catch (ModelNotFoundException $e) {
+            return $this->sendError("Resource not found", ['error' => $e->getMessage()], 404);
         } catch (\Exception $e) {
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
         }
         return $this->sendResponse($data, "Campaign Game retrieved succcessfully", 200);
     }
-
-    
-
-    
 }

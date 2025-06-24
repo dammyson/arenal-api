@@ -101,7 +101,7 @@ Route::middleware('auth:audience')->group(function () {
 
         Route::patch('gamez/{game_id}/favorite', [GameController::class, 'toogleFavorite']);
 
-        Route::get('play-game', [CampaignController::class, 'goToCampaignGame'])->name('play.game');
+        Route::post('play-game', [CampaignController::class, 'goToCampaignGame'])->name('play.game');
 
         Route::post('gameboard/search-game', [SearchGameController::class, 'searchGame']);
         Route::post('gameboard/category', [FilterGameController::class, 'filter']);
