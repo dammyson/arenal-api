@@ -11,6 +11,7 @@ use App\Http\Requests\SpinTheWheel\UpdateSpinTheWheelSegmentRequest;
 use App\Services\SpinTheWheelService\StoreSpinTheWheelSectorService;
 use App\Http\Requests\SpinTheWheel\StoreSpinTheWheelBackgroundRequest;
 use App\Http\Requests\SpinTheWheel\StoreSpinTheWheelRewardSetupRequest;
+use App\Http\Requests\SpinTheWheel\StoreSpinTheWheelSetUserFormRequest;
 use App\Http\Requests\Game\SpinTheWheel\CreateSpinTheWheelSectorRequest;
 use App\Http\Requests\SpinTheWheel\StoreSpinTheWheelCustomGameTextRequest;
 use App\Services\SpinTheWheelComponentService\StoreSpinTheWheelFormService;
@@ -22,6 +23,7 @@ use App\Services\SpinTheWheelComponentService\UpdateSpinTheWheelSegmentService;
 use App\Services\SpinTheWheelComponentService\StoreSpinTheWheelBackgroundService;
 use App\Services\SpinTheWheelComponentService\StoreSpinTheWheelCustomTextService;
 use App\Services\SpinTheWheelComponentService\StoreSpinTheWheelRewardSetupService;
+use App\Services\SpinTheWheelComponentService\StoreSpinTheWheelSetUserFormService;
 
 class SpinTheWheelComponentController extends BaseController
 {
@@ -104,9 +106,9 @@ class SpinTheWheelComponentController extends BaseController
 
     }
 
-    public function storeUserForm(StoreSpinTheWheelUserFormRequest $request) {
+    public function setUserForm(StoreSpinTheWheelSetUserFormRequest $request) {
         try {
-            $data = (new StoreSpinTheWheelUserFormService($request))->run();
+            $data = (new StoreSpinTheWheelSetUserFormService($request))->run();
             return $this->sendResponse($data, "spin the wheel user form created successfully", 201);
 
         } catch (\Throwable $e) {

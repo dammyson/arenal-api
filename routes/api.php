@@ -79,6 +79,7 @@ Route::group(["middleware" => ["auth:api"]], function () {
             Route::post('button', [SpinTheWheelComponentController::class, 'storeButton'])->name('create.sector.segment');
             Route::post('form', [SpinTheWheelComponentController::class, 'storeForm'])->name('create.sector.segment');
             Route::post('user-form', [SpinTheWheelComponentController::class, 'storeUserForm'])->name('create.sector.segment');
+            Route::post('set-user-form', [SpinTheWheelComponentController::class, 'setUserForm'])->name('create.sector.segment');
             Route::post('reward-setup', [SpinTheWheelComponentController::class, 'storeRewardSetup'])->name('create.sector.segment');
             Route::post('custom-text', [SpinTheWheelComponentController::class, 'storeCustomText'])->name('create.sector.segment');
 
