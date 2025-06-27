@@ -25,7 +25,7 @@ Route::get('game/{game_id}/show-game', [GameController::class, 'showGame']);
 Route::get('campaign', [CampaignController::class, 'index']);
 Route::get('campaign/{campaign_id}', [CampaignController::class, 'showCampaign']);
 Route::get('campaign-game', [CampaignGameController::class, 'indexCampaignGame']);
-Route::get('campaign/{campaign_id}/campaign-game/{game_id}/link', [CampaignController::class, 'generateCampaignLink']);
+Route::post('campaign/{campaign_id}/campaign-game/{game_id}/link', [CampaignController::class, 'generateCampaignLink']);
 Route::get('campaign/{campaign_id}/game/{game_id}/rules', [CampaignGameRuleController::class, 'showCampaignGameRules']);
 
 

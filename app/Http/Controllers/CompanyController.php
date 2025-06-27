@@ -34,7 +34,6 @@ class CompanyController extends BaseController
     public function storeCompany(CompanyStoreRequest $request)
     {   
         try {            
-            Gate::authorize('is-user');
             $user = Auth::user();
             $data = (new CreateCompanyUserService($request, $user->id))->run();
 
