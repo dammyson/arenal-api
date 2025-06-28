@@ -17,7 +17,7 @@ class ShowCampaign implements BaseServiceInterface{
 
     public function run() {
         
-       return CampaignGame::where("campaign_id", $this->campaignId);
-    //    return Campaign::where("id", $this->campaignId)->with('games');
+        return CampaignGame::where("campaign_id", $this->campaignId)->first();
+    //    return Campaign::where("id", $this->campaignId)->with('games')->first();
     }
 }
