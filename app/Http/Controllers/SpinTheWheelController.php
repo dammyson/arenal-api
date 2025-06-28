@@ -14,6 +14,8 @@ use App\Http\Requests\SpinTheWheel\StoreSpinTheWheelSectorRequest;
 use App\Services\SpinTheWheelService\IndexUserSpinTheWheelService;
 use App\Services\SpinTheWheelService\StoreSpinTheWheelSectorService;
 use App\Http\Requests\Game\SpinTheWheel\CreateSpinTheWheelSectorRequest;
+use App\Http\Requests\SpinTheWheel\StoreSpinTheWheelAudienceRewardRequest;
+use App\Services\SpinTheWheelService\StoreSpinTheWheelAudienceRewardService;
 
 class SpinTheWheelController extends BaseController
 {
@@ -101,35 +103,17 @@ class SpinTheWheelController extends BaseController
         }
     }
 
+    public function audiencePrize(StoreSpinTheWheelAudienceRewardRequest $request) {
+        try {
+            $data = (new StoreSpinTheWheelAudienceRewardService($request))->run();
+
+            return $this->sendResponse($data, "audience prize stored successfully", 201);
+
+        } catch (\Throwable $e) {
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);           
+        }
+    }
+
 }
-
-
-// for spin the wheel mechanism we have
-//  backgound_gradient background_color and background_image, start_time
-//  button_color, button_solid_style, button_outline_style, button_3d_styles, button_custom_png, has_custom_png
-//  interactive_component
-
-//  SpinTheWheelSectorSegment (BelongsTo spintheWheelSector)
-//  label_text, label_color, background_color, icon, probability
-
-//  sectorform (BelongsTo spinThewheeSector)
-//     title, 
-//     description, 
-//     text_style,
-//     user_name, user_email, phone_number, is_marked_filed as required(note front end might take care of this one), button text
-
-
-//  sectorRewardSetup (BelongsTo spinTheWheelSector)
-//     reward_name
-//     limit_setting
-//     deliveryMethod
-//     custom_success_message
-//     custom_button
-
-//  Text (BelongsTo spinTheWheelSector)
-//     game_title
-//     description
-//     error_message
-//     style
 
 
