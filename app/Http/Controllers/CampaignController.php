@@ -63,7 +63,7 @@ class CampaignController extends BaseController
     public function showCampaign($campaignId)
     {
         try {
-
+            // dd(" iran");
             $data = (new ShowCampaign($campaignId))->run();
         } catch (\Exception $e) {
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
