@@ -99,8 +99,10 @@ Route::middleware('auth:audience')->group(function () {
         Route::get('user-profile', [ProfileController::class, 'profile']);
         Route::get('top-three', [OverallCampaignGamePlayLeaderboardController::class, 'overallGamePlayTopThree']);
         Route::get('favorite-games', [CampaignGameController::class, 'indexFavorite']);
+        Route::post('spin-the-wheel-prize', [SpinTheWheelController::class, 'audiencePrize']);
 
-        Route::patch('gamez/{game_id}/favorite', [GameController::class, 'toogleFavorite']);
+
+        // Route::patch('gamez/{game_id}/favorite', [GameController::class, 'toogleFavorite']);
 
         Route::post('play-game', [CampaignController::class, 'goToCampaignGame'])->name('play.game');
 
