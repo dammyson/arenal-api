@@ -10,6 +10,7 @@ use App\Http\Controllers\SpinTheWheelController;
 use App\Http\Controllers\TriviaQuestionController;
 use App\Http\Controllers\CampaignGamePlayController;
 use App\Http\Controllers\CampaignGameRuleController;
+use App\Http\Controllers\SpinTheWheelComponentController;
 use App\Http\Controllers\CampaignGamePlayLeaderboardController;
 use App\Http\Controllers\OverallCampaignGamePlayLeaderboardController;
 
@@ -18,6 +19,7 @@ Route::post('/upload-image',  [ImageUploadController::class, 'uploadImage'])->na
 Route::get('user-spin-the-wheel', [SpinTheWheelController::class, 'userIndex'])->name('user.index');
 Route::get('spin-the-wheel', [SpinTheWheelController::class, 'index'])->name('index');
 Route::get('spin-the-wheel/{id}', [SpinTheWheelController::class, 'show'])->name('index');
+Route::get('show-user-form', [SpinTheWheelComponentController::class, 'showUserForm'])->name('create.sector.segment');
 
 Route::get('game', [GameController::class, 'index']);
 Route::get('game/{game_id}/show-game', [GameController::class, 'showGame']);
