@@ -16,6 +16,7 @@ use App\Http\Requests\Game\SpinTheWheel\CreateSpinTheWheelSectorRequest;
 use App\Http\Requests\SpinTheWheel\StoreSpinTheWheelCustomGameTextRequest;
 use App\Services\SpinTheWheelComponentService\StoreSpinTheWheelFormService;
 use App\Services\SpinTheWheelComponentService\StoreSpinTheWheelButtonService;
+use App\Services\SpinTheWheelComponentService\ShowSpinTheWheelUserFormService;
 use App\Services\SpinTheWheelComponentService\StoreSpinTheWheelSegmentService;
 use App\Services\SpinTheWheelComponentService\DeleteSpinTheWheelSegmentService;
 use App\Services\SpinTheWheelComponentService\StoreSpinTheWheelUserFormService;
@@ -110,6 +111,17 @@ class SpinTheWheelComponentController extends BaseController
         try {
             $data = (new StoreSpinTheWheelSetUserFormService($request))->run();
             return $this->sendResponse($data, "spin the wheel user form created successfully", 201);
+
+        } catch (\Throwable $e) {
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);           
+        }
+
+    }
+
+      public function showUserForm($spinTheWheelId) {
+        try {
+            $data = (new ShowSpinTheWheelUserFormService($spinTheWheelId))->run();
+            return $this->sendResponse($data, "spin the wheel user form retrieved successfully", 201);
 
         } catch (\Throwable $e) {
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);           

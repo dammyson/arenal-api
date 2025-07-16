@@ -2,14 +2,22 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Trivia;
+use App\Models\Campaign;
 use App\Models\TriviaQuestion;
+use App\Models\CampaignGamePlay;
+use Illuminate\Support\Facades\DB;
 use App\Models\TriviaQuestionChoice;
 use Illuminate\Support\Facades\Auth;
 use App\Services\Trivia\CreateService;
 use App\Services\Trivia\IndexTrivaService;
+use App\Http\Requests\Trivia\StoreTriviaAnswers;
+use App\Http\Requests\Trivia\StoreTriviaRequest;
+use App\Http\Requests\Trivia\StoreTriviaAnswerRequest;
 use App\Http\Requests\TriviaQuestion\StoreTriviaQuestionsRequest;
+use App\Services\Trivia\StoreTriviaAnswerService;
 
-class TriviaQuestionController extends Controller
+class TriviaQuestionController extends BaseController
 {
     public function storeMultiple(StoreTriviaQuestionsRequest $request)
     {
@@ -51,4 +59,31 @@ class TriviaQuestionController extends Controller
             ], 500);
         }
     }
+
+    public function processAnswers(Trivia $trivia, StoreTriviaAnswerRequest $request) {
+        try {
+            $data = (new StoreTriviaAnswerService($request, $request->validated()["questions"], $trivia->game_id))->run();
+        
+            return $this->sendResponse($data, "answer returned successfully");
+        } catch (\Throwable $e) {
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }
+
+      
+    }
+
+    // public function processAnswer(Trivia $trivia, StoreTriviaAnswers $request) {
+    //     $points = 0;
+
+    //     $triviaQuestionChoice = TriviaQuestionChoice::where("question_id", $request["question_id"])
+    //             ->where('answer_id', $request->answer_id)->first();
+
+    //     if ($triviaQuestionChoice->is_correct_choice) {
+    //            $triviaQuestion = TriviaQuestion::find( $request["question_id"]);
+    //            $points += $triviaQuestion->points;
+    //     }
+
+    //     return $points;
+
+    // }
 }

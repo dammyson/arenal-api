@@ -17,7 +17,6 @@ class BrandController extends BaseController
     public function index(Request $request)
     {
         try {
-            Gate::authorize('is-user');
             $data = (new IndexBrandService())->run();
 
         }  catch (\Exception $e){
@@ -32,7 +31,6 @@ class BrandController extends BaseController
     public function storeBrand(BrandStoreRequest $request)
     {
         try {
-            Gate::authorize('is-user');
             $data = (new StoreBrandService($request))->run();
 
         }  catch (\Exception $e){
@@ -40,6 +38,8 @@ class BrandController extends BaseController
         }        
         return $this->sendResponse($data, "Brand info retrieved succcessfully");
     }
+
+    
 
     public function updateBrand(BrandUpdateRequest $request, $id) {
           try {

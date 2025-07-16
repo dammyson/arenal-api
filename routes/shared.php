@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GameController;
+use App\Http\Controllers\BrandController;
+use App\Http\Controllers\PrizeController;
 use App\Http\Controllers\TriviaController;
 use App\Http\Controllers\CampaignController;
 use App\Http\Controllers\ImageUploadController;
@@ -10,14 +12,19 @@ use App\Http\Controllers\SpinTheWheelController;
 use App\Http\Controllers\TriviaQuestionController;
 use App\Http\Controllers\CampaignGamePlayController;
 use App\Http\Controllers\CampaignGameRuleController;
+use App\Http\Controllers\SpinTheWheelComponentController;
 use App\Http\Controllers\CampaignGamePlayLeaderboardController;
 use App\Http\Controllers\OverallCampaignGamePlayLeaderboardController;
 
 Route::get('/',  [TriviaController::class, 'index'])->name('index');
+Route::get('/brands',  [BrandController::class, 'index'])->name('index');
+Route::get('brand-prizes/{brand}', [PrizeController::class, 'getBrandPrizes']);
+
 Route::post('/upload-image',  [ImageUploadController::class, 'uploadImage'])->name('upload.image');
 Route::get('user-spin-the-wheel', [SpinTheWheelController::class, 'userIndex'])->name('user.index');
 Route::get('spin-the-wheel', [SpinTheWheelController::class, 'index'])->name('index');
 Route::get('spin-the-wheel/{id}', [SpinTheWheelController::class, 'show'])->name('index');
+Route::get('show-user-form', [SpinTheWheelComponentController::class, 'showUserForm'])->name('create.sector.segment');
 
 Route::get('game', [GameController::class, 'index']);
 Route::get('game/{game_id}/show-game', [GameController::class, 'showGame']);
@@ -37,6 +44,7 @@ Route::put('campaign/{campaign_id}/games/{game_id}/game-plays', [CampaignGamePla
 Route::delete('campaign/{campaign_id}/games/{game_id}/game-plays', [CampaignGamePlayController::class, 'destroy']); // not seen in UI
 
 Route::get('campaign/{campaign_id}/games/{game_id}/campaign-game-leaderboard/daily', [CampaignGamePlayLeaderboardController::class, 'gameLeaderboardDaily']);
+Route::post('brand-leaderboard', [CampaignGamePlayLeaderboardController::class, 'brandLeaderboard']);
 Route::get('campaign/{campaign_id}/games/{game_id}/campaign-game-leaderboard/weekly', [CampaignGamePlayLeaderboardController::class, 'gameLeaderboardWeekly']);
 Route::get('campaign/{campaign_id}/games/{game_id}/campaign-game-leaderboard/monthly', [CampaignGamePlayLeaderboardController::class, 'gameLeaderboardMonthly']);
 Route::get('campaign/{campaign_id}/games/{game_id}/campaign-game-leaderboard/alltime', [CampaignGamePlayLeaderboardController::class, 'gameLeaderboardAllTime']);
@@ -49,3 +57,4 @@ Route::get('general/overall-leaderboard/alltime', [OverallCampaignGamePlayLeader
 // Route::get('rules', [CampaignGameRuleController::class, 'index']);
 
 Route::get('trivia/questions', [TriviaQuestionController::class, 'index']);
+Route::post('trivia/{trivia}', [TriviaQuestionController::class, 'processAnswers']);

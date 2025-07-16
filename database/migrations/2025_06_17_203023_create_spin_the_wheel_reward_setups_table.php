@@ -11,11 +11,6 @@ return new class extends Migration
      */
     public function up(): void
     {
-        //     
-//     
-//     
-//     
-//     
         Schema::create('spin_the_wheel_reward_setups', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->uuid('spin_the_wheel_id');
