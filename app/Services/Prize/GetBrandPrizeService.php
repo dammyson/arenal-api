@@ -11,7 +11,6 @@ class GetBrandPrizeService implements BaseServiceInterface{
     public function __construct( $brandId)
     {
         $this->brandId = $brandId;
-        
     }
 
     public function run() {
