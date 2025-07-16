@@ -4,7 +4,7 @@ namespace App\Http\Requests\User;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class BrandStoreRequest extends FormRequest
+class PrizeStoreRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,14 +23,12 @@ class BrandStoreRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string'],
-            'description' => ['sometimes', 'string'],
-            'image_url' => ['nullable', 'string'],
-            'industry_code' => ['nullable', 'string'],
-            'sub_industry_code' => ['nullable', 'string'],
-            'slug' => ['nullable', 'string'],
-            'client_id' => ['required', 'uuid', 'exists:Clients,id'],
-            "brand_details" => "sometimes|array",
-            "brand_details.*.detail_detail" => "sometimes|string"
+            'game_id' => ['sometimes', 'string'],
+            'brand_id' => ['required', 'string'],
+            'campaign_id' => ['required', 'string'],
+            'description' => ['required', 'string'],
+            'image_url' => ["required|string"]
+           
         ];
     }
 }

@@ -20,4 +20,8 @@ class Brand extends Model
         'client_id',
         'description'
     ];
+
+    public function details() {
+        return $this->hasMany(BrandDetail::class);
+    }
 }

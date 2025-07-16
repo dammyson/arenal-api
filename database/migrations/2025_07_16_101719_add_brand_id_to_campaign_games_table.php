@@ -11,9 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('trivia', function (Blueprint $table) {
-            $table->integer('time_limit')->nullable();
-            $table->integer('entry_fee')->nullable();
+        Schema::table('campaign_game_plays', function (Blueprint $table) {            
+            $table->uuid('brand_id')->nullable();
         });
     }
 
@@ -22,9 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('trivia', function (Blueprint $table) {
-            $table->dropColumn('time_limit');
-            $table->dropColumn('entry_fee');
+        Schema::table('campaign_game_plays', function (Blueprint $table) {
+            $table->dropColumn('brand_id');
         });
     }
 };
