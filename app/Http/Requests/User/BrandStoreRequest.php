@@ -23,11 +23,14 @@ class BrandStoreRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string'],
+            'description' => ['sometimes', 'string'],
             'image_url' => ['nullable', 'string'],
             'industry_code' => ['nullable', 'string'],
             'sub_industry_code' => ['nullable', 'string'],
             'slug' => ['nullable', 'string'],
             'client_id' => ['required', 'uuid', 'exists:Clients,id'],
+            "brand_details" => "sometimes|array",
+            "brand_details.*.detail_detail" => "sometimes|string"
         ];
     }
 }
