@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
-use App\Models\Brand;
 use Illuminate\Http\Request;
 use App\Models\CampaignGamePlay;
 use Illuminate\Support\Facades\DB;
@@ -35,37 +34,6 @@ class CampaignGamePlayLeaderboardController extends Controller
         return response()->json($leaderboard);
     }
 
-    public function brandLeaderboard(Request $request)
-    {
-        try {
-
-           $leaderboardType =  $request->query('type');
-
-           if ($leaderboardType == "brand") {
-                $leaderboard = CampaignGamePlay::select('audience_id', DB::raw('SUM(score) as total_score'))
-                   ->where('brand_id', $request->brand_id);
-                  
-           } else if (($leaderboardType == "campaign")) {
-                $leaderboard = CampaignGamePlay::select('audience_id', DB::raw('SUM(score) as total_score'))
-                   ->where('campaign_id', $request->campaign_id);
-           }
-
-
-           $leaderboard = $leaderboard->whereDate('created_at', Carbon::now()->toDateString())
-                ->groupBy('audience_id')
-                ->orderBy('total_score', 'desc')
-                ->with('audience') // Assuming you have a relationship with the Audience model
-                ->get();
-
-        }   catch (\Throwable $th) {
-            return response()->json([
-                'error' => true,
-                'message' => $th->getMessage()
-            ], 500);
-        }
-
-        return response()->json($leaderboard);
-    }
     public function gameLeaderboardDaily($campaignId, $gameId)
     {
         try {

@@ -9,16 +9,7 @@ class Trivia extends Model
 {
     use HasUuids;
     //
-
-     
-    protected $fillable = [
-        "name", 
-        "game_id", 
-        "image_url", 
-        "user_id", 
-        "entry_fee",
-        "time_limit"
-    ];
+    protected $fillable = ["name", "game_id", "image_url", "user_id"];
 
     public function questions() {
         return $this->hasMany(TriviaQuestion::class);

@@ -11,6 +11,6 @@ class IndexBrandService implements BaseServiceInterface{
     }
 
     public function run() {
-        return  Brand::with('details')->get();
+        return  Brand::all();
     }
 }
