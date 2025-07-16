@@ -41,7 +41,6 @@ class CampaignGameController extends BaseController
 
     public function showCampaignGame($campaign_id, $game_id) {
         try {
-            
             $data = (new ShowCampaignGame($campaign_id, $game_id))->run();
 
         }   catch (\Exception $e){

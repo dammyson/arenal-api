@@ -10,7 +10,7 @@ class CampaignGamePlay extends Model
 {
     use HasFactory, HasUuids;
 
-    protected $fillable = ['campaign_id', 'game_id', 'audience_id', 'played_at', 'score', 'brand_id'];
+    protected $fillable = ['campaign_id', 'game_id', 'audience_id', 'played_at', 'score'];
 
     public function game()
     {
