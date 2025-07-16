@@ -30,7 +30,7 @@ class BrandStoreRequest extends FormRequest
             'slug' => ['nullable', 'string'],
             'client_id' => ['required', 'uuid', 'exists:Clients,id'],
             "brand_details" => "sometimes|array",
-            "brand_details.*.detail_detail" => "sometimes|string"
+            "brand_details.*.brand_detail" => "sometimes|string"
         ];
     }
 }
