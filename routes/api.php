@@ -24,6 +24,7 @@ use App\Http\Controllers\SearchTransactionController;
 use App\Http\Controllers\SpinTheWheelSectorController;
 use App\Http\Controllers\TransactionHistoryController;
 use App\Http\Controllers\OverallCampaignGamePlayLeaderboardController;
+use App\Http\Controllers\PrizeController;
 use App\Http\Controllers\SpinTheWheelComponentController;
 
 Route::post('users/auth/register', [UserRegisterController::class, 'userRegister']);
@@ -53,10 +54,10 @@ Route::group(["middleware" => ["auth:api"]], function () {
         Route::post('clients', [ClientController::class, 'storeClient']);
         Route::put('clients/{client}', [ClientController::class, 'updateClient']);
         Route::delete('clients/{client}', [ClientController::class, 'deleteClient']);
-        Route::get('brands', [BrandController::class, 'index']);
         Route::post('brands', [BrandController::class, 'storeBrand']);
         Route::put('brands/{brand}', [BrandController::class, 'updateBrand']);
         Route::delete('brands/{brand}', [BrandController::class, 'deleteBrand']);
+        Route::post('prize', [PrizeController::class, 'storePrize']);
 
         
         Route::post('campaign', [CampaignController::class, 'storeCampaign']);   

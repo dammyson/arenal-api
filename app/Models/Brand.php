@@ -17,6 +17,11 @@ class Brand extends Model
         'sub_industry_code', 
         'slug',
         'created_by',
-        'client_id'
+        'client_id',
+        'description'
     ];
+
+    public function details() {
+        return $this->hasMany(BrandDetail::class);
+    }
 }
