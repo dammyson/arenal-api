@@ -59,4 +59,5 @@ Route::get('general/overall-leaderboard/alltime', [OverallCampaignGamePlayLeader
 // Route::get('rules', [CampaignGameRuleController::class, 'index']);
 
 Route::get('trivia/questions', [TriviaQuestionController::class, 'index']);
+Route::get('trivia/{trivia}/questions', [TriviaQuestionController::class, 'show']);
 Route::post('trivia/{trivia}', [TriviaQuestionController::class, 'processAnswers']);
