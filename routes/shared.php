@@ -5,6 +5,7 @@ use App\Http\Controllers\GameController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\PrizeController;
 use App\Http\Controllers\TriviaController;
+use App\Http\Controllers\WalletController;
 use App\Http\Controllers\CampaignController;
 use App\Http\Controllers\ImageUploadController;
 use App\Http\Controllers\CampaignGameController;
@@ -17,6 +18,7 @@ use App\Http\Controllers\CampaignGamePlayLeaderboardController;
 use App\Http\Controllers\OverallCampaignGamePlayLeaderboardController;
 
 Route::get('/',  [TriviaController::class, 'index'])->name('index');
+Route::post('wallet/deduct-fee', [WalletController::class, 'deductFee']);
 Route::get('/brands',  [BrandController::class, 'index'])->name('index');
 Route::get('brand-prizes/{brand}', [PrizeController::class, 'getBrandPrizes']);
 
@@ -57,4 +59,5 @@ Route::get('general/overall-leaderboard/alltime', [OverallCampaignGamePlayLeader
 // Route::get('rules', [CampaignGameRuleController::class, 'index']);
 
 Route::get('trivia/questions', [TriviaQuestionController::class, 'index']);
+Route::get('trivia/{trivia}/questions', [TriviaQuestionController::class, 'show']);
 Route::post('trivia/{trivia}', [TriviaQuestionController::class, 'processAnswers']);

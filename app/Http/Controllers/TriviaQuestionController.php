@@ -11,11 +11,12 @@ use App\Models\TriviaQuestionChoice;
 use Illuminate\Support\Facades\Auth;
 use App\Services\Trivia\CreateService;
 use App\Services\Trivia\IndexTrivaService;
+use App\Services\Trivia\ShowTriviaService;
 use App\Http\Requests\Trivia\StoreTriviaAnswers;
 use App\Http\Requests\Trivia\StoreTriviaRequest;
+use App\Services\Trivia\StoreTriviaAnswerService;
 use App\Http\Requests\Trivia\StoreTriviaAnswerRequest;
 use App\Http\Requests\TriviaQuestion\StoreTriviaQuestionsRequest;
-use App\Services\Trivia\StoreTriviaAnswerService;
 
 class TriviaQuestionController extends BaseController
 {
@@ -52,6 +53,16 @@ class TriviaQuestionController extends BaseController
     public function index(){
         try {
             return (new IndexTrivaService())->run();
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'An error occurred while processing your request.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+    public function show(Trivia $trivia){
+        try {
+            return (new ShowTriviaService($trivia->id))->run();
         } catch (\Throwable $e) {
             return response()->json([
                 'message' => 'An error occurred while processing your request.',

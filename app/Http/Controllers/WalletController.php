@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use App\Models\Wallet;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Wallet\FundWalletRequest;
 
@@ -42,6 +43,7 @@ class WalletController extends Controller
 
         try {
             $user = $request->user();
+            // dd($user);
             $wallet = $user->wallet;
     
             if (!$wallet) {
@@ -63,6 +65,53 @@ class WalletController extends Controller
             return response()->json([ 
                 "error" => true,
                 "message" => "unable to fund wallet",
+                "actual_message" => $th->getMessage()
+            ], 500);
+        
+        }
+    }
+
+    public function deductFee(Request $request) {
+        
+        
+        try {
+            $user = $request->user();
+            $gameFee = $request->input('game_fee');
+            $wallet = $user->wallet;
+    
+            if (!$wallet) {
+                // Optionally handle case where wallet doesn't exist
+                return response()->json(['message' => 'Wallet not found.'], 404);
+            }
+            $walletBalance = (int) $wallet->balance;
+            $gameFee = (int) $gameFee;
+            // dd($walletBalance, $gameFee);
+
+            if ($walletBalance < $gameFee) {
+                return  response()->json(['message' => 'insufficient funds'], 422);
+            }
+
+            DB::beginTransaction();
+                $wallet->balance -= (int) $gameFee;
+                $wallet->save();
+    
+            DB::commit();
+
+            return response()->json([
+                'message' => 'successfull',
+                'game_fee' => $gameFee,
+                'user_balance' => $wallet->balance
+            ]);
+            
+            // $wallet = Wallet::find($wallet_id);
+            // $wallet->balance += (int) $request['amount'];
+            // $wallet->save();
+
+        }  catch (\Throwable $th) {
+            report($th);
+            return response()->json([ 
+                "error" => true,
+                "message" => "unable to deduct funds from wallet",
                 "actual_message" => $th->getMessage()
             ], 500);
         
