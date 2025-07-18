@@ -120,7 +120,6 @@ Route::middleware('auth:audience')->group(function () {
 
         Route::get('wallet/fund-wallet', [WalletController::class, 'showAccountNumber']);
         Route::post('wallet/fund-wallet', [WalletController::class, 'fundWallet']);
-        Route::post('wallet/deduct-fee', [WalletController::class, 'deductFee']);
         Route::post('wallet/transfer-funds', [WalletController::class, 'transferFund']);
         Route::post('wallet/create', [WalletController::class, 'createWallet']);
         Route::get('wallet/{wallet_id}/wallet-balance', [WalletController::class, 'getWalletBalance']);
