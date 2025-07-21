@@ -2,7 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GameController;
+use App\Http\Controllers\LiveController;
 use App\Http\Controllers\BrandController;
+use App\Http\Controllers\PrizeController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\LogoutController;
 use App\Http\Controllers\TriviaController;
@@ -23,9 +25,8 @@ use App\Http\Controllers\CampaignGameRuleController;
 use App\Http\Controllers\SearchTransactionController;
 use App\Http\Controllers\SpinTheWheelSectorController;
 use App\Http\Controllers\TransactionHistoryController;
-use App\Http\Controllers\OverallCampaignGamePlayLeaderboardController;
-use App\Http\Controllers\PrizeController;
 use App\Http\Controllers\SpinTheWheelComponentController;
+use App\Http\Controllers\OverallCampaignGamePlayLeaderboardController;
 
 Route::post('users/auth/register', [UserRegisterController::class, 'userRegister']);
 Route::post('users/auth/login', [UserRegisterController::class, 'login']);
@@ -57,6 +58,7 @@ Route::group(["middleware" => ["auth:api"]], function () {
         Route::post('brands', [BrandController::class, 'storeBrand']);
         Route::put('brands/{brand}', [BrandController::class, 'updateBrand']);
         Route::delete('brands/{brand}', [BrandController::class, 'deleteBrand']);
+        Route::post('live', [LiveController::class, 'storeBrandLive']);
         Route::post('prize', [PrizeController::class, 'storePrize']);
 
         
