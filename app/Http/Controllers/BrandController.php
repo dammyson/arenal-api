@@ -11,6 +11,7 @@ use App\Services\Brand\DeleteBrandService;
 use App\Services\Brand\UpdateBrandService;
 use App\Http\Requests\User\BrandStoreRequest;
 use App\Http\Requests\User\BrandUpdateRequest;
+use App\Services\Point\GetAudienceBrandPointService;
 
 class BrandController extends BaseController
 {
@@ -52,8 +53,23 @@ class BrandController extends BaseController
         return $this->sendResponse($data, "Brand updated succcessfully");
     }
 
-     public function deleteBrand(Request $request, $id) {
-          try {
+     public function getPoints(Request $request, Brand $brand) {
+        try {
+
+            $brandLive = (new GetAudienceBrandPointService($request, $brand->id))->run();
+    
+            return $this->sendResponse($brandLive, "live joined", 201);
+        
+        } catch (\Exception $e){
+
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }   
+
+
+    }
+
+    public function deleteBrand(Request $request, $id) {
+        try {
             Gate::authorize('is-user');
             $data = (new DeleteBrandService($request, $id))->run();
 

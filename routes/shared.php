@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GameController;
+use App\Http\Controllers\LiveController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\PrizeController;
 use App\Http\Controllers\TriviaController;
@@ -20,6 +21,9 @@ use App\Http\Controllers\OverallCampaignGamePlayLeaderboardController;
 Route::get('/',  [TriviaController::class, 'index'])->name('index');
 Route::post('wallet/deduct-fee', [WalletController::class, 'deductFee']);
 Route::get('/brands',  [BrandController::class, 'index'])->name('index');
+Route::get('brand/{brand}/live', [LiveController::class, 'viewBrandLive']);
+Route::post('join-live', [LiveController::class, 'joinLive']);
+Route::get('brand/{brand}/get-points', [BrandController::class, 'getPoints']);
 Route::get('brand-prizes/{brand}', [PrizeController::class, 'getBrandPrizes']);
 
 Route::post('/upload-image',  [ImageUploadController::class, 'uploadImage'])->name('upload.image');
