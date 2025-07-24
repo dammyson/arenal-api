@@ -17,14 +17,22 @@ use App\Http\Controllers\CampaignGameRuleController;
 use App\Http\Controllers\SpinTheWheelComponentController;
 use App\Http\Controllers\CampaignGamePlayLeaderboardController;
 use App\Http\Controllers\OverallCampaignGamePlayLeaderboardController;
+use App\Models\Audience;
 
 Route::get('/',  [TriviaController::class, 'index'])->name('index');
 Route::post('wallet/deduct-fee', [WalletController::class, 'deductFee']);
 Route::get('/brands',  [BrandController::class, 'index'])->name('index');
 Route::get('brand/{brand}/live', [LiveController::class, 'viewBrandLive']);
 Route::post('join-live', [LiveController::class, 'joinLive']);
+
 Route::get('brand/{brand}/get-points', [BrandController::class, 'getPoints']);
+Route::get('brand/{brand}/user-prizes', [PrizeController::class, 'audienceBrandPrize']);
 Route::get('brand-prizes/{brand}', [PrizeController::class, 'getBrandPrizes']);
+Route::get('brand-badges/{brand}', [PrizeController::class, 'getBrandBadges']);
+Route::get('brand-badges/{brand}/user-badges', [PrizeController::class, 'getBrandAudienceBadges']);
+Route::get('wallet/wallet-balance', [WalletController::class, 'getWalletBalance']);
+Route::get('brand/{brand}/point-balance', [PrizeController::class, 'getAudiencePointBalance']);
+
 
 Route::post('/upload-image',  [ImageUploadController::class, 'uploadImage'])->name('upload.image');
 Route::get('user-spin-the-wheel', [SpinTheWheelController::class, 'userIndex'])->name('user.index');
@@ -64,4 +72,4 @@ Route::get('general/overall-leaderboard/alltime', [OverallCampaignGamePlayLeader
 
 Route::get('trivia/questions', [TriviaQuestionController::class, 'index']);
 Route::get('trivia/{trivia}/questions', [TriviaQuestionController::class, 'show']);
-Route::post('trivia/{trivia}', [TriviaQuestionController::class, 'processAnswers']);
+Route::post('trivia/{trivia}/prize/{prize}', [TriviaQuestionController::class, 'processAnswers']);

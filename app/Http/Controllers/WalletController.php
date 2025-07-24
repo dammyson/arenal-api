@@ -120,10 +120,11 @@ class WalletController extends Controller
 
    
 
-    public function getWalletBalance(Request $request, $wallet_id)
+    public function getWalletBalance(Request $request)
     {
         try {
-            $wallet = Wallet::find($wallet_id);
+            $audienceId = $request->user()->id;
+            $wallet = Wallet::where('audience_id', $audienceId)->first();
             $walletBalance = $wallet->balance;
 
             

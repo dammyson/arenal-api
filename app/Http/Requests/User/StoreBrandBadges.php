@@ -4,8 +4,8 @@ namespace App\Http\Requests\User;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class PrizeStoreRequest extends FormRequest
-{  
+class StoreBrandBadges extends FormRequest
+{
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -22,14 +22,12 @@ class PrizeStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string'],
-            'game_id' => ['sometimes', 'string'],
-            'brand_id' => ['required', 'string'],
-            'campaign_id' => ['required', 'string'],
-            'description' => ['required', 'string'],
-            'image_url' => ["required|string"],
-            'points' => ['required', 'numeric']
-           
+            "badges" => "required|array",
+            "badges.*.name" => "required|string",
+            "badges.*.brand_id" => "required|exists:brands,id",
+            "badges.*.image_url" => "required|string",
+            "badges.*.points" => "required|integer"
+
         ];
     }
 }

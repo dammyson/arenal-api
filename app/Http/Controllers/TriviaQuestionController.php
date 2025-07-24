@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Prize;
 use App\Models\Trivia;
 use App\Models\Campaign;
 use App\Models\TriviaQuestion;
@@ -71,9 +72,9 @@ class TriviaQuestionController extends BaseController
         }
     }
 
-    public function processAnswers(Trivia $trivia, StoreTriviaAnswerRequest $request) {
+    public function processAnswers(Trivia $trivia, Prize $prize, StoreTriviaAnswerRequest $request) {
         try {
-            $data = (new StoreTriviaAnswerService($request, $request->validated()["questions"], $trivia->game_id))->run();
+            $data = (new StoreTriviaAnswerService($request, $request->validated()["questions"], $trivia->game_id, $prize->id))->run();
         
             return $this->sendResponse($data, "answer returned successfully");
         } catch (\Throwable $e) {

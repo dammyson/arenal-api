@@ -9,18 +9,22 @@ use Illuminate\Support\Facades\DB;
 use App\Models\TriviaQuestionChoice;
 use App\Services\BaseServiceInterface;
 use App\Http\Requests\Trivia\StoreTriviaAnswerRequest;
+use App\Models\BrandAudienceReward;
+use App\Models\Prize;
 
 class StoreTriviaAnswerService implements BaseServiceInterface
 {
     protected $request;
     protected $questions;
     protected $gameId;
+    protected $prizeId;
 
-    public function __construct(StoreTriviaAnswerRequest $request, $questions, $gameId)
+    public function __construct(StoreTriviaAnswerRequest $request, $questions, $gameId, $prizeId)
     {
         $this->request = $request;
         $this->questions = $questions;
         $this->gameId = $gameId;
+        $this->prizeId = $prizeId;
     }
 
     public function run()
@@ -75,6 +79,17 @@ class StoreTriviaAnswerService implements BaseServiceInterface
 
         // Commit the transaction after updates
         DB::commit();
+        
+        $prize = Prize::where('id', $this->prizeId)->first();
+
+        if ($points >= $prize->points) {
+            $brandAudienceReward = BrandAudienceReward::create([
+                'brand_id' => $brandId,
+                'audience_id' => $this->request->user()->id,
+                'prize_id' => $this->prizeId,
+                'is_redeemed' => false
+            ]);
+        }       
 
         return ["points" => $points, "leaderboard" => $campaignGamePlay ];
     }

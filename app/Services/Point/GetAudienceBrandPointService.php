@@ -25,8 +25,15 @@ class GetAudienceBrandPointService implements BaseServiceInterface{
             $brandPoint = BrandPoint::where("brand_id", $this->brandId)
                 ->where("audience_id", $user->id)->first();
 
+            if (!$brandPoint) {
+                return ["points" => 0];  
+            
+            } else{
                 
-            return ["points" => $brandPoint->points];
+                return ["points" => $brandPoint->points];
+
+            }
+                
        
         } catch(\Throwable $e) {
             
