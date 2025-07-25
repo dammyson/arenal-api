@@ -95,7 +95,7 @@ Route::group(["middleware" => ["auth:api"]], function () {
     });
 });
 
-// Audience routes
+// Audience routes 
 Route::middleware('auth:audience')->group(function () {
 
     Route::prefix('audiences/')->group(function () {

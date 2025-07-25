@@ -7,7 +7,8 @@ use Illuminate\Http\Request;
 use App\Services\BaseServiceInterface;
 use App\Http\Requests\Live\StoreJoinLiveRequest;
 
-class GetAudienceBrandPointService implements BaseServiceInterface{
+class GetAudienceBrandPointService implements BaseServiceInterface
+{
     protected $request;
     protected $brandId;
 
@@ -17,29 +18,19 @@ class GetAudienceBrandPointService implements BaseServiceInterface{
         $this->brandId = $brandId;
     }
 
-    public function run() {
+    public function run()
+    {
         try {
-            
+
             $user = $this->request->user();
-
-            $brandPoint = BrandPoint::where("brand_id", $this->brandId)
-                ->where("audience_id", $user->id)->first();
-
-            if (!$brandPoint) {
-                return ["points" => 0];  
-            
-            } else{
+            return ['points' => BrandPoint::where('brand_id', $this->brandId)
+                ->where('audience_id', $user->id)
+                ->first()
+                ?->points ?? 0];
                 
-                return ["points" => $brandPoint->points];
+        } catch (\Throwable $e) {
 
-            }
-                
-       
-        } catch(\Throwable $e) {
-            
             throw $e;
         }
-       
-
     }
 }
