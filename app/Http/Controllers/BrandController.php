@@ -9,8 +9,10 @@ use App\Services\Brand\IndexBrandService;
 use App\Services\Brand\StoreBrandService;
 use App\Services\Brand\DeleteBrandService;
 use App\Services\Brand\UpdateBrandService;
+use App\Http\Requests\User\StoreBrandBadges;
 use App\Http\Requests\User\BrandStoreRequest;
 use App\Http\Requests\User\BrandUpdateRequest;
+use App\Services\Brand\StoreBrandBadgesService;
 use App\Services\Point\GetAudienceBrandPointService;
 
 class BrandController extends BaseController
@@ -53,10 +55,42 @@ class BrandController extends BaseController
         return $this->sendResponse($data, "Brand updated succcessfully");
     }
 
-     public function getPoints(Request $request, Brand $brand) {
+    public function getPoints(Request $request, Brand $brand) {
         try {
 
             $brandLive = (new GetAudienceBrandPointService($request, $brand->id))->run();
+    
+            return $this->sendResponse($brandLive, "audience points", 201);
+        
+        } catch (\Exception $e){
+
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }   
+
+
+    }
+
+
+    public function userPrize(Request $request, Brand $brand) {
+        try {
+
+            $brandLive = (new GetAudienceBrandPointService($request, $brand->id))->run();
+    
+            return $this->sendResponse($brandLive, "live joined", 201);
+        
+        } catch (\Exception $e){
+
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }   
+
+
+    }
+
+    
+    public function storeBrandBadges(StoreBrandBadges $request) {
+        try {
+            
+            $brandLive = (new StoreBrandBadgesService($request))->run();
     
             return $this->sendResponse($brandLive, "live joined", 201);
         

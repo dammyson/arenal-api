@@ -10,7 +10,7 @@ class Badge extends Model
 {
     use HasFactory, HasUuids;
 
-    protected $fillable = [ "audience_id", "name", "image_url", "brand_id"];
+    protected $fillable = [ "user_id", "name", "image_url", "brand_id", "points"];
 
     public function brand() {
         return $this->belongsTo(Brand::class);

@@ -10,5 +10,5 @@ class Prize extends Model
 {
     use HasUuids, HasFactory;
 
-    protected $fillable = ["name", "description", "campaign_id", "game_id", "brand_id"];
+    protected $fillable = ["name", "description", "campaign_id", "game_id", "brand_id", "points"];
 }
