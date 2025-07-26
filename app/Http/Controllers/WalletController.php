@@ -126,7 +126,6 @@ class WalletController extends Controller
         try {
             $audienceId = $request->user()->id;
             $wallet = AudienceWallet::where('audience_id', $audienceId)->first();
-            $walletBalance = $wallet->balance;
 
             
         } catch (\Throwable $th) {
@@ -140,7 +139,7 @@ class WalletController extends Controller
         return response()->json([
             'error' => false,
             "message" => "wallet balance",
-            "walletBalance" => $walletBalance
+            "walletBalance" => $wallet
         ]);
         
     }
