@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Wallet\FundWalletRequest;
+use App\Models\AudienceWallet;
 
 class WalletController extends Controller
 {
@@ -124,7 +125,7 @@ class WalletController extends Controller
     {
         try {
             $audienceId = $request->user()->id;
-            $wallet = Wallet::where('audience_id', $audienceId)->first();
+            $wallet = AudienceWallet::where('audience_id', $audienceId)->first();
             $walletBalance = $wallet->balance;
 
             
