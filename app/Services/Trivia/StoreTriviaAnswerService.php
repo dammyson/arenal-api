@@ -2,15 +2,18 @@
 
 namespace App\Services\Trivia;
 
+use App\Models\Badge;
+use App\Models\Prize;
 use App\Models\Trivia;
+use App\Models\BrandPoint;
+use App\Models\AudienceBadge;
 use App\Models\TriviaQuestion;
 use App\Models\CampaignGamePlay;
 use Illuminate\Support\Facades\DB;
+use App\Models\BrandAudienceReward;
 use App\Models\TriviaQuestionChoice;
 use App\Services\BaseServiceInterface;
 use App\Http\Requests\Trivia\StoreTriviaAnswerRequest;
-use App\Models\BrandAudienceReward;
-use App\Models\Prize;
 
 class StoreTriviaAnswerService implements BaseServiceInterface
 {
@@ -89,9 +92,43 @@ class StoreTriviaAnswerService implements BaseServiceInterface
                 'prize_id' => $this->prizeId,
                 'is_redeemed' => false
             ]);
-        }       
+        } 
+        
+        $audienceBrandPoint = BrandPoint::where('brand_id', $brandId)        
+            ->where("audience_id", $audience->id)
+            ->first();
 
-        return ["points" => $points, "leaderboard" => $campaignGamePlay ];
+        if ($audienceBrandPoint) {
+            $audienceBrandPoint->points += $points;
+            $audienceBrandPoint->save();
+       
+        } else {
+            $audienceBrandPoint = BrandPoint::create([
+                'brand_id' => $brandId,
+                'audience_id' => $audience->id,
+                'points' => $points
+            ]);
+        }
+
+        $brandBadges = Badge::where('brand_id', $brandId)->get();
+        // dd($brandBadges);
+        $audienceBadgesList = [];
+
+        foreach ($brandBadges as $brandBadge) {
+            // dump($audienceBrandPoint->points, $brandBadge->points);
+            if ($audienceBrandPoint->points >= $brandBadge->points) {
+                AudienceBadge::firstOrCreate([
+                    "audience_id" => $audience->id,
+                    "brand_id" => $brandId,
+                    "badge_id" => $brandBadge->id
+                ]);
+                $audienceBadgesList[] = $brandBadge;
+
+            }
+        }
+            
+        return ["points" => $points, "audience_badges_list" => $audienceBadgesList, "leaderboard" => $campaignGamePlay ];
     }
+
     
 }

@@ -12,6 +12,6 @@ class AudienceBadge extends Model
     protected $fillable = [
         'audience_id',
         'brand_id',
-        'brand_id'
+        'badge_id'
     ];
 }
