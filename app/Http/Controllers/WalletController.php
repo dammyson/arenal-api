@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use App\Models\Wallet;
 use App\Models\Transaction;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\AudienceWallet;
 use Illuminate\Support\Facades\DB;
@@ -247,6 +248,10 @@ class WalletController extends BaseController
         return $response->json();
     }
 
+    public function generateRandomRef() {
+        return Str::random(16);
+    }
+
     public function seerbit(Request $request) {
         try {
            
@@ -271,7 +276,7 @@ class WalletController extends BaseController
                     "email" => $user->email ?? "test@gmail.com",
                     "currency" => $currency, //"NGN"
                     "country" => $country, //"NG"
-                    "paymentReference" => "dsfafdafkasdjfssdddsddffsadfafjskasjfererer",
+                    "paymentReference" => $this->generateRandomRef(),
                     "callbackUrl" => "http://checkout-seerbit.surge.sh",
                     "redirectUrl" => "http://checkout-seerbit.surge.sh",
                     "paymentType" => "TRANSFER"
@@ -291,6 +296,11 @@ class WalletController extends BaseController
 
             $user = $request->user();
 
+            $wallet = $user->wallet;
+    
+            if (!$wallet) {
+                return response()->json(['message' => 'Wallet not found.'], 404);
+            }
 
             $seerBitBearerKey = "bzSlv4IUp3GNQkNT0qqWh+ulbYbuTT/5JtDZHUAg+hxSVPUWuZLEbg/G29GOTlL/EAma3YCrDJfYhM+HFjy68GhRmDFDbab98Mzd55Pz4DW84em1uccL50F2fGm73l8m";
 
@@ -301,7 +311,7 @@ class WalletController extends BaseController
                     'Content-Type' => 'application/json'
                 ])
                 
-                ->get("{$seerBitVerifyUrl}{$tranxReference}");
+            ->get("{$seerBitVerifyUrl}{$tranxReference}");
 
                 //             {
                 // "success": true,
@@ -359,16 +369,26 @@ class WalletController extends BaseController
                         return $this->sendError("account not funded ", ['error' => "account does not match the user"], 500);
 
                     }
-                    return $data;
-            }
 
-            
+                    $amount = $paymentInfo["amount"];
+                    $amount = round($amount, 2);
+                    // dd($amount);
 
-            return $this->sendResponse( "account created successfully", 201);
-            
-        } catch (\Exception $e){
+                    $wallet->balance += $amount;
+                    $wallet->save();
+
+                    return $this->sendResponse($wallet, "user wallet funded successfully");
+                }
+                return $this->sendError("something went wrong");
+            } catch (\Exception $e){
 
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
-        }   
+        }  
+
+            
+
+
+            
+        
     }
 }
