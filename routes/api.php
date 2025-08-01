@@ -123,6 +123,12 @@ Route::middleware('auth:audience')->group(function () {
 
         Route::get('wallet/fund-wallet', [WalletController::class, 'showAccountNumber']);
         Route::post('wallet/fund-wallet', [WalletController::class, 'fundWallet']);
+        Route::post('wallet/fund-wallet/transfer-funding', [WalletController::class, 'seerbit']);
+        Route::get('wallet/fund-wallet/card-funding/{ref}', [WalletController::class, 'cardPayment']);
+        Route::get('/seerbit/get-seerbit-token', [WalletController::class, 'getSeerBitToken']);
+        Route::get('wallet/seerbit/verify/{ref_id}', [WalletController::class, 'verifyTransfer']);
+
+
         Route::post('wallet/transfer-funds', [WalletController::class, 'transferFund']);
         Route::post('wallet/create', [WalletController::class, 'createWallet']);
         Route::get('wallet/{wallet_id}/wallet-balance', [WalletController::class, 'getWalletBalance']);
