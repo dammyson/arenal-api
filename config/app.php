@@ -123,4 +123,21 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+
+    'google' => [
+        'client_id' => env('GOOGLE_CLIENT_ID'),        // Your Google Client ID
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'), // Your Google Client Secret
+        'redirect' => env('GOOGLE_REDIRECT_URL'),      // Your Google Redirect URL
+    ],
+
+    'paystack' => [
+        'verify_url' => env('PAYSTACK_VERIFY_URL'),
+        'bearer_token' => env('PAYSTACK_BEARER_TOKEN'),
+    ],
+
+    'flutterwave' => [
+        'verify_url' => env('FLUTTERWAVE_VERIFY_URL'),
+        'bearer_token' => env('FLUTTERWAVE_BEARER_TOKEN'),
+    ],
+
 ];

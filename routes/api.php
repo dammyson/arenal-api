@@ -60,6 +60,8 @@ Route::group(["middleware" => ["auth:api"]], function () {
         Route::delete('brands/{brand}', [BrandController::class, 'deleteBrand']);
         Route::post('live', [LiveController::class, 'storeBrandLive']);
         Route::post('prize', [PrizeController::class, 'storePrize']);
+        Route::get('brand-audience/{reward}/delivery', [PrizeController::class, 'getAudienceBrandPrizeDelivery']);
+        Route::post('brand-audience/{audiencePrizeDelivery}/delivery-update', [PrizeController::class, 'updateAudienceBrandPrizeDelivery']);
         Route::post('badges', [BrandController::class, 'storeBrandBadges']);
 
         
@@ -110,6 +112,8 @@ Route::middleware('auth:audience')->group(function () {
 
         Route::post('play-game', [CampaignController::class, 'goToCampaignGame'])->name('play.game');
 
+    
+
         Route::post('gameboard/search-game', [SearchGameController::class, 'searchGame']);
         Route::post('gameboard/category', [FilterGameController::class, 'filter']);
         Route::get('gameboard', [CampaignGameController::class, 'indexCampaignGame']);
@@ -123,6 +127,12 @@ Route::middleware('auth:audience')->group(function () {
 
         Route::get('wallet/fund-wallet', [WalletController::class, 'showAccountNumber']);
         Route::post('wallet/fund-wallet', [WalletController::class, 'fundWallet']);
+        Route::post('wallet/fund-wallet/transfer-funding', [WalletController::class, 'seerbit']);
+        Route::get('wallet/fund-wallet/card-funding/{ref}', [WalletController::class, 'cardPayment']);
+        Route::get('/seerbit/get-seerbit-token', [WalletController::class, 'getSeerBitToken']);
+        Route::get('wallet/seerbit/verify/{ref_id}', [WalletController::class, 'verifyTransfer']);
+
+
         Route::post('wallet/transfer-funds', [WalletController::class, 'transferFund']);
         Route::post('wallet/create', [WalletController::class, 'createWallet']);
         Route::get('wallet/{wallet_id}/wallet-balance', [WalletController::class, 'getWalletBalance']);

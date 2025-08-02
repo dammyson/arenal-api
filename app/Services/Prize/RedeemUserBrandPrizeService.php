@@ -2,24 +2,35 @@
 
 namespace App\Services\Prize;
 
+use App\Models\BrandAudienceReward;
 use App\Services\BaseServiceInterface;
 use App\Models\Prize;
 use Illuminate\Http\Request;
 
 class RedeemUserBrandPrizeService implements BaseServiceInterface{
-    protected $prize;
+    protected $brandAudienceReward;
+    protected $userId;
 
-    public function __construct(Prize $prize)
+    public function __construct($brandAudienceReward, $userId)
     {
-        $this->prize = $prize;
+        $this->brandAudienceReward = $brandAudienceReward;        
+        $this->userId = $userId;        
     }
 
     public function run() {
-        
-        $this->prize->is_redeemed = true;
-        $this->prize->save();
+        $audienceReward = BrandAudienceReward::where("id", $this->brandAudienceReward)
+            ->where("audience_id", $this->userId)
+            ->first();
 
-        return $this->prize;
+        if ($audienceReward) {
+            $audienceReward->is_redeemed = true;
+            $audienceReward->save();
+            return $audienceReward;
+
+        }
+
+
+        return "not found";
 
     }
 }
