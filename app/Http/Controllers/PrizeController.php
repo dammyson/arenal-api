@@ -61,12 +61,13 @@ class PrizeController extends BaseController
         return $this->sendResponse($data, "Brand info retrieved succcessfully");
     }
 
-    public function redeemUserPrize(Request $request, Prize $prize)
+    public function redeemUserPrize(Request $request, $brandAudienceReward)
     {
         try {
+            // "audience_id", "prize_id",
             // dd($brand);
             
-            $data = (new RedeemUserBrandPrizeService($prize))->run();
+            $data = (new RedeemUserBrandPrizeService($brandAudienceReward, $request->user()->id))->run();
 
         }  catch (\Exception $e){
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
