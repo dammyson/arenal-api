@@ -60,6 +60,8 @@ Route::group(["middleware" => ["auth:api"]], function () {
         Route::delete('brands/{brand}', [BrandController::class, 'deleteBrand']);
         Route::post('live', [LiveController::class, 'storeBrandLive']);
         Route::post('prize', [PrizeController::class, 'storePrize']);
+        Route::get('brand-audience/{reward}/delivery', [PrizeController::class, 'getAudienceBrandPrizeDelivery']);
+        Route::post('brand-audience/{audiencePrizeDelivery}/delivery-update', [PrizeController::class, 'updateAudienceBrandPrizeDelivery']);
         Route::post('badges', [BrandController::class, 'storeBrandBadges']);
 
         
@@ -109,6 +111,8 @@ Route::middleware('auth:audience')->group(function () {
         // Route::patch('gamez/{game_id}/favorite', [GameController::class, 'toogleFavorite']);
 
         Route::post('play-game', [CampaignController::class, 'goToCampaignGame'])->name('play.game');
+
+    
 
         Route::post('gameboard/search-game', [SearchGameController::class, 'searchGame']);
         Route::post('gameboard/category', [FilterGameController::class, 'filter']);

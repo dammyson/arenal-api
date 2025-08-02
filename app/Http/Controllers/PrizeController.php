@@ -6,11 +6,15 @@ use App\Models\Brand;
 use App\Models\Prize;
 use Illuminate\Http\Request;
 use App\Http\Controllers\BaseController;
+use App\Http\Requests\Prize\PrizeDeliveryRequest;
+use App\Http\Requests\Prize\UpdatePrizeDeliveryRequest;
 use App\Services\Brand\StoreBrandService;
 use App\Services\Prize\StorePrizeService;
 use App\Services\Prize\GetBrandPrizeService;
 use App\Http\Requests\User\BrandStoreRequest;
 use App\Http\Requests\User\PrizeStoreRequest;
+use App\Models\AudiencePrizeDelivery;
+use App\Models\BrandAudienceReward;
 use App\Services\Prize\GetBrandBadgesService;
 use App\Services\Prize\GetBrandPrizeUserService;
 use App\Services\Prize\RedeemUserBrandPrizeService;
@@ -110,5 +114,45 @@ class PrizeController extends BaseController
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
         }        
         return $this->sendResponse($data, "Brand info retrieved succcessfully");
+    }
+
+    public function audienceBrandPrizeDelivery(BrandAudienceReward $brandAudienceReward, PrizeDeliveryRequest $prizeDeliveryRequest) {
+        try {
+
+            // dd($brandAudienceReward->id);
+            $data = AudiencePrizeDelivery::create([
+                ...$prizeDeliveryRequest->validated(),
+                "brand_audience_reward_id" => $brandAudienceReward->id
+            ]);
+
+        }catch (\Exception $e){
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }        
+        return $this->sendResponse($data, "Brand info retrieved succcessfully");
+
+    }
+
+    
+    public function updateAudienceBrandPrizeDelivery(AudiencePrizeDelivery $audiencePrizeDelivery, UpdatePrizeDeliveryRequest $updatePrizeDeliveryRequest ) {
+        try {
+            $audiencePrizeDelivery->status = $updatePrizeDeliveryRequest["status"];
+            $audiencePrizeDelivery->save();
+
+        }catch (\Exception $e){
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }        
+        return $this->sendResponse($audiencePrizeDelivery, "Brand info retrieved succcessfully");
+
+    }
+    
+    public function getAudienceBrandPrizeDelivery(AudiencePrizeDelivery $audiencePrizeDelivery) {
+        try {
+        //    dd("i ran");
+            return $this->sendResponse($audiencePrizeDelivery, "Brand info retrieved succcessfully");
+
+        }catch (\Exception $e){
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }        
+
     }
 }
