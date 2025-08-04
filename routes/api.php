@@ -32,6 +32,7 @@ Route::post('users/auth/register', [UserRegisterController::class, 'userRegister
 Route::post('users/auth/login', [UserRegisterController::class, 'login']);
 Route::post('users/auth/verify-otp', [UserRegisterController::class, 'verifyOtp']);
 
+
 Route::post('audiences/auth/register', [AudienceRegisterController::class, 'registerAudience']);
 Route::post('audiences/check-audience', [AudienceRegisterController::class, 'checkAudience']);
 Route::post('audiences/auth/login', [AudienceRegisterController::class, 'login']);
