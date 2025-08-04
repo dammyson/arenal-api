@@ -11,6 +11,7 @@ class UpdatePrizeDeliveryRequest extends FormRequest
      */
     public function authorize(): bool
     {
+        
         return true;
     }
 
