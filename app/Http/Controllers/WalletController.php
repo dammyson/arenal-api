@@ -365,7 +365,7 @@ class WalletController extends BaseController
                     $data["customer_phone_number"] =  $responseData["data"]["customers"]["customerMobile"];
                     
 
-                    if ($data["customer_email"] == $user->email) {
+                    if ($data["customer_email"] != $user->email) {
                         return $this->sendError("account not funded ", ['error' => "account does not match the user"], 500);
 
                     }
