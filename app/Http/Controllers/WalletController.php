@@ -302,7 +302,7 @@ class WalletController extends BaseController
                 return response()->json(['message' => 'Wallet not found.'], 404);
             }
 
-            $seerBitBearerKey = "bzSlv4IUp3GNQkNT0qqWh+ulbYbuTT/5JtDZHUAg+hxSVPUWuZLEbg/G29GOTlL/EAma3YCrDJfYhM+HFjy68GhRmDFDbab98Mzd55Pz4DW84em1uccL50F2fGm73l8m";
+            $seerBitBearerKey = env("SEERBIT_BEARER_KEY");
 
             $seerBitVerifyUrl = env('SEER_BIT_VERIFY_URL');
 
