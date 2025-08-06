@@ -15,7 +15,9 @@ class GetBrandPrizeService implements BaseServiceInterface{
 
     public function run() {
 
-        $prize = Prize::where('brand_id', $this->brandId)->get();
+        $prize = Prize::where('brand_id', $this->brandId)
+            ->with('game:id,name')
+            ->get();
 
         return $prize;
 
