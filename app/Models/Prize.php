@@ -10,5 +10,9 @@ class Prize extends Model
 {
     use HasUuids, HasFactory;
 
-    protected $fillable = ["name", "description", "campaign_id", "game_id", "brand_id", "points"];
+    protected $fillable = ["name", "description", "campaign_id", "game_id", "brand_id", "points", "image_url"];
+
+    public function game() {
+        return $this->belongsTo(Game::class);
+    }
 }
