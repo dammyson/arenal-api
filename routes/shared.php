@@ -22,6 +22,7 @@ use App\Models\Audience;
 Route::get('/',  [TriviaController::class, 'index'])->name('index');
 Route::post('wallet/deduct-fee', [WalletController::class, 'deductFee']);
 Route::get('/brands',  [BrandController::class, 'index'])->name('index');
+Route::post('brand-leaderboard', [CampaignGamePlayLeaderboardController::class, 'brandLeaderboard']);
 Route::get('brand/{brand}/live', [LiveController::class, 'viewBrandLive']);
 Route::post('join-live', [LiveController::class, 'joinLive']);
 
@@ -61,7 +62,6 @@ Route::put('campaign/{campaign_id}/games/{game_id}/game-plays', [CampaignGamePla
 Route::delete('campaign/{campaign_id}/games/{game_id}/game-plays', [CampaignGamePlayController::class, 'destroy']); // not seen in UI
 
 Route::get('campaign/{campaign_id}/games/{game_id}/campaign-game-leaderboard/daily', [CampaignGamePlayLeaderboardController::class, 'gameLeaderboardDaily']);
-Route::post('brand-leaderboard', [CampaignGamePlayLeaderboardController::class, 'brandLeaderboard']);
 Route::get('campaign/{campaign_id}/games/{game_id}/campaign-game-leaderboard/weekly', [CampaignGamePlayLeaderboardController::class, 'gameLeaderboardWeekly']);
 Route::get('campaign/{campaign_id}/games/{game_id}/campaign-game-leaderboard/monthly', [CampaignGamePlayLeaderboardController::class, 'gameLeaderboardMonthly']);
 Route::get('campaign/{campaign_id}/games/{game_id}/campaign-game-leaderboard/alltime', [CampaignGamePlayLeaderboardController::class, 'gameLeaderboardAllTime']);
