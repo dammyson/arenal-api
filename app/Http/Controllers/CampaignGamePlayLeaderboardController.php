@@ -51,8 +51,8 @@ class CampaignGamePlayLeaderboardController extends Controller
            }
 
 
-           $leaderboard = $leaderboard->whereDate('created_at', Carbon::now()->toDateString())
-                ->groupBy('audience_id')
+        //    $leaderboard = $leaderboard->whereDate('created_at', Carbon::now()->toDateString())
+           $leaderboard = $leaderboard->groupBy('audience_id')
                 ->orderBy('total_score', 'desc')
                 ->with('audience') // Assuming you have a relationship with the Audience model
                 ->get();
