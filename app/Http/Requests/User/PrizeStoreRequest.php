@@ -27,7 +27,7 @@ class PrizeStoreRequest extends FormRequest
             'brand_id' => ['required', 'string'],
             'campaign_id' => ['required', 'string'],
             'description' => ['required', 'string'],
-            'image_url' => ["required|string"],
+            'image_url' => ["required", "string"],
             'points' => ['required', 'numeric']
            
         ];
