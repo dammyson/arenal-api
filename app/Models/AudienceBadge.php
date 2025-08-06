@@ -19,6 +19,10 @@ class AudienceBadge extends Model
         return $this->belongsTo(Audience::class);
     }
 
+    public function badge() {
+        return $this->belongsTo(Badge::class);
+    }
+
 
 
 

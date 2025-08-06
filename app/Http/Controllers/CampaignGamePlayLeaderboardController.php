@@ -54,7 +54,7 @@ class CampaignGamePlayLeaderboardController extends Controller
         //    $leaderboard = $leaderboard->whereDate('created_at', Carbon::now()->toDateString())
            $leaderboard = $leaderboard->groupBy('audience_id')
                 ->orderBy('total_score', 'desc')
-                ->with(['audience', 'audience.audienceBadges']) // Assuming you have a relationship with the Audience model
+                ->with(['audience', 'audience.audienceBadges.badge:id,name']) // Assuming you have a relationship with the Audience model
                 ->get();
 
         }   catch (\Throwable $th) {
