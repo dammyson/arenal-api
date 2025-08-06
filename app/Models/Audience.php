@@ -23,8 +23,8 @@ class Audience extends Authenticatable
       return $this->hasOne(AudienceWallet::class);
     }
 
-    public function badges() {
-        return $this->hasMany(Badge::class);
+    public function audienceBadges() {
+        return $this->hasMany(AudienceBadge::class);
     }
 
     public function liveTickets() {

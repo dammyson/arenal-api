@@ -14,4 +14,12 @@ class AudienceBadge extends Model
         'brand_id',
         'badge_id'
     ];
+
+    public function audience() {
+        return $this->belongsTo(Audience::class);
+    }
+
+
+
+
 }
