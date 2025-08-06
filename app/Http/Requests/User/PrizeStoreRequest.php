@@ -23,7 +23,7 @@ class PrizeStoreRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string'],
-            'game_id' => ['sometimes', 'uuid', 'exists:games,id'],
+            'game_id' => ['required', 'uuid', 'exists:games,id'],
             'brand_id' => ['required', 'uuid', 'exists:brands,id'],
             'campaign_id' => ['required', 'uuid', 'exists:campaigns,id'],
             'description' => ['required', 'string'],
