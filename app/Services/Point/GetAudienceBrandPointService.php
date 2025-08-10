@@ -2,9 +2,11 @@
 
 namespace App\Services\Point;
 
+use App\Models\Badge;
 use App\Models\BrandPoint;
 use Illuminate\Http\Request;
 use App\Models\AudienceBadge;
+use App\Models\AudienceWallet;
 use App\Models\CampaignGamePlay;
 use App\Services\BaseServiceInterface;
 use App\Http\Requests\Live\StoreJoinLiveRequest;
@@ -33,19 +35,34 @@ class GetAudienceBrandPointService implements BaseServiceInterface
             
             $audienceBadgeCount =  AudienceBadge::where('brand_id', $this->brandId)
                 ->where('audience_id', $user->id)
-                ->count();
+                ->count(); 
 
-                
-    
+            
+            // $audienceBadgeName = AudienceBadge::where('brand_id', $this->brandId)
+            //     ->where('audience_id', $user->id)->whereHas("badge", function($query) {
+            //         $query->orderBy("points", "desc")
+            //         ->first()->select("id", "name");
+            //     });
+
+            
+            $userBadge = Badge::where("points", "<=", $audiencePoints)->orderBy("points", "desc")->first();
+
+
             $rank = $this->getUserRank($user->id, $this->brandId);
             $leaderboardCount = CampaignGamePlay::where("brand_id", $this->brandId)->count();
             // $rank = $this->getUserRank($user->id, $this->brandId, $campaignId, $this->gameId);
 
+              
+            $walletBalance = AudienceWallet::where('audience_id', $user->id)->first()?->balance ?? 0;
+
+
             return [
+                "audience_badge_name" => $userBadge->name ?? "no badge yet",
                 'points' => $audiencePoints,
                 'badge_count' => $audienceBadgeCount,
                 "rank" => $rank,
-                "leaderboard_count" => $leaderboardCount
+                "leaderboard_count" => $leaderboardCount,
+                "wallet_balance" => $walletBalance
             ];
 
                 
