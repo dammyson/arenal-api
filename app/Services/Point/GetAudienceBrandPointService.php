@@ -47,8 +47,6 @@ class GetAudienceBrandPointService implements BaseServiceInterface
             
             $userBadge = Badge::where("points", "<=", $audiencePoints)->orderBy("points", "desc")->first();
 
-            $audienceBadgeName = $userBadge->name ?? "no badge yet";
-
 
             $rank = $this->getUserRank($user->id, $this->brandId);
             $leaderboardCount = CampaignGamePlay::where("brand_id", $this->brandId)->count();
