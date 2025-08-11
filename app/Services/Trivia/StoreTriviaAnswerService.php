@@ -21,13 +21,15 @@ class StoreTriviaAnswerService implements BaseServiceInterface
     protected $questions;
     protected $gameId;
     protected $prizeId;
+    protected $trivia;
 
-    public function __construct(StoreTriviaAnswerRequest $request, $questions, $gameId, $prizeId)
+    public function __construct(StoreTriviaAnswerRequest $request, $questions, $prizeId, Trivia $trivia)
     {
         $this->request = $request;
         $this->questions = $questions;
-        $this->gameId = $gameId;
+        $this->gameId = $trivia->game_id;
         $this->prizeId = $prizeId;
+        $this->trivia = $trivia;
     }
 
     public function run()
@@ -39,6 +41,10 @@ class StoreTriviaAnswerService implements BaseServiceInterface
 
         // dd($trivia->game_id);
         $points = 0;
+
+        $totalQuestionsCount = $this->trivia->questions()->count();
+
+        $correctAnswersCount = 0;
         foreach($this->questions as $question) {
             $triviaQuestionChoice = TriviaQuestionChoice::where("question_id", $question["question_id"])
                 ->where('id', $question["answer_id"])->first();
@@ -46,6 +52,7 @@ class StoreTriviaAnswerService implements BaseServiceInterface
             // dd($triviaQuestionChoice);
 
             if ($triviaQuestionChoice->is_correct_choice) {
+                $correctAnswersCount += 1;
                $triviaQuestion = TriviaQuestion::find( $question["question_id"]);
                $points += $triviaQuestion->points;
             }
@@ -127,7 +134,7 @@ class StoreTriviaAnswerService implements BaseServiceInterface
             }
         }
             
-        return ["points" => $points, "audience_badges_list" => $audienceBadgesList, "leaderboard" => $campaignGamePlay ];
+        return ["total_question_count" => $totalQuestionsCount, "correct_answer_count" => $correctAnswersCount, "points" => $points, "audience_badges_list" => $audienceBadgesList, "leaderboard" => $campaignGamePlay ];
     }
 
     
