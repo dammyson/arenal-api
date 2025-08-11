@@ -134,7 +134,7 @@ class StoreTriviaAnswerService implements BaseServiceInterface
             }
         }
             
-        return ["total_question_count" => $totalQuestionsCount, "correct_answer_count" => $correctAnswersCount, "points" => $points, "audience_badges_list" => $audienceBadgesList, "leaderboard" => $campaignGamePlay ];
+        return ["total_questions_count" => $totalQuestionsCount, "correct_answers_count" => $correctAnswersCount, "points" => $points, "audience_badges_list" => $audienceBadgesList, "leaderboard" => $campaignGamePlay ];
     }
 
     
