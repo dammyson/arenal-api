@@ -40,6 +40,7 @@ class CampaignGamePlayLeaderboardController extends Controller
         try {
 
            $leaderboardType =  $request->query('type');
+           $audience = $request->user();
 
            if ($leaderboardType == "brand") {
                 $leaderboard = CampaignGamePlay::select('audience_id', DB::raw('SUM(score) as total_score'))
@@ -64,7 +65,7 @@ class CampaignGamePlayLeaderboardController extends Controller
             ], 500);
         }
 
-        return response()->json($leaderboard);
+        return response()->json(["audience" => $audience->id, "leaderboard" => $leaderboard]);
     }
     public function gameLeaderboardDaily($campaignId, $gameId)
     {
