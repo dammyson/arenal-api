@@ -262,6 +262,7 @@ class WalletController extends BaseController
             $user = $request->user();
 
             $seerBitURL =env('SEER_BIT_URL');
+            $seerBitURL = 'https://seerbitapi.com/api/v2/payments/initiates';
             $seerBitBearerKey = "bzSlv4IUp3GNQkNT0qqWh+ulbYbuTT/5JtDZHUAg+hxSVPUWuZLEbg/G29GOTlL/EAma3YCrDJfYhM+HFjy68GhRmDFDbab98Mzd55Pz4DW84em1uccL50F2fGm73l8m";
             $seerBitPublicKey =env('SEER_BIT_PUBLIC_KEY');
     

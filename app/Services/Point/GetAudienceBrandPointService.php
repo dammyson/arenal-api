@@ -38,13 +38,6 @@ class GetAudienceBrandPointService implements BaseServiceInterface
                 ->count(); 
 
             
-            // $audienceBadgeName = AudienceBadge::where('brand_id', $this->brandId)
-            //     ->where('audience_id', $user->id)->whereHas("badge", function($query) {
-            //         $query->orderBy("points", "desc")
-            //         ->first()->select("id", "name");
-            //     });
-
-            
             $userBadge = Badge::where("points", "<=", $audiencePoints)->orderBy("points", "desc")->first();
 
 
