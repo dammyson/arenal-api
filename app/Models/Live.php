@@ -9,7 +9,7 @@ class Live extends Model
 {
     use HasUuids;
     
-    protected $fillable = ["user_id", "brand_id", "duration", "checkIn_amount", "coins"];
+    protected $fillable = ["user_id", "brand_id", "duration", "checkIn_amount", "coins", "start_time", "end_time"];
 
     public function brand(){
         $this->belongsTo(Brand::class);
