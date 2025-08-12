@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Achievements;
+namespace App\Services\Achievement;
 
 use App\Models\BrandPoint;
 use Illuminate\Http\Request;
