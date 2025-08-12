@@ -52,7 +52,6 @@ class JoinBrandLiveService implements BaseServiceInterface{
                     'audience_id' => $user->id
                 ]);
 
-
                 $brandPoint = BrandPoint::firstOrNew([
                     "brand_id" => $this->request->brand_id,
                     "audience_id" => $user->id
@@ -76,8 +75,11 @@ class JoinBrandLiveService implements BaseServiceInterface{
     
     private function generateTicketId($email)
     {
+          // Get the part before @
+        $usernamePart = strstr($email, '@', true); // everything before '@'
+
         do {
-            $ticketId = $email . '_' . mt_rand(100000, 999999);
+            $ticketId = $usernamePart . '_' . mt_rand(100000, 999999);
         } while (LiveTicket::where('ticket_id', $ticketId)->exists());
 
         return $ticketId;
