@@ -20,7 +20,7 @@ use App\Services\Prize\RedeemUserBrandPrizeService;
 use App\Services\Point\GetAudienceBrandPointService;
 use App\Services\Prize\GetBrandAudienceBadgeService;
 use App\Http\Requests\Prize\UpdatePrizeDeliveryRequest;
-use App\Services\Achievements\AudienceBrandAchievementService;
+use App\Services\Achievement\AudienceBrandAchievementService;
 
 class PrizeController extends BaseController
 {
