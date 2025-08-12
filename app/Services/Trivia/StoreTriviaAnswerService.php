@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\BrandAudienceReward;
 use App\Models\TriviaQuestionChoice;
 use App\Services\BaseServiceInterface;
+use App\Services\Utility\GetAudienceBadgeListService;
 use App\Http\Requests\Trivia\StoreTriviaAnswerRequest;
 
 class StoreTriviaAnswerService implements BaseServiceInterface
@@ -117,22 +118,7 @@ class StoreTriviaAnswerService implements BaseServiceInterface
             ]);
         }
 
-        $brandBadges = Badge::where('brand_id', $brandId)->get();
-        // dd($brandBadges);
-        $audienceBadgesList = [];
-
-        foreach ($brandBadges as $brandBadge) {
-            // dump($audienceBrandPoint->points, $brandBadge->points);
-            if ($audienceBrandPoint->points >= $brandBadge->points) {
-                AudienceBadge::firstOrCreate([
-                    "audience_id" => $audience->id,
-                    "brand_id" => $brandId,
-                    "badge_id" => $brandBadge->id
-                ]);
-                $audienceBadgesList[] = $brandBadge;
-
-            }
-        }
+        $audienceBadgesList = (new GetAudienceBadgeListService($brandId, $audience->id, $audienceBrandPoint->points))->run();
             
         return ["total_questions_count" => $totalQuestionsCount, "correct_answers_count" => $correctAnswersCount, "points" => $points, "audience_badges_list" => $audienceBadgesList, "leaderboard" => $campaignGamePlay ];
     }

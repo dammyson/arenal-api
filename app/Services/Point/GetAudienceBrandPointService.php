@@ -9,7 +9,9 @@ use App\Models\AudienceBadge;
 use App\Models\AudienceWallet;
 use App\Models\CampaignGamePlay;
 use App\Services\BaseServiceInterface;
+use App\Services\Utility\GetUserRankService;
 use App\Http\Requests\Live\StoreJoinLiveRequest;
+use App\Services\Utility\GetAudienceRankService;
 
 class GetAudienceBrandPointService implements BaseServiceInterface
 {
@@ -31,7 +33,6 @@ class GetAudienceBrandPointService implements BaseServiceInterface
                 ->where('audience_id', $user->id)
                 ->first()
                 ?->points ?? 0;
-
             
             $audienceBadgeCount =  AudienceBadge::where('brand_id', $this->brandId)
                 ->where('audience_id', $user->id)
@@ -41,9 +42,8 @@ class GetAudienceBrandPointService implements BaseServiceInterface
             $userBadge = Badge::where("points", "<=", $audiencePoints)->orderBy("points", "desc")->first();
 
 
-            $rank = $this->getUserRank($user->id, $this->brandId);
+            $rank = (new GetAudienceRankService($this->brandId, $user->id))->run();
             $leaderboardCount = CampaignGamePlay::where("brand_id", $this->brandId)->count();
-            // $rank = $this->getUserRank($user->id, $this->brandId, $campaignId, $this->gameId);
 
               
             $walletBalance = AudienceWallet::where('audience_id', $user->id)->first()?->balance ?? 0;
@@ -66,32 +66,5 @@ class GetAudienceBrandPointService implements BaseServiceInterface
         }
     }
 
-
-    public function getUserRank($audienceId, $brandId)
-    {
-        // Get all user scores ordered by score descending
-        $gamePlays = CampaignGamePlay::where('brand_id', $brandId)
-            ->orderByDesc('score')
-            ->pluck('audience_id'); // Just get audience IDs
-
-        // Search for current audience position (add 1 for 1-based index)
-        $rank = $gamePlays->search($audienceId);
-
-        return $rank !== false ? $rank + 1 : null; // null if not found
-    }
     
-    // public function getUserRank($audienceId, $brandId, $campaignId, $gameId)
-    // {
-    //     // Get all user scores ordered by score descending
-    //     $gamePlays = CampaignGamePlay::where('brand_id', $brandId)
-    //         ->where('campaign_id', $campaignId)
-    //         ->where('game_id', $gameId)
-    //         ->orderByDesc('score')
-    //         ->pluck('audience_id'); // Just get audience IDs
-
-    //     // Search for current audience position (add 1 for 1-based index)
-    //     $rank = $gamePlays->search($audienceId);
-
-    //     return $rank !== false ? $rank + 1 : null; // null if not found
-    // }
 }
