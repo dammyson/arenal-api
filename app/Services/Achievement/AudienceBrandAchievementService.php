@@ -30,6 +30,7 @@ class AudienceBrandAchievementService implements BaseServiceInterface{
 
         $audienceBadges = AudienceBadge::where('brand_id', $this->brandId)
             ->where('audience_id', $audienceId)
+            ->with('badge:id,name')
             ->get();
 
 
