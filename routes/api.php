@@ -60,6 +60,7 @@ Route::group(["middleware" => ["auth:api"]], function () {
         Route::put('brands/{brand}', [BrandController::class, 'updateBrand']);
         Route::delete('brands/{brand}', [BrandController::class, 'deleteBrand']);
         Route::post('live', [LiveController::class, 'storeBrandLive']);
+        Route::put('live/{live}', [LiveController::class, 'updateBrandLive']);
         Route::post('prize', [PrizeController::class, 'storePrize']);
         Route::get('brand-audience/{reward}/delivery', [PrizeController::class, 'getAudienceBrandPrizeDelivery']);
         Route::post('brand-audience/{audiencePrizeDelivery}/delivery-update', [PrizeController::class, 'updateAudienceBrandPrizeDelivery']);

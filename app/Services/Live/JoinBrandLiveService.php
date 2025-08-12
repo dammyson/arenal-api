@@ -7,6 +7,7 @@ use App\Models\Brand;
 use App\Models\BrandPoint;
 use App\Models\LiveTicket;
 use App\Models\BrandDetail;
+use Illuminate\Support\Facades\DB;
 use App\Services\BaseServiceInterface;
 use App\Http\Requests\Live\StoreLiveRequest;
 use App\Http\Requests\User\BrandStoreRequest;
@@ -23,32 +24,46 @@ class JoinBrandLiveService implements BaseServiceInterface{
     public function run() {
        try {
        
-        $user = $this->request->user();
+            $user = $this->request->user();
 
-            $liveTicket = LiveTicket::create([
-                ...$this->request->validated(),
-                'audience_id' => $user->id
-            ]);
-            
-            $brandPoint = BrandPoint::where("brand_id", $this->request->brand_id)
-                ->where("audience_id", $user->id)->first();
+            $live = Live::findOrFail($this->request->live_id);
 
-            if (!$brandPoint) {
+            $currentTime = now()->format('H:i:s');
 
-                $brandPoint = BrandPoint::create([
-                    "brand_id" => $this->request->brand_id,
-                    "audience_id" => $user->id,
-                    "points" => $this->request->coined_earned
-                ]);             
-
-            } else{
-
-                $brandPoint->points += $this->request->coined_earned;
-
+            if ($currentTime < $live->start_time || $currentTime > $live->end_time) {
+                return ["message" => "You cannot join live at this time"];
             }
 
-            $brandPoint->save();
-            return ["ticket" => $liveTicket , "brand_points" => $brandPoint];
+            // check if the user has already gone live today
+            // dump(now()->toDateString());
+            $alreadyJoined = LiveTicket::where('live_id', $this->request->live_id)
+                    ->where('audience_id', $user->id)
+                    ->whereDate('created_at', now()->toDateString())->exists();
+
+            // dd($alreadyJoined);
+            if ($alreadyJoined) {
+                return ["message" => "You have already gone live today"];
+            }                
+           
+            return DB::transaction(function() use($user, $live) {
+                $liveTicket = LiveTicket::create([
+                    ...$this->request->validated(),
+                    'ticket_id' => $this->generateTicketId($user->email),
+                    'audience_id' => $user->id
+                ]);
+
+
+                $brandPoint = BrandPoint::firstOrNew([
+                    "brand_id" => $this->request->brand_id,
+                    "audience_id" => $user->id
+                ]);
+                    
+                $brandPoint->points =  ($brandPoint->points ?? 0) + $live->coins;
+    
+                $brandPoint->save();
+
+                return ["ticket" => $liveTicket , "brand_points" => $brandPoint];
+            });
        
         } catch(\Throwable $e) {
             
@@ -57,4 +72,15 @@ class JoinBrandLiveService implements BaseServiceInterface{
        
 
     }
+
+    
+    private function generateTicketId($email)
+    {
+        do {
+            $ticketId = $email . '_' . mt_rand(100000, 999999);
+        } while (LiveTicket::where('ticket_id', $ticketId)->exists());
+
+        return $ticketId;
+    }
+
 }

@@ -23,6 +23,8 @@ class ViewBrandLiveService implements BaseServiceInterface{
             $live = Live::where("brand_id", $this->brandId)->first();
 
             $liveCount = LiveTicket::where("live_id", $live->id)->where("is_live", true)->count();
+            
+            
 
             return [
                 "live" => $live, 
