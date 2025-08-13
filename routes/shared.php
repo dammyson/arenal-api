@@ -29,7 +29,7 @@ Route::post('brand-leaderboard', [CampaignGamePlayLeaderboardController::class, 
 Route::get('brand/{brand}/live', [LiveController::class, 'viewBrandLive']);
 Route::post('join-live', [LiveController::class, 'joinLive']);
 Route::get('brand/{brand}/live-history', [LiveController::class, 'liveHistory']);
-Route::get('brand/{brand}/transactionHistory', [BrandAudienceTransactionController::class, 'audienceTransactionHistory']);
+Route::get('brand/{brand}/transaction-history', [BrandAudienceTransactionController::class, 'audienceTransactionHistory']);
 
 Route::get('brand/{brand}/get-points', [BrandController::class, 'getPoints']);
 Route::get('brand/{brand}/prizes', [BrandController::class, 'brandPrizes']);
