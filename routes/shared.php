@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Audience;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GameController;
 use App\Http\Controllers\LiveController;
@@ -14,10 +15,12 @@ use App\Http\Controllers\SpinTheWheelController;
 use App\Http\Controllers\TriviaQuestionController;
 use App\Http\Controllers\CampaignGamePlayController;
 use App\Http\Controllers\CampaignGameRuleController;
+use App\Http\Controllers\TransactionHistoryController;
 use App\Http\Controllers\SpinTheWheelComponentController;
+use App\Http\Controllers\BrandAudienceTransactionController;
 use App\Http\Controllers\CampaignGamePlayLeaderboardController;
+use App\Http\Controllers\BrandAudienceTransactionHistoryController;
 use App\Http\Controllers\OverallCampaignGamePlayLeaderboardController;
-use App\Models\Audience;
 
 Route::get('/',  [TriviaController::class, 'index'])->name('index');
 Route::post('wallet/deduct-fee', [WalletController::class, 'deductFee']);
@@ -26,6 +29,7 @@ Route::post('brand-leaderboard', [CampaignGamePlayLeaderboardController::class, 
 Route::get('brand/{brand}/live', [LiveController::class, 'viewBrandLive']);
 Route::post('join-live', [LiveController::class, 'joinLive']);
 Route::get('brand/{brand}/live-history', [LiveController::class, 'liveHistory']);
+Route::get('brand/{brand}/transactionHistory', [BrandAudienceTransactionController::class, 'audienceTransactionHistory']);
 
 Route::get('brand/{brand}/get-points', [BrandController::class, 'getPoints']);
 Route::get('brand/{brand}/prizes', [BrandController::class, 'brandPrizes']);
