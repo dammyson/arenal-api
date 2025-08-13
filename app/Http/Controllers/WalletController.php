@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Http;
 use App\Http\Requests\Wallet\FundWalletRequest;
+use App\Models\BrandTransaction;
 
 class WalletController extends BaseController
 {
@@ -75,9 +76,11 @@ class WalletController extends BaseController
     }
 
 
-    public function cardPayment(Request $request, $ref_number) {        
+    public function cardPayment(Request $request, $brandId, $ref_number) {        
 
         try {
+
+
             $user = $request->user();
 
             $paymentChannel = $request->query('payment_channel');
@@ -113,6 +116,19 @@ class WalletController extends BaseController
                 
                     $wallet->save();
 
+                    BrandTransaction::create([
+                        'audience_id' => $user->id, 
+                        'wallet_id' => $wallet->id, 
+                        'brand_id' => $brandId, 
+                        'payment_channel' => 'Paystack', 
+                        'payment_channel_description' => 'Card Payment',
+                        'status' => 'success',
+                        'is_credit' => true,
+                        'sender_name' => $user->first_name ?? $user->email,
+                        'amount' => $amount
+                    
+                    ]);
+
                     return $this->sendResponse($wallet, "user wallet funded successfully");
                     // dump($wallet->balance);
                 }
@@ -141,7 +157,53 @@ class WalletController extends BaseController
                     $wallet->balance += $amount;
                     $wallet->save();
 
+
+                    BrandTransaction::create([
+                        'audience_id' => $user->id, 
+                        'wallet_id' => $wallet->id,  
+                        'brand_id' => $brandId, 
+                        'payment_channel' => 'flutterwave', 
+                        'payment_channel_description' => 'Card Payment',
+                        'status' => 'success',
+                        'is_credit' => true,
+                        'sender_name' => $user->first_name ?? $user->email,
+                        'amount' => $amount
+                    
+                    ]);
+
                     return $this->sendResponse($wallet, "user wallet funded successfully");
+                } else if (array_key_exists('data', $responseData) && array_key_exists('status', $responseData['data']) && ($responseData['data']['status'] === 'pending')) {
+                     
+                    $amount = $responseData["data"]["amount"];
+                    $amount = round($amount, 2);
+                    BrandTransaction::create([
+                        'audience_id' => $user->id, 
+                        'wallet_id' => $wallet->id, 
+                        'brand_id' => $brandId,  
+                        'payment_channel' => 'flutterwave', 
+                        'payment_channel_description' => 'Card Payment',
+                        'status' => 'pending',
+                        'is_credit' => true,
+                        'sender_name' => $user->first_name ?? $user->email,
+                        'amount' => $amount
+                    
+                    ]);
+                }  else if (array_key_exists('data', $responseData) && array_key_exists('status', $responseData['data']) && ($responseData['data']['status'] === 'failed')) {
+                     
+                    $amount = $responseData["data"]["amount"];
+                    $amount = round($amount, 2);
+                    BrandTransaction::create([
+                        'audience_id' => $user->id, 
+                        'wallet_id' => $wallet->id, 
+                        'brand_id' => $brandId,  
+                        'payment_channel' => 'fullerwave', 
+                        'payment_channel_description' => 'Card Payment',
+                        'status' => 'failed',
+                        'is_credit' => true,
+                        'sender_name' => $user->first_name ?? $user->email,
+                        'amount' => $amount
+                    
+                    ]);
                 }
 
                 return $this->sendError("unable to fund wallet, pls try again later");

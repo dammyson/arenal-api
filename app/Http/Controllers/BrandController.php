@@ -46,7 +46,6 @@ class BrandController extends BaseController
 
     public function updateBrand(BrandUpdateRequest $request, $id) {
           try {
-            Gate::authorize('is-user');
             $data = (new UpdateBrandService($request, $id))->run();
 
         }  catch (\Exception $e){
