@@ -9,7 +9,7 @@ class LiveTicket extends Model
 {
     use HasUuids;
 
-    protected $fillable = ["audience_id", "live_id", "coined_earned", "is_live", 'ticket_id'];
+    protected $fillable = ["audience_id", "live_id", "coined_earned", "is_live", 'ticket_id', 'brand_id'];
 
     public function audience() {
         return $this->belongsTo(Audience::class);

@@ -14,6 +14,8 @@ use App\Http\Requests\Live\StoreJoinLiveRequest;
 use App\Http\Requests\Live\UpdateBrandLiveRequest;
 use App\Http\Requests\Live\UpdateStoreLiveRequest;
 use App\Services\Point\GetAudienceBrandPointService;
+use App\Services\Live\AudieneBrandLiveHistoryService;
+use App\Services\Live\AudienceBrandLiveHistoryService;
 
 class LiveController extends BaseController
 {
@@ -67,6 +69,22 @@ class LiveController extends BaseController
             $brandLive = (new JoinBrandLiveService($request))->run();
     
             return $this->sendResponse($brandLive, "live joined", 201);
+        
+        } catch (\Exception $e){
+
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }   
+
+
+    }
+
+    public function liveHistory(Request $request, Brand $brand) {
+        try {
+            $userId = $request->user()->id;
+
+            $liveHistory = (new AudienceBrandLiveHistoryService($userId, $brand->id))->run();
+    
+            return $this->sendResponse(["live_history" => $liveHistory], "brand history retrieved successfully");
         
         } catch (\Exception $e){
 
