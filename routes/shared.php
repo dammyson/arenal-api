@@ -27,6 +27,7 @@ Route::get('brand/{brand}/live', [LiveController::class, 'viewBrandLive']);
 Route::post('join-live', [LiveController::class, 'joinLive']);
 
 Route::get('brand/{brand}/get-points', [BrandController::class, 'getPoints']);
+Route::get('brand/{brand}/prizes', [BrandController::class, 'brandPrizes']);
 Route::get('brand/{brand}/achievements', [PrizeController::class, 'achievements']);
 // Route::get('brand/{brand}/user-prizes', [PrizeController::class, 'audienceBrandPrize']);
 Route::post('brand-audience/delivery/{brandAudienceReward}', [PrizeController::class, 'audienceBrandPrizeDelivery']);

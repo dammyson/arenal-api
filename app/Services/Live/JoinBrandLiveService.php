@@ -2,6 +2,7 @@
 
 namespace App\Services\Live;
 
+use Error;
 use App\Models\Live;
 use App\Models\Brand;
 use App\Models\BrandPoint;
@@ -12,6 +13,7 @@ use App\Services\BaseServiceInterface;
 use App\Http\Requests\Live\StoreLiveRequest;
 use App\Http\Requests\User\BrandStoreRequest;
 use App\Http\Requests\Live\StoreJoinLiveRequest;
+use Exception;
 
 class JoinBrandLiveService implements BaseServiceInterface{
     protected $request;
@@ -31,7 +33,9 @@ class JoinBrandLiveService implements BaseServiceInterface{
             $currentTime = now()->format('H:i:s');
 
             if ($currentTime < $live->start_time || $currentTime > $live->end_time) {
-                return ["message" => "You cannot join live at this time"];
+
+                throw new Exception("You cannot join live at this time");
+                // return ["message" => "You cannot join live at this time"];
             }
 
             // check if the user has already gone live today
@@ -42,7 +46,8 @@ class JoinBrandLiveService implements BaseServiceInterface{
 
             // dd($alreadyJoined);
             if ($alreadyJoined) {
-                return ["message" => "You have already gone live today"];
+                throw new Exception("You have already gone live today");
+
             }                
            
             return DB::transaction(function() use($user, $live) {

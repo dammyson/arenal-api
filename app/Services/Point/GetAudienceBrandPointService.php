@@ -60,7 +60,7 @@ class GetAudienceBrandPointService implements BaseServiceInterface
 
                 
                 
-        } catch (\Throwable $e) {
+        } catch (\Exception $e) {
 
             throw $e;
         }
