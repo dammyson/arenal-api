@@ -12,6 +12,7 @@ use App\Services\BaseServiceInterface;
 use App\Services\Utility\GetUserRankService;
 use App\Http\Requests\Live\StoreJoinLiveRequest;
 use App\Services\Utility\GetAudienceRankService;
+use App\Services\Utility\GetAudienceBadgeListService;
 
 class GetAudienceBrandPointService implements BaseServiceInterface
 {
@@ -44,6 +45,8 @@ class GetAudienceBrandPointService implements BaseServiceInterface
 
             $rank = (new GetAudienceRankService($this->brandId, $user->id))->run();
             $leaderboardCount = CampaignGamePlay::where("brand_id", $this->brandId)->count();
+            $audienceBadgesList = (new GetAudienceBadgeListService( $this->brandId, $user->id, $audiencePoints))->run();
+
 
               
             $walletBalance = AudienceWallet::where('audience_id', $user->id)->first()?->balance ?? 0;
@@ -55,6 +58,7 @@ class GetAudienceBrandPointService implements BaseServiceInterface
                 'badge_count' => $audienceBadgeCount,
                 "rank" => $rank,
                 "leaderboard_count" => $leaderboardCount,
+                "audience_badges" => $audienceBadgesList,
                 "wallet_balance" => $walletBalance
             ];
 
