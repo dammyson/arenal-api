@@ -30,10 +30,27 @@ class AudienceBrandLiveHistoryService implements BaseServiceInterface{
        
             // $user = $this->request->user();
 
+            $dayTitles = [
+                'Monday'    => 'Miracle Monday',
+                'Tuesday'   => 'Testimony Tuesday',
+                'Wednesday' => 'Worship Wednesday',
+                'Thursday'  => 'Thankful Thursday',
+                'Friday'    => 'Faith-Filled Friday',
+                'Saturday'  => 'Sanctified Saturday',
+                'Sunday'    => 'Sacred Sunday',
+            ];
             
             return LiveTicket::where('brand_id', $this->brandId)
                 ->where('audience_id', $this->userId)
-                ->get();
+                ->orderBy('created_at', 'desc')
+                ->get()->map(function ($ticket) use ($dayTitles) {
+                    $dayName = $ticket->created_at->format('l');
+                    return [
+                        'title' => $dayTitles[$dayName] ?? $dayName,
+                        'date'  => $ticket->created_at->format('m/d/Y'),
+                        'live_id' => $ticket->live_id,
+                    ];
+            });
 
                
             
