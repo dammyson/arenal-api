@@ -53,6 +53,7 @@ class JoinBrandLiveService implements BaseServiceInterface{
             return DB::transaction(function() use($user, $live) {
                 $liveTicket = LiveTicket::create([
                     ...$this->request->validated(),
+                    'brand_id' => $live->brand_id,
                     'ticket_id' => $this->generateTicketId($user->email),
                     'audience_id' => $user->id
                 ]);
