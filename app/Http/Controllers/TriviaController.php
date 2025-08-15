@@ -14,6 +14,8 @@ use App\Services\Trivia\CreateTriviaService;
 use App\Http\Requests\TriviaQuestion\StoreTriviaQuestionsRequest;
 use App\Models\Brand;
 
+use function Laravel\Prompts\select;
+
 class TriviaController extends BaseController
 {
     public function store(StoreTriviaRequest $request)
@@ -35,8 +37,8 @@ class TriviaController extends BaseController
 
     public function index(Request $request, Brand $brand){
         try {
-            return Trivia::where('brand_id', $brand->id)->get();
-            
+            return Trivia::where('brand_id', $brand->id)->select('id', 'name')->get();
+
         } catch (\Throwable $e) {
             return response()->json([
                 'message' => 'An error occurred while processing your request.',
@@ -44,4 +46,20 @@ class TriviaController extends BaseController
             ], 500);
         }
     }
+
+    public function showTrivia(Trivia $trivia){
+        try {
+            
+            return $trivia->load('game.prizes');
+
+
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'An error occurred while processing your request.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    
 }

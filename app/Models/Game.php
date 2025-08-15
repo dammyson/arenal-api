@@ -41,4 +41,8 @@ class Game extends Model
         return $this->hasMany(Trivia::class);
     }
 
+    public function prizes() {
+        return $this->hasMany(Prize::class);
+    }
+
 }
