@@ -49,7 +49,7 @@
         // redirect_url: 'https://glaciers.titanic.com/handle-flutterwave-payment',
         callback: function(response) {
           console.log(response)
-          alert('success. transaction ref is ' + response.tx_ref);
+          alert('success. transaction ref is ' + response.transaction_id);
         },
         customer: {
           email: 'achugoebuka1@gmail.com'
