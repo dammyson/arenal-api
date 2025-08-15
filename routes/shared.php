@@ -39,6 +39,7 @@ Route::get('brand-audience/delivery/{audiencePrizeDelivery}', [PrizeController::
 Route::get('brand-prizes/{brand}', [PrizeController::class, 'getBrandPrizes']);
 Route::get('brand-badges/{brand}', [PrizeController::class, 'getBrandBadges']);
 Route::get('brand-reward/{brandAudienceReward}', [PrizeController::class, 'redeemUserPrize']);
+Route::get('brand-reward/{brandAudienceReward}', [PrizeController::class, 'redeemUserPrize']);
 Route::get('brand-badges/{brand}/user-badges', [PrizeController::class, 'getBrandAudienceBadges']);
 Route::get('wallet/wallet-balance', [WalletController::class, 'getWalletBalance']);
 Route::get('brand/{brand}/point-balance', [PrizeController::class, 'getAudiencePointBalance']);

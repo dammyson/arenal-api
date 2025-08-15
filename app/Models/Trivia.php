@@ -23,4 +23,8 @@ class Trivia extends Model
     public function questions() {
         return $this->hasMany(TriviaQuestion::class);
     }
+
+    public function game() {
+        return $this->belongsTo(Game::class);
+    }
 }
