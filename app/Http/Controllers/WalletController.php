@@ -155,7 +155,8 @@ class WalletController extends BaseController
                 // dump($response);
                 
                 $responseData = $response->json();
-                // dump($responseData);
+                dump($responseData);
+                dump($response);
 
 
                 if (array_key_exists('data', $responseData) && array_key_exists('status', $responseData['data']) && ($responseData['data']['status'] === 'successful')) {
