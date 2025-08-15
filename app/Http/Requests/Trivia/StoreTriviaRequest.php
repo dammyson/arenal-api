@@ -25,6 +25,7 @@ class StoreTriviaRequest extends FormRequest
             "trivia_name" => "required|string",
             "game_id" => "required|exists:games,id",
             "brand_id" => "required|exists:brands,id",
+            "campaign_id" => "required|exists:campaigns,id",
             "image_url" => "sometimes|string",
             "entry_fee" => "sometimes|integer",
             "point_score" => "sometimes|integer",

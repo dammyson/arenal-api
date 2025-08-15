@@ -26,7 +26,7 @@ class StoreTriviaAnswerRequest extends FormRequest
             "questions.*.question_id" => "required|uuid|exists:trivia_questions,id|distinct",
             "questions.*.answer_id" => "required|uuid|exists:trivia_question_choices,id|distinct",
             "brand_id" => "required|exists:brands,id",
-            "campaign_id" => "required|exists:campaigns,id"
+            // "campaign_id" => "required|exists:campaigns,id"
         ];
     }
 }
