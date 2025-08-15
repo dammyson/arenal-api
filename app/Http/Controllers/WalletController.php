@@ -80,6 +80,7 @@ class WalletController extends BaseController
 
         try {
 
+            // dd("i got here");
 
             $user = $request->user();
 
@@ -89,6 +90,9 @@ class WalletController extends BaseController
 
             $flutterVerifyUrl = config('app.flutterwave.verify_url');
             $flutterBearerToken = config('app.flutterwave.bearer_token');
+            // dd($flutterVerifyUrl, $flutterBearerToken);
+
+            // dd($flutterBearerToken);
 
             $wallet = $user->wallet;
     
@@ -139,18 +143,23 @@ class WalletController extends BaseController
 
 
             } else if ($paymentChannel == "flutterwave") {
-
+                // dd($ref_number);
+                // dd("{$flutterVerifyUrl}{$ref_number}");
                 $response = Http::withHeaders([
                     'Content-Type' => 'application/json',
                     'Accept' => 'application/json',
                     'Authorization' => "Bearer " . $flutterBearerToken
                 
-                ])->get("{$flutterVerifyUrl}{$ref_number}");
+                ])->get("{$flutterVerifyUrl}{$ref_number}/verify");
 
+                // dd($response);
 
                 $responseData = $response->json();
 
-                if (array_key_exists('data', $responseData) && array_key_exists('status', $responseData['data']) && ($responseData['data']['status'] === 'success')) {
+
+                if (array_key_exists('data', $responseData) && array_key_exists('status', $responseData['data']) && ($responseData['data']['status'] === 'successful')) {
+                    // dd(" i ran");
+                   
                     $amount = $responseData["data"]["amount"];
                     $amount = round($amount, 2);
 
@@ -196,7 +205,7 @@ class WalletController extends BaseController
                         'audience_id' => $user->id, 
                         'wallet_id' => $wallet->id, 
                         'brand_id' => $brandId,  
-                        'payment_channel' => 'fullerwave', 
+                        'payment_channel' => 'flutterwave', 
                         'payment_channel_description' => 'Card Payment',
                         'status' => 'failed',
                         'is_credit' => true,
