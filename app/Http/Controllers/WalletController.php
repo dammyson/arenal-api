@@ -152,9 +152,11 @@ class WalletController extends BaseController
                 
                 ])->get("{$flutterVerifyUrl}{$ref_number}/verify");
 
-                // dd($response);
-
+                // dump($response);
+                
                 $responseData = $response->json();
+                dump($responseData);
+                dump($response);
 
 
                 if (array_key_exists('data', $responseData) && array_key_exists('status', $responseData['data']) && ($responseData['data']['status'] === 'successful')) {
