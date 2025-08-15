@@ -9,8 +9,9 @@ class BrandAudienceTransactionController extends BaseController
 {
       public function audienceTransactionHistory(Request $request, $brandId) {
           try {
+            $filter = $request->query('filter');
             
-            $data = (new ListAudienceBrandTransactionService($brandId, $request->user()->id))->run();
+            $data = (new ListAudienceBrandTransactionService($brandId, $request->user()->id, $filter))->run();
 
         }  catch (\Exception $e){
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
