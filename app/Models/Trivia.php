@@ -13,6 +13,7 @@ class Trivia extends Model
         "name", 
         "game_id", 
         "brand_id", 
+        "campaign_id", 
         "image_url", 
         "user_id", 
         "entry_fee",

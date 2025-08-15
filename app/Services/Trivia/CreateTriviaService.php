@@ -29,6 +29,7 @@ class CreateTriviaService implements BaseServiceInterface
                 "name" => $this->request["trivia_name"],
                 "game_id" => $this->request["game_id"],
                 "brand_id" => $this->request["brand_id"],
+                "campaign_id" => $this->request["campaign_id"],
                 "image_url" => $this->request["image_url"],
                 "user_id" => $this->request->user()->id,
                 "entry_fee" => $this->request['entry_fee'],
