@@ -12,6 +12,7 @@ class Trivia extends Model
    protected $fillable = [
         "name", 
         "game_id", 
+        "brand_id", 
         "image_url", 
         "user_id", 
         "entry_fee",

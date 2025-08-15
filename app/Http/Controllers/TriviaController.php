@@ -12,12 +12,12 @@ use App\Services\Trivia\CreateService;
 use App\Services\Trivia\IndexTrivaService;
 use App\Services\Trivia\CreateTriviaService;
 use App\Http\Requests\TriviaQuestion\StoreTriviaQuestionsRequest;
+use App\Models\Brand;
 
 class TriviaController extends BaseController
 {
     public function store(StoreTriviaRequest $request)
     {
-
         try {
 
             $data = (new CreateTriviaService($request))->run();
@@ -33,9 +33,10 @@ class TriviaController extends BaseController
         }
     }
 
-    public function index(Request $request){
+    public function index(Request $request, Brand $brand){
         try {
-            return ($user = Auth::user());
+            return Trivia::where('brand_id', $brand->id)->get();
+            
         } catch (\Throwable $e) {
             return response()->json([
                 'message' => 'An error occurred while processing your request.',
