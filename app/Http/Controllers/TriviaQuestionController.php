@@ -63,7 +63,8 @@ class TriviaQuestionController extends BaseController
     }
     public function show(Trivia $trivia){
         try {
-            return (new ShowTriviaService($trivia->id))->run();
+            $data = (new ShowTriviaService($trivia->id))->run();
+            return ["question_count" => count($data["questions"]), "data" => $data];
         } catch (\Throwable $e) {
             return response()->json([
                 'message' => 'An error occurred while processing your request.',

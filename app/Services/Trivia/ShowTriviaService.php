@@ -22,8 +22,10 @@ class ShowTriviaService implements BaseServiceInterface
     {
         return Trivia::where('id', $this->triviaId)
             ->whereHas('questions')
-            ->with(['questions.choices'])    // Eager loads questions and their choices
-            ->get();
+            ->with(['questions' => function($query) {
+                $query->inRandomOrder()->limit(10)->with('choices');
+            }])   
+            ->first();
     }
     
 }
