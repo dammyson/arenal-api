@@ -22,7 +22,6 @@ use App\Http\Controllers\CampaignGamePlayLeaderboardController;
 use App\Http\Controllers\BrandAudienceTransactionHistoryController;
 use App\Http\Controllers\OverallCampaignGamePlayLeaderboardController;
 
-Route::get('/',  [TriviaController::class, 'index'])->name('index');
 Route::post('wallet/deduct-fee', [WalletController::class, 'deductFee']);
 Route::get('/brands',  [BrandController::class, 'index'])->name('index');
 Route::post('brand-leaderboard', [CampaignGamePlayLeaderboardController::class, 'brandLeaderboard']);
@@ -80,6 +79,7 @@ Route::get('general/overall-leaderboard/alltime', [OverallCampaignGamePlayLeader
 
 // Route::get('rules', [CampaignGameRuleController::class, 'index']);
 
+Route::get('trivia/{brand}', [TriviaController::class, 'index']);
 Route::get('trivia/questions', [TriviaQuestionController::class, 'index']);
 Route::get('trivia/{trivia}/questions', [TriviaQuestionController::class, 'show']);
 Route::post('trivia/{trivia}/prize/{prize}', [TriviaQuestionController::class, 'processAnswers']);
