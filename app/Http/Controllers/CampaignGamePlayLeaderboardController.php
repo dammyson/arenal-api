@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
+use App\Models\Badge;
 use App\Models\Brand;
 use Illuminate\Http\Request;
 use App\Models\CampaignGamePlay;
@@ -42,11 +43,24 @@ class CampaignGamePlayLeaderboardController extends Controller
 
             $audience = $request->user();
             $filter = $request->query('filter');
-            $leaderboard = CampaignGamePlay::with(['audience', 'audience.audienceBadges' => function($q) { 
-                        $q->with(['badge' => function($q2) { // arrange the badges in descending order of their points
-                            $q2->select('id', 'name', 'points')
-                            ->orderBy('points', 'desc');
-                        }]);
+            $leaderboard = CampaignGamePlay::with(['audience', 'audience.audienceBadges' => function($q) use($brand) { 
+                        // $q->with(['badge' => function($q2) { // arrange the badges in descending order of their points
+                        //     $q2->select('id', 'name', 'points')
+                        //     ->orderBy('points', 'desc');
+                        // }]);
+
+                        $q->where('brand_id', $brand->id)
+                        ->with(['badge' => function ($b) {
+                            $b->select('id', 'name', 'points');
+                        }])
+                        ->orderBy(
+                            // order audience_badges by their related badge points (DESC)
+                            Badge::select('points')
+                                ->whereColumn('badges.id', 'audience_badges.badge_id'),
+                            'desc'
+                        )
+                        // optional tiebreaker so equal points keep newest first
+                        ->orderBy('audience_badges.created_at', 'desc');
                     }]) 
                 // with(['audience', 'audience.audienceBadges.badge:id,name']) // Assuming you have a relationship with the Audience model
                     ->select('audience_id', DB::raw('SUM(score) as total_score'))
