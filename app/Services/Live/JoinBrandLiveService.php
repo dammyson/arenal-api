@@ -3,6 +3,8 @@
 namespace App\Services\Live;
 
 use Error;
+use Exception;
+use Carbon\Carbon;
 use App\Models\Live;
 use App\Models\Brand;
 use App\Models\BrandPoint;
@@ -13,7 +15,6 @@ use App\Services\BaseServiceInterface;
 use App\Http\Requests\Live\StoreLiveRequest;
 use App\Http\Requests\User\BrandStoreRequest;
 use App\Http\Requests\Live\StoreJoinLiveRequest;
-use Exception;
 
 class JoinBrandLiveService implements BaseServiceInterface{
     protected $request;
@@ -30,9 +31,12 @@ class JoinBrandLiveService implements BaseServiceInterface{
 
             $live = Live::findOrFail($this->request->live_id);
 
-            $currentTime = now()->format('H:i:s');
+            $currentTime = now();
 
-            if ($currentTime < $live->start_time || $currentTime > $live->end_time) {
+            $startTime = Carbon::createFromFormat('H:i:s', $live->start_time);
+            $endTime   = Carbon::createFromFormat('H:i:s', $live->end_time);
+            
+           if ($currentTime->lt($startTime) || $currentTime->gt($endTime)) {
 
                 throw new Exception("You cannot join live at this time");
                 // return ["message" => "You cannot join live at this time"];
