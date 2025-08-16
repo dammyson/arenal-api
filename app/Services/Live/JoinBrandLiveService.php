@@ -33,9 +33,21 @@ class JoinBrandLiveService implements BaseServiceInterface{
 
             $currentTime = now();
 
-            $startTime = Carbon::createFromFormat('H:i:s', $live->start_time);
-            $endTime   = Carbon::createFromFormat('H:i:s', $live->end_time);
+            // $startTime = Carbon::createFromFormat('H:i:s', $live->start_time);
+            // $endTime   = Carbon::createFromFormat('H:i:s', $live->end_time);
             
+            // Attach today's date to the stored start & end times
+        $startTime = Carbon::createFromFormat('H:i:s', $live->start_time)->setDate(
+            $currentTime->year,
+            $currentTime->month,
+            $currentTime->day
+        );
+
+        $endTime = Carbon::createFromFormat('H:i:s', $live->end_time)->setDate(
+            $currentTime->year,
+            $currentTime->month,
+            $currentTime->day
+        );
            if ($currentTime->lt($startTime) || $currentTime->gt($endTime)) {
 
                 throw new Exception("You cannot join live at this time");
