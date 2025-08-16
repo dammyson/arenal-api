@@ -37,16 +37,23 @@ class CampaignGamePlayLeaderboardController extends Controller
 
     public function brandLeaderboard(Request $request, Brand $brand)
     {
-        try {
+      
+        try{
 
             $audience = $request->user();
             $filter = $request->query('filter');
-            $leaderboard = CampaignGamePlay::with(['audience', 'audience.audienceBadges.badge:id,name']) // Assuming you have a relationship with the Audience model
+            $leaderboard = CampaignGamePlay::with(['audience', 'audience.audienceBadges' => function($q) { 
+                        $q->with(['badge' => function($q2) { // arrange the badges in descending order of their points
+                            $q2->select('id', 'name', 'points')
+                            ->orderBy('points', 'desc');
+                        }]);
+                    }]) 
+                // with(['audience', 'audience.audienceBadges.badge:id,name']) // Assuming you have a relationship with the Audience model
                     ->select('audience_id', DB::raw('SUM(score) as total_score'))
                     ->where('brand_id', $brand->id);
 
            if ($filter == "daily") {
-                   $leaderboard->whereDate('created_at', Carbon::now()->toDateString());
+                $leaderboard->whereDate('created_at', Carbon::now()->toDateString());
                   
            } else if ($filter == "weekly") {
                 $start_week = Carbon::now()->startOfWeek()->format('Y-m-d');
