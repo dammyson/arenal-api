@@ -21,21 +21,23 @@ class ListAudienceBrandTransactionService implements BaseServiceInterface {
         $brandTransaction = BrandTransaction::where('audience_id', $this->audienceId);
 
         if ($this->filter == "daily") {
-                $brandTransaction->whereDate('created_at', Carbon::now()->toDateString());
+            $brandTransaction->whereDate('created_at', Carbon::now()->toDateString());
                   
         } else if ($this->filter == "weekly") {
-                $start_week = Carbon::now()->startOfWeek()->format('Y-m-d');
-                $end_week = Carbon::now()->endOfWeek()->format('Y-m-d');
+            $start_week = Carbon::now()->startOfWeek()->format('Y-m-d');
+            $end_week = Carbon::now()->endOfWeek()->format('Y-m-d');
 
-                $brandTransaction->whereDate('created_at', '>=', $start_week)->whereDate('created_at', '<=', $end_week);
+            $brandTransaction->whereDate('created_at', '>=', $start_week)->whereDate('created_at', '<=', $end_week);
 
         } else if ($this->filter == 'monthly') {            
-                $start_month = Carbon::now()->firstOfMonth()->format('Y-m-d');
-                $end_month = Carbon::now()->lastOfMonth()->format('Y-m-d');
-                $brandTransaction->whereDate('created_at', '>=', $start_month)->whereDate('created_at', '<=', $end_month);
+            $start_month = Carbon::now()->firstOfMonth()->format('Y-m-d');
+            $end_month = Carbon::now()->lastOfMonth()->format('Y-m-d');
+            $brandTransaction->whereDate('created_at', '>=', $start_month)->whereDate('created_at', '<=', $end_month);
         } 
         
-        return $brandTransaction->get();
+        return $brandTransaction
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         // if ($this->filter !== null && $this->filter != '') {
             // dd($this->filter);
