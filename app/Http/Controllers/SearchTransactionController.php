@@ -16,14 +16,6 @@ class SearchTransactionController extends Controller
 
         try {
 
-        
-            // $data = TransactionHistory::whereHas('transaction', function($query) use($wallet_id, $request){
-            //     $query->where('wallet_id', $wallet_id)
-            //         ->whereAny([
-            //             'receipient_name',
-            //             'transaction_id'
-            //         ], 'LIKE', '%'. $request['transaction_param']. '%');
-            // })->with('transaction')->get();
 
             $data = Transaction::where('wallet_id', $wallet_id)
                         ->whereAny([

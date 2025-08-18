@@ -13,6 +13,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Http;
 use App\Http\Requests\Wallet\FundWalletRequest;
 use App\Models\BrandTransaction;
+use App\Services\Payment\VerifyCardPaymentService;
 
 class WalletController extends BaseController
 {
@@ -42,191 +43,21 @@ class WalletController extends BaseController
     }
 
 
-    public function fundWallet(FundWalletRequest $request) {
-        
-
-        try {
-            $user = $request->user();
-            // dd($user);
-            $wallet = $user->wallet;
-    
-            if (!$wallet) {
-                // Optionally handle case where wallet doesn't exist
-                return response()->json(['message' => 'Wallet not found.'], 404);
-            }
-    
-            $wallet->balance += (int) $request->amount;
-            $wallet->save();
-    
-            return response()->json(['message' => 'Wallet funded successfully.']);
-            
-            // $wallet = Wallet::find($wallet_id);
-            // $wallet->balance += (int) $request['amount'];
-            // $wallet->save();
-
-        }  catch (\Throwable $th) {
-            report($th);
-            return response()->json([ 
-                "error" => true,
-                "message" => "unable to fund wallet",
-                "actual_message" => $th->getMessage()
-            ], 500);
-        
-        }
-    }
-
-
     public function cardPayment(Request $request, $brandId, $ref_number) {        
 
         try {
 
-            // dd("i got here");
+            $response = (new VerifyCardPaymentService($request, $brandId, $ref_number))->run();
 
-            $user = $request->user();
-
-            $paymentChannel = $request->query('payment_channel');
-            $paystackVerifyUrl = config('app.paystack.verify_url');
-            $paystackBearerToken = config('app.paystack.bearer_token');
-
-            $flutterVerifyUrl = config('app.flutterwave.verify_url');
-            $flutterBearerToken = config('app.flutterwave.bearer_token');
-            // dd($flutterVerifyUrl, $flutterBearerToken);
-
-            // dd($flutterBearerToken);
-
-            $wallet = $user->wallet;
-    
-            if (!$wallet) {
-                return response()->json(['message' => 'Wallet not found.'], 404);
-            }
-
-            if ($paymentChannel == "paystack") {
-                $response = Http::withHeaders([
-                    'Content-Type' => 'application/json',
-                    'Accept' => 'application/json',
-                    'Authorization' => "Bearer " . $paystackBearerToken
-                
-                ])->get("{$paystackVerifyUrl}{$ref_number}");
-
-                $responseData = $response->json();
-                // dd($responseData);
-
-                if (array_key_exists('data', $responseData) && array_key_exists('status', $responseData['data']) && ($responseData['data']['status'] === 'success')) {
-                    $amount = $responseData["data"]["amount"];
-
-                    $amount =  round($amount / 100, 2);                   
-                    
-                    $wallet->balance += $amount;
-                
-                    $wallet->save();
-
-                    BrandTransaction::create([
-                        'audience_id' => $user->id, 
-                        'wallet_id' => $wallet->id, 
-                        'brand_id' => $brandId, 
-                        'payment_channel' => 'Paystack', 
-                        'payment_channel_description' => 'Card Payment',
-                        'status' => 'success',
-                        'is_credit' => true,
-                        'sender_name' => $user->first_name ?? $user->email,
-                        'amount' => $amount
-                    
-                    ]);
-
-                    return $this->sendResponse($wallet, "user wallet funded successfully");
-                    // dump($wallet->balance);
-                }
-
-                
-                return $this->sendError("unable to fund wallet, pls try again later");
-
-
-
-            } else if ($paymentChannel == "flutterwave") {
-                // dd($ref_number);
-                // dd("{$flutterVerifyUrl}{$ref_number}");
-                $response = Http::withHeaders([
-                    'Content-Type' => 'application/json',
-                    'Accept' => 'application/json',
-                    'Authorization' => "Bearer " . $flutterBearerToken
-                
-                ])->get("{$flutterVerifyUrl}{$ref_number}/verify");
-
-                // dump($response);
-                
-                $responseData = $response->json();
-
-
-                if (array_key_exists('data', $responseData) && array_key_exists('status', $responseData['data']) && ($responseData['data']['status'] === 'successful')) {
-                    // dd(" i ran");
-                   
-                    $amount = $responseData["data"]["amount"];
-                    $amount = round($amount, 2);
-
-                    $wallet->balance += $amount;
-                    $wallet->save();
-
-
-                    BrandTransaction::create([
-                        'audience_id' => $user->id, 
-                        'wallet_id' => $wallet->id,  
-                        'brand_id' => $brandId, 
-                        'payment_channel' => 'flutterwave', 
-                        'payment_channel_description' => 'Card Payment',
-                        'status' => 'success',
-                        'is_credit' => true,
-                        'sender_name' => $user->first_name ?? $user->email,
-                        'amount' => $amount
-                    
-                    ]);
-
-                    return $this->sendResponse($wallet, "user wallet funded successfully");
-                } else if (array_key_exists('data', $responseData) && array_key_exists('status', $responseData['data']) && ($responseData['data']['status'] === 'pending')) {
-                     
-                    $amount = $responseData["data"]["amount"];
-                    $amount = round($amount, 2);
-                    BrandTransaction::create([
-                        'audience_id' => $user->id, 
-                        'wallet_id' => $wallet->id, 
-                        'brand_id' => $brandId,  
-                        'payment_channel' => 'flutterwave', 
-                        'payment_channel_description' => 'Card Payment',
-                        'status' => 'pending',
-                        'is_credit' => true,
-                        'sender_name' => $user->first_name ?? $user->email,
-                        'amount' => $amount
-                    
-                    ]);
-                }  else if (array_key_exists('data', $responseData) && array_key_exists('status', $responseData['data']) && ($responseData['data']['status'] === 'failed')) {
-                     
-                    $amount = $responseData["data"]["amount"];
-                    $amount = round($amount, 2);
-                    BrandTransaction::create([
-                        'audience_id' => $user->id, 
-                        'wallet_id' => $wallet->id, 
-                        'brand_id' => $brandId,  
-                        'payment_channel' => 'flutterwave', 
-                        'payment_channel_description' => 'Card Payment',
-                        'status' => 'failed',
-                        'is_credit' => true,
-                        'sender_name' => $user->first_name ?? $user->email,
-                        'amount' => $amount
-                    
-                    ]);
-                }
-
-                return $this->sendError("unable to fund wallet, pls try again later");
-
-            }
+            return  $this->sendResponse($response, "wallet fund successfuly");
+          
            
 
         }  catch (\Throwable $th) {
             report($th);
-            return response()->json([ 
-                "error" => true,
-                "message" => "unable to fund wallet",
-                "actual_message" => $th->getMessage()
-            ], 500);
+
+            return $this->sendError("unable to fund wallet", $th->getMessage());
+           
         
         }
     }
