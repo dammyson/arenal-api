@@ -140,4 +140,9 @@ return [
         'bearer_token' => env('FLUTTERWAVE_BEARER_TOKEN'),
     ],
 
+    'seerbit' => [
+        'verify_url' => env('SEER_BIT_VERIFY_URL'),
+        'bearer_token' => env("SEERBIT_BEARER_KEY")
+    ]
+
 ];
