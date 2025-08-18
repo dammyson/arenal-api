@@ -3,17 +3,19 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
+use App\Models\Brand;
 use App\Models\Wallet;
 use App\Models\Transaction;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\AudienceWallet;
+use App\Models\BrandTransaction;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Http;
 use App\Http\Requests\Wallet\FundWalletRequest;
-use App\Models\BrandTransaction;
 use App\Services\Payment\VerifyCardPaymentService;
+use App\Services\Payment\VerifyBankTransferService;
 
 class WalletController extends BaseController
 {
@@ -194,95 +196,13 @@ class WalletController extends BaseController
     }
 
 
-    public function verifyTransfer(Request $request, $tranxReference) {
+    public function verifyTransfer(Request $request, Brand $brand, $tranxReference) {
         try {
 
-            $user = $request->user();
-
-            $wallet = $user->wallet;
-    
-            if (!$wallet) {
-                return response()->json(['message' => 'Wallet not found.'], 404);
-            }
-
-            $seerBitBearerKey = env("SEERBIT_BEARER_KEY");
-
-            $seerBitVerifyUrl = env('SEER_BIT_VERIFY_URL');
-
-            $response = Http::withHeaders([
-                    'Authorization' =>  'Bearer ' . $seerBitBearerKey, 
-                    'Content-Type' => 'application/json'
-                ])
-                
-            ->get("{$seerBitVerifyUrl}{$tranxReference}");
-
-                //             {
-                // "success": true,
-                // "data": {
-                //     "status": "SUCCESS",
-                //     "data": {
-                //         "code": "00",
-                //         "message": "Successful",
-                //         "payments": {
-                //             "redirectLink": "http://checkout-seerbit.surge.sh",
-                //             "amount": 200,
-                //             "bankName": "TEST BANK",
-                //             "mobilenumber": "08012335588",
-                //             "publicKey": "SBTESTPUBK_VR9e7A2lzf0zplz4CvwZ15gmBKeg2XaW",
-                //             "paymentType": "TRANSFER",
-                //             "gatewayMessage": "Successful",
-                //             "gatewayCode": "00",
-                //             "gatewayref": "SEEROF0D1P9C2KI1V1S",
-                //             "businessName": "Tech & Sons",
-                //             "mode": "test",
-                //             "callbackurl": "http://checkout-seerbit.surge.sh",
-                //             "redirecturl": "http://checkout-seerbit.surge.sh",
-                //             "channelType": "TRANSFER",
-                //             "sourceIP": "102.88.53.129",
-                //             "country": "NG",
-                //             "currency": "NGN",
-                //             "paymentReference": "dsfafdafkasdjfsssddffsfjskasjfererer",
-                //             "network": "UNKNOWN",
-                //             "reason": "Successful",
-                //             "transactionProcessedTime": "2025-07-30 13:00:34.550101871"
-                //         },
-                //         "customers": {
-                //             "customerId": "SBTff3895bbcab0b6c5311b",
-                //             "customerName": "Emeka Genye",
-                //             "customerMobile": "08012335588",
-                //             "customerEmail": "emeka@e.com"
-                //         }
-                //     }
-                // }
-           $responseData = $response->json();
-            
-            // return $responseData;
-            if ($responseData["status"] ===  "SUCCESS" && $responseData["data"]["code"] === "00") {
-
-                    $paymentInfo = $responseData["data"]["payments"];
-                    $data["paymentType"] = $paymentInfo["paymentType"];
-                    $data["paymentReference"] = $paymentInfo["paymentReference"];
-                    $data["amount"] = $paymentInfo["amount"];
-                    $data["transactionProcessedTime"] = $paymentInfo["transactionProcessedTime"];
-                    $data["customer_email"] =  $responseData["data"]["customers"]["customerEmail"];
-                    $data["customer_phone_number"] =  $responseData["data"]["customers"]["customerMobile"];
-                    
-
-                    if ($data["customer_email"] != $user->email) {
-                        return $this->sendError("account not funded ", ['error' => "account does not match the user"], 500);
-
-                    }
-
-                    $amount = $paymentInfo["amount"];
-                    $amount = round($amount, 2);
-                    // dd($amount);
-
-                    $wallet->balance += $amount;
-                    $wallet->save();
-
-                    return $this->sendResponse($wallet, "user wallet funded successfully");
-                }
-                return $this->sendError("something went wrong");
+            $data = (new VerifyBankTransferService($request, $brand->id, $tranxReference))->run();
+           
+            return $this->sendResponse($data, "user wallet funded successfully");
+              
             } catch (\Exception $e){
 
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
