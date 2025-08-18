@@ -127,18 +127,14 @@ Route::middleware('auth:audience')->group(function () {
         Route::post("account-settings/profile/upload-image", [ProfileController::class, "uploadImage"]);
         Route::patch('account-settings/security/change-password', [ChangePasswordController::class, 'changePassword']);
 
-        Route::get('wallet/fund-wallet', [WalletController::class, 'showAccountNumber']);
-        Route::post('wallet/fund-wallet', [WalletController::class, 'fundWallet']);
         Route::post('wallet/fund-wallet/transfer-funding', [WalletController::class, 'seerbit']);
         Route::get('wallet/brand/{brand}/fund-wallet/card-funding/{ref}', [WalletController::class, 'cardPayment']);
         Route::get('/seerbit/get-seerbit-token', [WalletController::class, 'getSeerBitToken']);
         Route::get('wallet/seerbit/verify/{ref_id}', [WalletController::class, 'verifyTransfer']);
 
 
-        Route::post('wallet/transfer-funds', [WalletController::class, 'transferFund']);
         Route::post('wallet/create', [WalletController::class, 'createWallet']);
         Route::get('wallet/{wallet_id}/wallet-balance', [WalletController::class, 'getWalletBalance']);
-        Route::post('wallet/{wallet_id}/transaction', [TransactionController::class, 'storeTransaction']);
         Route::post('wallet/{wallet_id}/transaction-history', [TransactionHistoryController::class, 'storeTxHistory']);
         Route::get('wallet/{wallet_id}/transaction-history', [TransactionHistoryController::class, 'getTxHistory']);
         Route::post('wallet/{wallet_id}/search-transaction', [SearchTransactionController::class, 'searchTransactionHistory']);

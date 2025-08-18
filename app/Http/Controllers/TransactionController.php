@@ -64,21 +64,6 @@ class TransactionController extends Controller
         return new TransactionResource($transaction);
     }
 
-    // for test purpose
-    public function storeTransaction(Request $request, $wallet_id) {
-        $tx = Transaction::create([
-            'receipient_name' => $request['receipient_name'],
-            'is_credit' => $request['is_credit'],
-            'status' => $request['status'],
-            'amount' => $request['amount'],
-            'wallet_id' => $wallet_id
-        ]);
-    
-
-        
-        return response()->json([
-            'tx' => $tx
-        ]);
-    }
+   
 
 }
