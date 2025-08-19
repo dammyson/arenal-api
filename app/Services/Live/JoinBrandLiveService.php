@@ -31,30 +31,22 @@ class JoinBrandLiveService implements BaseServiceInterface{
 
             $live = Live::findOrFail($this->request->live_id);
 
-            $currentTime = now();
+            $currentTime = Carbon::now('Africa/Lagos'); // or your actual local TZ
 
-            // $startTime = Carbon::createFromFormat('H:i:s', $live->start_time);
-            // $endTime   = Carbon::createFromFormat('H:i:s', $live->end_time);
-            
-            // Attach today's date to the stored start & end times
-            $startTime = Carbon::createFromFormat('H:i:s', $live->start_time)->setDate(
-                $currentTime->year,
-                $currentTime->month,
-                $currentTime->day
-            );
+            $startTime = Carbon::createFromFormat('H:i:s', $live->start_time, 'Africa/Lagos')
+                ->setDate($currentTime->year, $currentTime->month, $currentTime->day);
 
-            $endTime = Carbon::createFromFormat('H:i:s', $live->end_time)->setDate(
-                $currentTime->year,
-                $currentTime->month,
-                $currentTime->day
-            );
-            
-            if ($currentTime->lt($startTime) || $currentTime->gt($endTime)) {
+            $endTime = Carbon::createFromFormat('H:i:s', $live->end_time, 'Africa/Lagos')
+                ->setDate($currentTime->year, $currentTime->month, $currentTime->day);
 
-                    throw new Exception("You cannot join live at this time");
-                    // return ["message" => "You cannot join live at this time"];
+            // Handle midnight crossover (e.g. 23:00 → 01:00)
+            if ($endTime->lessThan($startTime)) {
+                $endTime->addDay();
             }
 
+            if ($currentTime->lt($startTime) || $currentTime->gt($endTime)) {
+                throw new Exception("You cannot join live at this time");
+            }
             // check if the user has already gone live today
             // dump(now()->toDateString());
             $alreadyJoined = LiveTicket::where('live_id', $this->request->live_id)
