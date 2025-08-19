@@ -2,13 +2,14 @@
 
 namespace App\Services\Live;
 
+use Carbon\Carbon;
 use App\Models\Live;
 use App\Models\Brand;
+use App\Models\LiveTicket;
 use App\Models\BrandDetail;
 use App\Services\BaseServiceInterface;
 use App\Http\Requests\Live\StoreLiveRequest;
 use App\Http\Requests\User\BrandStoreRequest;
-use App\Models\LiveTicket;
 
 class ViewBrandLiveService implements BaseServiceInterface{
     protected $brandId;
@@ -22,8 +23,20 @@ class ViewBrandLiveService implements BaseServiceInterface{
         try {
             $live = Live::where("brand_id", $this->brandId)->first();
 
-            $liveCount = LiveTicket::where("live_id", $live->id)->where("is_live", true)->count();
+            if (!$live) {
+                return [
+                    "live" => null,
+                    "live_count" => 0
+                ];
+            }
+
+
+            $startDateTime = Carbon::today()->setTimeFromTimeString($live->start_time);
+            $endDateTime = Carbon::today()->setTimeFromTimeString($live->end_time);
             
+            $liveCount = LiveTicket::where("live_id", $live->id)->where("is_live", true)
+                ->whereBetween('created_at', [$startDateTime, $endDateTime])
+                ->count();
             
 
             return [
