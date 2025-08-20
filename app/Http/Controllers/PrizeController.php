@@ -98,8 +98,6 @@ class PrizeController extends BaseController
     public function redeemHistory(Request $request, Brand $brand)
     {
         try {
-            // "audience_id", "prize_id",
-            // dd($brand);
             
             $data = (new RedeemHistoryService($brand->id, $request->user()->id))->run();
 

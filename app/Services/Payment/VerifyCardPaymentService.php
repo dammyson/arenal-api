@@ -30,6 +30,7 @@ class VerifyCardPaymentService implements BaseServiceInterface
             if (!$wallet) {
                 throw new Exception("Wallet not found");
             }
+            // dd(" i got here");
 
             $paymentChannel = strtolower($this->request->query('payment_channel'));
 
@@ -46,8 +47,10 @@ class VerifyCardPaymentService implements BaseServiceInterface
             ])->get($config['url']);
 
             $responseData = $response->json();
+            // return $responseData['data']['payment_type'];
+            // dd($responseData['data']["channel"]);
 
-            $brandTrans = $this->createBrandTransaction($user, $wallet, ucfirst($paymentChannel));
+            $brandTrans = $this->createBrandTransaction($user, $wallet, ucfirst($paymentChannel), $responseData['data'][$config['payment_type']]);
 
             if (isset($responseData['data']['amount'])) {
                 $amount     = $config['amountHandler']($responseData['data']['amount']);
@@ -83,6 +86,7 @@ class VerifyCardPaymentService implements BaseServiceInterface
                 'token'         => config('app.paystack.bearer_token'),
                 'amountHandler' => fn($amount) => round($amount / 100, 2),
                 'paymentRefKey' => 'reference',
+                'payment_type' => 'channel',
                 'statusMap'     => [
                     'success' => 'success',
                     'pending' => 'pending',
@@ -94,6 +98,7 @@ class VerifyCardPaymentService implements BaseServiceInterface
                 'token'         => config('app.flutterwave.bearer_token'),
                 'amountHandler' => fn($amount) => round($amount, 2),
                 'paymentRefKey' => 'tx_ref',
+                'payment_type' => 'payment_type',
                 'statusMap'     => [
                     'success' => 'success',
                     'successful' => 'success',
@@ -106,14 +111,14 @@ class VerifyCardPaymentService implements BaseServiceInterface
         return $configs[$channel] ?? null;
     }
 
-    protected function createBrandTransaction($user, $wallet, string $channel)
+    protected function createBrandTransaction($user, $wallet, string $channel, $description)
     {
         return BrandTransaction::create([
             'audience_id'                 => $user->id,
             'wallet_id'                   => $wallet->id,
             'brand_id'                    => $this->brandId,
             'payment_channel'             => $channel,
-            'payment_channel_description' => 'Card Payment',
+            'payment_method' => $description,
             'is_credit'                   => true,
             'sender_name'                 => $user->first_name ?? $user->email,
         ]);
