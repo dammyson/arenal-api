@@ -73,9 +73,9 @@ class TriviaQuestionController extends BaseController
         }
     }
 
-    public function processAnswers(Trivia $trivia, Prize $prize, StoreTriviaAnswerRequest $request) {
+    public function processAnswers(Trivia $trivia, StoreTriviaAnswerRequest $request) {
         try {
-            $data = (new StoreTriviaAnswerService($request, $request->validated()["questions"], $prize->id, $trivia))->run();
+            $data = (new StoreTriviaAnswerService($request, $request->validated()["questions"], $trivia))->run();
         
             return $this->sendResponse($data, "answer returned successfully");
         } catch (\Throwable $e) {

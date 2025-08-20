@@ -21,15 +21,13 @@ class StoreTriviaAnswerService implements BaseServiceInterface
     protected $request;
     protected $questions;
     protected $gameId;
-    protected $prizeId;
     protected $trivia;
 
-    public function __construct(StoreTriviaAnswerRequest $request, $questions, $prizeId, Trivia $trivia)
+    public function __construct(StoreTriviaAnswerRequest $request, $questions, Trivia $trivia)
     {
         $this->request = $request;
         $this->questions = $questions;
         $this->gameId = $trivia->game_id;
-        $this->prizeId = $prizeId;
         $this->trivia = $trivia;
     }
 
@@ -91,15 +89,24 @@ class StoreTriviaAnswerService implements BaseServiceInterface
         // Commit the transaction after updates
         DB::commit();
         
-        $prize = Prize::where('id', $this->prizeId)->first();
-
-        if ($points >= $prize->points) {
+        // $points = 100;
+        $prize = Prize::where('brand_id', $brandId)
+            ->where('points', '<=', $points)
+            ->inRandomOrder()
+            ->first();
+            
+        // return $prize;
+        
+        if ($prize) {
             $brandAudienceReward = BrandAudienceReward::create([
                 'brand_id' => $brandId,
                 'audience_id' => $this->request->user()->id,
-                'prize_id' => $this->prizeId,
+                'prize_id' => $prize->id,
                 'is_redeemed' => false
             ]);
+
+            $brandAudienceReward->load('prize:id,name,description');
+            // $brandAudienceReward = null;
         } 
         
         $audienceBrandPoint = BrandPoint::where('brand_id', $brandId)        
@@ -120,7 +127,14 @@ class StoreTriviaAnswerService implements BaseServiceInterface
 
         $audienceBadgesList = (new GetAudienceBadgeListService($brandId, $audience->id, $audienceBrandPoint->points))->run();
             
-        return ["total_questions_count" => $totalQuestionsCount, "correct_answers_count" => $correctAnswersCount, "points" => $points, "audience_badges_list" => $audienceBadgesList, "leaderboard" => $campaignGamePlay ];
+        return [
+            "total_questions_count" => $totalQuestionsCount, 
+            "correct_answers_count" => $correctAnswersCount, 
+            "points" => $points, 
+            "reward" => $brandAudienceReward ?? null, 
+            "audience_badges_list" => $audienceBadgesList, 
+            "leaderboard" => $campaignGamePlay 
+        ];
     }
 
     
