@@ -93,7 +93,7 @@ class BrandController extends BaseController
             
             $brandLive = (new StoreBrandBadgesService($request))->run();
     
-            return $this->sendResponse($brandLive, "live joined", 201);
+            return $this->sendResponse($brandLive, "brand badges created successfully", 201);
         
         } catch (\Exception $e){
 
