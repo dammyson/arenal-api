@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Badge;
 use App\Models\Brand;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -102,6 +103,20 @@ class BrandController extends BaseController
 
     }
 
+
+     public function deleteBrandBadges(Badge $badge) {
+        try {
+            
+            $badge->delete();
+            return $this->sendResponse("badge deleted successfully", "live joined", 201);
+        
+        } catch (\Exception $e){
+
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }   
+
+
+    }
     public function deleteBrand(Request $request, $id) {
         try {
             Gate::authorize('is-user');
