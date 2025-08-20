@@ -22,6 +22,7 @@ class RedeemHistoryService implements BaseServiceInterface{
         return BrandAudienceReward::where("brand_id", $this->brandId)
             ->where("audience_id", $this->userId)
             ->where('is_redeemed', true)
+            ->with('prize')
             ->get();
 
       
