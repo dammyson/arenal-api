@@ -14,7 +14,7 @@ class BrandTransaction extends Model
         'wallet_id',
         'brand_id',
         'payment_channel', 
-        'payment_channel_description',
+        'payment_method',
         'payment_reference',
         'status',
         'is_credit',
