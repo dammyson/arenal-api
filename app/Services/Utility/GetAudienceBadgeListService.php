@@ -24,7 +24,6 @@ class GetAudienceBadgeListService implements BaseServiceInterface
     public function run()
     {
         $brandBadges = Badge::where('brand_id', $this->brandId)->get();
-        // dd($brandBadges);
             
         $audienceBadgesList = [];
 

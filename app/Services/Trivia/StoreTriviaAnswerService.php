@@ -20,14 +20,12 @@ class StoreTriviaAnswerService implements BaseServiceInterface
 {
     protected $request;
     protected $questions;
-    protected $gameId;
     protected $trivia;
 
     public function __construct(StoreTriviaAnswerRequest $request, $questions, Trivia $trivia)
     {
         $this->request = $request;
         $this->questions = $questions;
-        $this->gameId = $trivia->game_id;
         $this->trivia = $trivia;
     }
 
@@ -35,8 +33,9 @@ class StoreTriviaAnswerService implements BaseServiceInterface
     {
         $audience = $this->request->user();
         // dd($audience);
-        $brandId = $this->request->brand_id;
-        $campaignId = $this->request->campaign_id;
+        $brandId = $this->trivia->brand_id;
+        $campaignId = $this->trivia->campaign_id;
+        $gameId = $this->trivia->game_id;
 
         // dd($trivia->game_id);
         $points = 0;
@@ -64,7 +63,7 @@ class StoreTriviaAnswerService implements BaseServiceInterface
             $campaignGamePlay = CampaignGamePlay::where('audience_id', $audience->id)
                 ->where('brand_id', $brandId)
                 ->where('campaign_id', $campaignId)
-                ->where('game_id', $this->gameId)
+                ->where('game_id', $gameId)
                 ->lockForUpdate()  // Apply pessimistic locking
                 ->first();
 
@@ -73,7 +72,7 @@ class StoreTriviaAnswerService implements BaseServiceInterface
                 $campaignGamePlay = CampaignGamePlay::create([
                     'audience_id' => $audience->id,
                     'campaign_id' => $campaignId,
-                    'game_id' => $this->gameId,
+                    'game_id' => $gameId,
                     'brand_id' => $brandId,
                     'score' => $points,
                     'played_at' => now()
@@ -100,7 +99,7 @@ class StoreTriviaAnswerService implements BaseServiceInterface
         if ($prize) {
             $brandAudienceReward = BrandAudienceReward::create([
                 'brand_id' => $brandId,
-                'audience_id' => $this->request->user()->id,
+                'audience_id' => $audience->id,
                 'prize_id' => $prize->id,
                 'is_redeemed' => false
             ]);
