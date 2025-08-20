@@ -11,6 +11,7 @@ use App\Http\Controllers\BaseController;
 use App\Services\Brand\StoreBrandService;
 use App\Services\Prize\StorePrizeService;
 use App\Services\Prize\GetBrandPrizeService;
+use App\Services\Prize\RedeemHistoryService;
 use App\Http\Requests\User\BrandStoreRequest;
 use App\Http\Requests\User\PrizeStoreRequest;
 use App\Services\Prize\GetBrandBadgesService;
@@ -91,6 +92,21 @@ class PrizeController extends BaseController
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
         }        
         return $this->sendResponse($data, "Brand info retrieved succcessfully");
+    }
+
+
+    public function redeemHistory(Request $request, Brand $brand)
+    {
+        try {
+            // "audience_id", "prize_id",
+            // dd($brand);
+            
+            $data = (new RedeemHistoryService($brand->id, $request->user()->id))->run();
+
+        }  catch (\Exception $e){
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }        
+        return $this->sendResponse($data, "redeem History succcessfully");
     }
 
 
