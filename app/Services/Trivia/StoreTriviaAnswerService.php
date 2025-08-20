@@ -15,6 +15,7 @@ use App\Models\TriviaQuestionChoice;
 use App\Services\BaseServiceInterface;
 use App\Services\Utility\GetAudienceBadgeListService;
 use App\Http\Requests\Trivia\StoreTriviaAnswerRequest;
+use App\Services\Utility\GetAudienceCurrentAndNextBadge;
 
 class StoreTriviaAnswerService implements BaseServiceInterface
 {
@@ -124,11 +125,15 @@ class StoreTriviaAnswerService implements BaseServiceInterface
             ]);
         }
 
+        [$currentBadge, $nextBadge] = (new GetAudienceCurrentAndNextBadge($brandId, $audienceBrandPoint->points))->run();
+
         $audienceBadgesList = (new GetAudienceBadgeListService($brandId, $audience->id, $audienceBrandPoint->points))->run();
             
         return [
             "total_questions_count" => $totalQuestionsCount, 
             "correct_answers_count" => $correctAnswersCount, 
+            'current_badge' => $currentBadge,
+            'next_badge' => $nextBadge,
             "points" => $points, 
             "reward" => $brandAudienceReward ?? null, 
             "audience_badges_list" => $audienceBadgesList, 

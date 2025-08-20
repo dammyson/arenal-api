@@ -10,6 +10,7 @@ use App\Models\BrandAudienceReward;
 use App\Services\BaseServiceInterface;
 use App\Services\Utility\GetAudienceRankService;
 use App\Services\Utility\GetAudienceBadgeListService;
+use App\Services\Utility\GetAudienceCurrentAndNextBadge;
 
 class AudienceBrandAchievementService implements BaseServiceInterface{
     protected $brandId;
@@ -45,19 +46,10 @@ class AudienceBrandAchievementService implements BaseServiceInterface{
         
         $allBadges = Badge::where('brand_id', $this->brandId)->get();
 
-        $currentBadge = Badge::where('brand_id', $this->brandId)
-            ->where('points', '<=', $points)
-            ->orderBy('points', 'desc')
-            ->first();
+    //    dd($this->brandId, $points);
+        [$currentBadge, $nextBadge] = (new GetAudienceCurrentAndNextBadge($this->brandId, $points))->run();
 
-
-        $nextBadge = Badge::where('brand_id', $this->brandId)
-            ->where('points', '>', $points)
-            ->orderBy('points', 'asc')
-            ->first();
-
-
-        $audienceBadgesList = (new GetAudienceBadgeListService( $this->brandId, $audienceId, $points))->run();
+        $audienceBadgesList = (new GetAudienceBadgeListService($this->brandId, $audienceId, $points))->run();
 
         $rank = (new GetAudienceRankService($this->brandId, $audienceId,))->run();
 
