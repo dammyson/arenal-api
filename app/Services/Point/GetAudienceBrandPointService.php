@@ -11,6 +11,8 @@ use App\Models\CampaignGamePlay;
 use App\Services\BaseServiceInterface;
 use App\Services\Utility\GetUserRankService;
 use App\Http\Requests\Live\StoreJoinLiveRequest;
+use App\Models\AudienceLiveStreak;
+use App\Models\Live;
 use App\Services\Utility\GetAudienceRankService;
 use App\Services\Utility\GetAudienceBadgeListService;
 
@@ -42,6 +44,9 @@ class GetAudienceBrandPointService implements BaseServiceInterface
             
             $userBadge = Badge::where("points", "<=", $audiencePoints)->orderBy("points", "desc")->first();
 
+            $live = Live::where('brand_id', $this->brandId)->first();
+            $liveStreak = AudienceLiveStreak::where('audience_id', $user->id)->where('live_id', $live->id)->first();
+            $liveStreakCount = $liveStreak->streak_count ?? 0;
 
             $rank = (new GetAudienceRankService($this->brandId, $user->id))->run();
             $leaderboardCount = CampaignGamePlay::where("brand_id", $this->brandId)->count();
@@ -54,13 +59,14 @@ class GetAudienceBrandPointService implements BaseServiceInterface
 
             return [
                 "audience_badge_name" => $userBadge->name ?? "no badge yet",
+                'streak_count' => $liveStreakCount,
                 'points' => $audiencePoints,
                 'badge_count' => $audienceBadgeCount,
                 "rank" => $rank,
                 "leaderboard_count" => $leaderboardCount,
                 "audience_badges" => $audienceBadgesList,
                 "wallet_balance" => $walletBalance
-            ];
+            ];  
 
                 
                 

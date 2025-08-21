@@ -15,6 +15,7 @@ use App\Services\BaseServiceInterface;
 use App\Http\Requests\Live\StoreLiveRequest;
 use App\Http\Requests\User\BrandStoreRequest;
 use App\Http\Requests\Live\StoreJoinLiveRequest;
+use App\Models\AudienceLiveStreak;
 
 class JoinBrandLiveService implements BaseServiceInterface{
     protected $request;
@@ -75,6 +76,33 @@ class JoinBrandLiveService implements BaseServiceInterface{
                 $brandPoint->points =  ($brandPoint->points ?? 0) + $live->coins;
     
                 $brandPoint->save();
+
+                $liveStreak = AudienceLiveStreak::where("audience_id", $user->id)
+                    ->where("live_id", $live->id)
+                    ->first();
+
+                $today = now()->toDateString();
+
+                if (!$liveStreak) {
+                    AudienceLiveStreak::create([
+                        "audience_id" => $user->id,
+                        "live_id" => $live->id,
+                        "streak_count" => 1,
+                        "last_joined" => $today
+                    ]);
+
+                } else {
+                    $lastJoined = Carbon::parse($liveStreak->last_joined);
+                    
+                    if ($lastJoined->isYesterday()) {
+                        $liveStreak->streak_count += 1;
+                    } else {
+                        $liveStreak->streak_count = 1;
+
+                    }
+                    $liveStreak->last_joined = $today;
+                    $liveStreak->save();
+                }
 
                 return ["ticket" => $liveTicket , "brand_points" => $brandPoint];
             });
