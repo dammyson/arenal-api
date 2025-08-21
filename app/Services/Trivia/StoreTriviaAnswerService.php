@@ -41,7 +41,7 @@ class StoreTriviaAnswerService implements BaseServiceInterface
         // dd($trivia->game_id);
         $points = 0;
 
-        $totalQuestionsCount = $this->trivia->questions()->count();
+        $totalQuestionsCount = 10;
 
         $correctAnswersCount = 0;
         foreach($this->questions as $question) {
