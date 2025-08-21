@@ -41,7 +41,7 @@ class StoreTriviaAnswerService implements BaseServiceInterface
         // dd($trivia->game_id);
         $points = 0;
 
-        $totalQuestionsCount = $this->trivia->questions()->count();
+        $totalQuestionsCount = 10;
 
         $correctAnswersCount = 0;
         foreach($this->questions as $question) {
@@ -134,7 +134,8 @@ class StoreTriviaAnswerService implements BaseServiceInterface
             "correct_answers_count" => $correctAnswersCount, 
             'current_badge' => $currentBadge,
             'next_badge' => $nextBadge,
-            "points" => $points, 
+            "audience_points" => $audienceBrandPoint->points,
+            "quiz_point" => $points, 
             "reward" => $brandAudienceReward ?? null, 
             "audience_badges_list" => $audienceBadgesList, 
             "leaderboard" => $campaignGamePlay 
