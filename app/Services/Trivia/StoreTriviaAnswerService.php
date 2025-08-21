@@ -134,7 +134,8 @@ class StoreTriviaAnswerService implements BaseServiceInterface
             "correct_answers_count" => $correctAnswersCount, 
             'current_badge' => $currentBadge,
             'next_badge' => $nextBadge,
-            "points" => $points, 
+            "audience_points" => $audienceBrandPoint->points,
+            "quiz_point" => $points, 
             "reward" => $brandAudienceReward ?? null, 
             "audience_badges_list" => $audienceBadgesList, 
             "leaderboard" => $campaignGamePlay 
