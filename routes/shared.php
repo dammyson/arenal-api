@@ -26,6 +26,8 @@ Route::post('wallet/deduct-fee', [WalletController::class, 'deductFee']);
 Route::get('/brands',  [BrandController::class, 'index'])->name('index');
 Route::get('brand-leaderboard/{brand}', [CampaignGamePlayLeaderboardController::class, 'brandLeaderboard']);
 Route::get('brand/{brand}/live', [LiveController::class, 'viewBrandLive']);
+Route::post("brand-profile/{brand}/profile", [BrandController::class, "getAudienceProfile"]);
+
 Route::post('join-live', [LiveController::class, 'joinLive']);
 Route::get('brand/{brand}/live-history', [LiveController::class, 'liveHistory']);
 Route::get('brand/{brand}/transaction-history', [BrandAudienceTransactionController::class, 'audienceTransactionHistory']);
