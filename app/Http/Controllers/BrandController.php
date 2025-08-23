@@ -72,6 +72,8 @@ class BrandController extends BaseController
 
 
 
+
+
     public function userPrize(Request $request, Brand $brand) {
         try {
 

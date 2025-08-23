@@ -58,6 +58,10 @@ class GetAudienceBrandPointService implements BaseServiceInterface
 
 
             return [
+                // "user" => $user,
+                "first_name" => $user->first_name,
+                "last_name" => $user->last_name,
+                "user_image" => $user->profile_image,
                 "audience_badge_name" => $userBadge->name ?? "no badge yet",
                 'streak_count' => $liveStreakCount,
                 'points' => $audiencePoints,
