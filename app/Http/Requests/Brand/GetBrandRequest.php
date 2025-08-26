@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Campaign;
+namespace App\Http\Requests\Brand;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class PlayCampaignGameRequest extends FormRequest
+class GetBrandRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,8 +22,7 @@ class PlayCampaignGameRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'game_id' => 'required|uuid',
-            'campaign_id' => 'required|uuid',
+            'brand_id' => 'required|uuid',
             'is_link' => 'required|boolean',
             'user_id' => 'required|uuid|exists:users,id',
         ];

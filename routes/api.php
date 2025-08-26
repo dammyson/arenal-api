@@ -27,6 +27,7 @@ use App\Http\Controllers\SpinTheWheelSectorController;
 use App\Http\Controllers\TransactionHistoryController;
 use App\Http\Controllers\SpinTheWheelComponentController;
 use App\Http\Controllers\OverallCampaignGamePlayLeaderboardController;
+use App\Models\Brand;
 
 Route::post('users/auth/register', [UserRegisterController::class, 'userRegister']);
 Route::post('users/auth/login', [UserRegisterController::class, 'login']);
@@ -66,6 +67,8 @@ Route::group(["middleware" => ["auth:api"]], function () {
         Route::post('brand-audience/{audiencePrizeDelivery}/delivery-update', [PrizeController::class, 'updateAudienceBrandPrizeDelivery']);
         Route::post('badges', [BrandController::class, 'storeBrandBadges']);
         Route::delete('badges/{id}', [BrandController::class, 'deleteBrandBadge']);
+
+        Route::get('generate-brands-link/{brand}', [BrandController::class, 'generateCampaignLink']);
 
         
         Route::post('campaign', [CampaignController::class, 'storeCampaign']);   
@@ -114,8 +117,7 @@ Route::middleware('auth:audience')->group(function () {
         // Route::patch('gamez/{game_id}/favorite', [GameController::class, 'toogleFavorite']);
 
         Route::post('play-game', [CampaignController::class, 'goToCampaignGame'])->name('play.game');
-
-    
+        Route::post('world-game', [BrandController::class, 'showBrand'])->name('world.game');
 
         Route::post('gameboard/search-game', [SearchGameController::class, 'searchGame']);
         Route::post('gameboard/category', [FilterGameController::class, 'filter']);
