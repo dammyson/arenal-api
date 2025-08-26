@@ -55,7 +55,7 @@ class BrandController extends BaseController
         return $this->sendResponse($data, "Brand updated succcessfully");
     }
 
-    public function getPoints(Request $request, Brand $brand) {
+    public function getProfile(Request $request, Brand $brand) {
         try {
 
             $brandLive = (new GetAudienceBrandPointService($request, $brand->id))->run();
