@@ -25,7 +25,7 @@ class PlayCampaignGameRequest extends FormRequest
             'game_id' => 'required|uuid',
             'campaign_id' => 'required|uuid',
             'is_link' => 'required|boolean',
-            'user_id' => 'required|uuid|exists:audiences,id',
+            'user_id' => 'required|uuid|exists:users,id',
         ];
     }
 }
