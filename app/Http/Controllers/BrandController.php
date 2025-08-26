@@ -158,7 +158,7 @@ class BrandController extends BaseController
             }
 
             $brand_id = $validated['brand_id'];
-            $data = Brand::with('badges')->find($brand_id);
+            $data = Brand::find($brand_id);
         } catch (\Exception $e) {
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
         }
