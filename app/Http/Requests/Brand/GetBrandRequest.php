@@ -24,7 +24,12 @@ class GetBrandRequest extends FormRequest
         return [
             'brand_id' => 'required|uuid',
             'is_link' => 'required|boolean',
-            'user_id' => 'required|uuid|exists:users,id',
+            'user_id' => [
+                'nullable',
+                'uuid',
+                'exists:users,id',
+                'required_if:is_link,true',
+            ],
         ];
     }
 }
