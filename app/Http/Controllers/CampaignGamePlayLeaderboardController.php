@@ -63,20 +63,20 @@ class CampaignGamePlayLeaderboardController extends Controller
 
                 // return $leaderboard->get();
 
-        //    if ($filter == "daily") {
-        //         $leaderboard->whereDate('created_at', Carbon::now()->toDateString());
+           if ($filter == "daily") {
+                $leaderboard->whereDate('updated_at', Carbon::now()->toDateString());
                   
-        //    } else if ($filter == "weekly") {
-        //         $start_week = Carbon::now()->startOfWeek()->format('Y-m-d');
-        //         $end_week = Carbon::now()->endOfWeek()->format('Y-m-d');
+           } else if ($filter == "weekly") {
+                $start_week = Carbon::now()->startOfWeek()->format('Y-m-d');
+                $end_week = Carbon::now()->endOfWeek()->format('Y-m-d');
 
-        //         $leaderboard->whereDate('created_at', '>=', $start_week)->whereDate('created_at', '<=', $end_week);
+                $leaderboard->whereDate('updated_at', '>=', $start_week)->whereDate('created_at', '<=', $end_week);
 
-        //    } else if ($filter == 'monthly') {            
-        //         $start_month = Carbon::now()->firstOfMonth()->format('Y-m-d');
-        //         $end_month = Carbon::now()->lastOfMonth()->format('Y-m-d');
-        //         $leaderboard->whereDate('created_at', '>=', $start_month)->whereDate('created_at', '<=', $end_month);
-        //    } 
+           } else if ($filter == 'monthly') {            
+                $start_month = Carbon::now()->firstOfMonth()->format('Y-m-d');
+                $end_month = Carbon::now()->lastOfMonth()->format('Y-m-d');
+                $leaderboard->whereDate('updated_at', '>=', $start_month)->whereDate('created_at', '<=', $end_month);
+           } 
 
             $leaderboard = $leaderboard->groupBy('audience_id')
                 ->orderBy('total_score', 'desc')
