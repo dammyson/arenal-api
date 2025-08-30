@@ -8,7 +8,7 @@ use App\Models\Wallet;
 use App\Models\Audience;
 use Illuminate\Http\Request;
 use App\Models\AudienceWallet;
-use App\Notifications\ArenaOtp;
+use App\Notifications\ArenaOTP;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Notification;
@@ -94,12 +94,12 @@ class AudienceRegisterController extends BaseController
                   // Send notification to email or phone
                 if (filter_var($request->email_or_phone, FILTER_VALIDATE_EMAIL)) {
                     Notification::route('mail', $request->email_or_phone)
-                        ->notify(new ArenaOtp($otpCode));
+                        ->notify(new ArenaOTP($otpCode));
                 } else {
                     Notification::route('nexmo', $request->email_or_phone) // or 'vonage' depending on your SMS driver
-                        ->notify(new ArenaOtp($otpCode));
+                        ->notify(new ArenaOTP($otpCode));
                 }
-                // $user->notify(new ArenaOtp($otp));
+                // $user->notify(new ArenaOTP($otp));
                 return $this->sendResponse($otp, false);
             }
         } catch (\Throwable $th) {
