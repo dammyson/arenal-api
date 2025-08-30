@@ -10,14 +10,13 @@ use Illuminate\Notifications\Notification;
 class ArenaOTP extends Notification
 {
     use Queueable;
-    protected  $otp;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct($otp)
+    public function __construct()
     {
-        $this->otp = $otp;
+        //
     }
 
     /**
@@ -36,11 +35,9 @@ class ArenaOTP extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->from('gilbertgenye4@gmail.com', 'Arena OTP')
-            ->greeting("Hello!")
-            ->line('Welcome to Arena, below is your OTP')
-            ->line($this->otp)
-            ->line('Thank you for using our application!');;
+                    ->line('The introduction to the notification.')
+                    ->action('Notification Action', url('/'))
+                    ->line('Thank you for using our application!');
     }
 
     /**
