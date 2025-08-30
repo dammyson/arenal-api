@@ -7,7 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class ArenaOtp extends Notification
+class ArenaOTP extends Notification
 {
     use Queueable;
     protected  $otp;
@@ -36,6 +36,7 @@ class ArenaOtp extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
+            ->from('gilbertgenye4@gmail.com', 'Arena OTP')
             ->greeting("Hello!")
             ->line('Welcome to Arena, below is your OTP')
             ->line($this->otp)
