@@ -8,13 +8,13 @@ use App\Models\Wallet;
 use App\Models\Audience;
 use Illuminate\Http\Request;
 use App\Models\AudienceWallet;
-use App\Notifications\ArenaOTP;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Notification;
 use App\Http\Requests\Auth\AudienceLoginRequest;
 use App\Http\Requests\Auth\RegisterAudienceRequest;
 use App\Http\Requests\Auth\ChangeAudiencePasswordRequest;
+use App\Notifications\ArenaOTP;
 
 class AudienceRegisterController extends BaseController
 {
