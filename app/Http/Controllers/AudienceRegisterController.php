@@ -193,7 +193,7 @@ class AudienceRegisterController extends BaseController
             }
 
             return response()->json([
-                "message" => "Otp to reset password has been sent to your email/phone number",
+                "message" => "OTP to reset password has been sent to your email/phone number",
                 'otp' => $otp
             ], 200);
             // return redirect()->to(route('login.get'))->with('success', "we have sent an email to reset password");
