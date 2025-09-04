@@ -122,6 +122,7 @@ class AudienceRegisterController extends BaseController
             $user = Audience::where('email', $request['email_or_phone'])
                 ->orWhere('phone_number', $request['email_or_phone'])
                 ->first();
+            dd($user);
 
             if (is_null($user)) {
                 return response()->json(['error' => true, 'message' => 'Invalid credentials'], 401);
