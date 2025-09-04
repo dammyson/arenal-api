@@ -122,7 +122,7 @@ class AudienceRegisterController extends BaseController
             $user = Audience::where('email', $request['email_or_phone'])
                 ->orWhere('phone_number', $request['email_or_phone'])
                 ->first();
-            dd($user);
+            // dd($user);
 
             if (is_null($user)) {
                 return response()->json(['error' => true, 'message' => 'Invalid credentials'], 401);
@@ -131,9 +131,11 @@ class AudienceRegisterController extends BaseController
             if (Hash::check($request->password, $user->password) || $request->password === $user->pin) {
                 $data['user'] = $user;
                 $data['token'] = $user->createToken('Nova')->accessToken;
+                
 
                 return response()->json(['is_correct' => true, 'message' => 'Login Successful', 'data' => $data], 200);
             } else {
+                dd(" iran");
                 return response()->json(['error' => true, 'message' => 'Invalid credentials'], 401);
             }
         } catch (\Exception $exception) {
