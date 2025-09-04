@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Notification;
 use App\Http\Requests\Auth\AudienceLoginRequest;
 use App\Http\Requests\Auth\RegisterAudienceRequest;
 use App\Http\Requests\Auth\ChangeAudiencePasswordRequest;
+use App\Notifications\ArenaForgotPassword;
 use App\Notifications\ArenaOTP;
 
 class AudienceRegisterController extends BaseController
@@ -176,12 +177,20 @@ class AudienceRegisterController extends BaseController
                 ->orWhere('phone_number', $request['email_or_phone'])
                 ->first();
 
-            $otp = $this->generateFourDigitOtp();
+            $otpCode = $this->generateFourDigitOtp();
 
             $otp = Otp::create([
                 'email_or_phone_no' => $request['email_or_phone'],
-                'otp' => $otp
+                'otp' => $otpCode
             ]);
+
+            if (filter_var($request->email_or_phone, FILTER_VALIDATE_EMAIL)) {
+                    Notification::route('mail', $request->email_or_phone)
+                        ->notify(new ArenaForgotPassword($otpCode));
+            } else {
+                Notification::route('nexmo', $request->email_or_phone) // or 'vonage' depending on your SMS driver
+                    ->notify(new ArenaForgotPassword($otpCode));
+            }
 
             return response()->json([
                 "message" => "Otp to reset password has been sent to your email/phone number",
