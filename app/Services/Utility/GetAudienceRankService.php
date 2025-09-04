@@ -26,7 +26,7 @@ class GetAudienceRankService implements BaseServiceInterface
         // Search for current audience position (add 1 for 1-based index)
         $rank = $gamePlays->search($this->audienceId);
 
-        return $rank !== false ? $rank + 1 : null; // null if not found
+        return $rank !== false ? $rank : null; // null if not found
     }
     
 }
