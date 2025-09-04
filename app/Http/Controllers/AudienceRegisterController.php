@@ -135,7 +135,7 @@ class AudienceRegisterController extends BaseController
 
                 return response()->json(['is_correct' => true, 'message' => 'Login Successful', 'data' => $data], 200);
             } else {
-                dd(" iran");
+                // dd(" iran");
                 return response()->json(['error' => true, 'message' => 'Invalid credentials'], 401);
             }
         } catch (\Exception $exception) {
