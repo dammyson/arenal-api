@@ -2,20 +2,26 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Otp;
 use App\Models\User;
 use App\Models\Wallet;
+use App\Models\Audience;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\ChangeAudienceTransactionPin;
-use App\Http\Requests\ChangePinRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Storage;
+use App\Notifications\ArenaForgotPin;
 use App\Services\Users\ProfileService;
+use App\Http\Requests\ChangePinRequest;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\ProfileEditRequest;
 use App\Http\Requests\UploadImageRequest;
+
 use App\Services\Images\UploadImageService;
+use Illuminate\Support\Facades\Notification;
+use App\Http\Requests\ChangeAudienceTransactionPin;
+use App\Http\Requests\ForgotAudienceTransactionPin;
 
 class ProfileController extends BaseController
 {   
@@ -62,6 +68,88 @@ class ProfileController extends BaseController
         }        
         return $this->sendResponse($data, "user pin updated succcessfully", 200);
    
+    }
+
+    public function forgotPin(ForgotAudienceTransactionPin $request) 
+    {
+        try {
+            $newPin = $request->input("new_pin");
+            $user = $request->user();
+
+            $otp = Otp::where('otp', $request['otp'])
+                ->where('email_or_phone_no', $user->email)
+                ->Orwhere('email_or_phone_no', $user->phone_number)
+                ->where('created_at', '<' , now()->subMinutes(10))->first();
+
+
+            if (!$otp) {
+                return $this->sendError('wrong otp', null, 400);
+
+            }
+            if ($otp->is_verified) {
+                return $this->sendError('otp already verified', null, 400);
+            }
+            
+            $data = $this->profileService->changeAudiencePin($newPin);
+
+            $otp->is_verified = true;
+            $otp->save();
+            return $this->sendResponse($otp, 'otp verifcation successfully');
+           
+
+        }  catch (\Exception $e){
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }        
+        return $this->sendResponse($data, "user pin updated succcessfully", 200);
+   
+    }
+
+    public function getOTP(Request $request) 
+    {
+        try {
+
+            $user = $request->user();
+            
+            if (!$user) {
+                return $this->sendError("user does not exist");
+            }
+
+            $otpCode = $this->generateFourDigitOtp();
+
+            if ($user->email) {
+                  
+                Otp::create([
+                    'email_or_phone_no' => $user->email,
+                    'otp' => $otpCode
+                ]);
+
+                Notification::route('mail', $user->email)
+                    ->notify(new ArenaForgotPin($otpCode));
+            } else {
+
+                Otp::create([
+                    'email_or_phone_no' => $user->phone_number,
+                    'otp' => $otpCode
+                ]);
+
+                Notification::route('nexmo', $user->phone_number) // or 'vonage' depending on your SMS driver
+                    ->notify(new ArenaForgotPin($otpCode));
+            }
+
+            return $this->sendResponse($otpCode, "otp sent succcessfully", 200);
+
+        }  catch (\Exception $e){
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }        
+   
+    }
+
+     
+    public function generateFourDigitOtp()
+    {
+        $digits = 4;
+        $otp = str_pad(rand(0, pow(10, $digits) - 1), $digits, '0', STR_PAD_LEFT);
+        return $otp;
     }
 
     public function uploadImage(UploadImageRequest $request) 
