@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Audience;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\ProfileEditRequest;
+use Exception;
 
 class ProfileService   {
     protected $audience;
@@ -51,7 +52,16 @@ class ProfileService   {
 		return $userInfo;
 	}
 
-	public function changeAudiencePin($pin) {
+	public function setPin($pin) {
+		$this->audience->pin = $pin;
+		$this->audience->save();
+		return $this->audience;
+	}
+
+	public function changePin($pin, $currentPin, $oldPin) {
+		if ($currentPin !== $oldPin) {
+			throw new Exception("incorrect current pin");
+		}
 		$this->audience->pin = $pin;
 		$this->audience->save();
 		return $this->audience;
