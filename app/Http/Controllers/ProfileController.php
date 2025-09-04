@@ -22,6 +22,7 @@ use App\Services\Images\UploadImageService;
 use Illuminate\Support\Facades\Notification;
 use App\Http\Requests\ChangeAudienceTransactionPin;
 use App\Http\Requests\ForgotAudienceTransactionPin;
+use App\Http\Requests\SetAudienceTransactionPinRequest;
 
 class ProfileController extends BaseController
 {   
@@ -57,14 +58,28 @@ class ProfileController extends BaseController
    
     }
 
-    public function changePin(ChangeAudienceTransactionPin $request) 
+    public function setPin(SetAudienceTransactionPinRequest $request) 
     {
         try {
-            $data = $this->profileService->changeAudiencePin($request->pin);
+            $data = $this->profileService->setPin($request->pin);
 
 
         }  catch (\Exception $e){
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }        
+        return $this->sendResponse($data, "user pin updated succcessfully", 200);
+   
+    }
+
+    public function changePin(ChangeAudienceTransactionPin $request) 
+    {
+        try {
+            $user = $request->user();
+            $data = $this->profileService->changePin($request->pin, $user->pin, $request->old_pin);
+
+
+        }  catch (\Exception $e){
+            return $this->sendError($e->getMessage(), ['error' => $e->getMessage()], 500);
         }        
         return $this->sendResponse($data, "user pin updated succcessfully", 200);
    

@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ChangeAudienceTransactionPin extends FormRequest
+class SetAudienceTransactionPinRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,8 +22,7 @@ class ChangeAudienceTransactionPin extends FormRequest
     public function rules(): array
     {
         return [
-            "pin" => "required|digits:4",
-            "old_pin" => "sometimes|digits:4"
+            "pin" => "required|digits:4"
 
         ];
     }
