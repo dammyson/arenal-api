@@ -19,9 +19,16 @@ class GetAudienceRankService implements BaseServiceInterface
     public function run()
     {
          // Get all user scores ordered by score descending
+        // $gamePlays = CampaignGamePlay::where('brand_id', $this->brandId)
+        //     ->orderByDesc('score')
+        //     ->pluck('audience_id'); // Just get audience IDs
+
         $gamePlays = CampaignGamePlay::where('brand_id', $this->brandId)
-            ->orderByDesc('score')
-            ->pluck('audience_id'); // Just get audience IDs
+            ->select('audience_id')
+            ->selectRaw('MAX(score) as max_score')
+            ->groupBy('audience_id')
+            ->orderByDesc('max_score')
+            ->pluck('audience_id');
 
         // Search for current audience position (add 1 for 1-based index)
         $rank = $gamePlays->search($this->audienceId);
