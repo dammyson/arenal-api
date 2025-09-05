@@ -92,14 +92,14 @@ class JoinBrandLiveService implements BaseServiceInterface{
                     ]);
 
                 } else {
-                    $lastJoined = Carbon::parse($liveStreak->last_joined);
-                    
-                    if ($lastJoined->isYesterday()) {
+                    $lastJoined = Carbon::parse($liveStreak->last_joined)->startOfDay();
+
+                    if ($lastJoined->equalTo(today()->subDay())) {
                         $liveStreak->streak_count += 1;
                     } else {
                         $liveStreak->streak_count = 1;
-
                     }
+                    
                     $liveStreak->last_joined = $today;
                     $liveStreak->save();
                 }
