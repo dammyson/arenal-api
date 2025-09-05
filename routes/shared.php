@@ -32,6 +32,9 @@ Route::get('brand/{brand}/live-history', [LiveController::class, 'liveHistory'])
 Route::get('brand/{brand}/transaction-history', [BrandAudienceTransactionController::class, 'audienceTransactionHistory']);
 
 Route::get('brand/{brand}/get-profile', [BrandController::class, 'getProfile']);
+Route::get('arena-profile', [BrandController::class, 'arenaProfile']);
+Route::post('arena-demography', [BrandController::class, 'storeAudienceDemo']);
+Route::get('arena-demography', [BrandController::class, 'getAudienceDemo']);
 Route::get('brand/{brand}/prizes', [BrandController::class, 'brandPrizes']);
 Route::get('brand/{brand}/achievements', [PrizeController::class, 'achievements']);
 // Route::get('brand/{brand}/user-prizes', [PrizeController::class, 'audienceBrandPrize']);
