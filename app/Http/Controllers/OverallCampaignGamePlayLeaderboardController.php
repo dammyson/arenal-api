@@ -17,10 +17,12 @@ class OverallCampaignGamePlayLeaderboardController extends BaseController
         $this->overallGamePlayService = new OverallCampaignGamePlayService();
     }
   
-    public function overallLeaderboard()
+    public function overallLeaderboard(Request $request)
     {
         try {
-            $data = $this->overallGamePlayService->overallLeaderboard();
+            $audience = $request->user();
+            $data["audience_id"] = $audience->id;
+            $data["leaderboard"] = $this->overallGamePlayService->overallLeaderboard();
             
         }  catch (\Exception $e){
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
@@ -42,10 +44,12 @@ class OverallCampaignGamePlayLeaderboardController extends BaseController
     
     }
 
-    public function overallLeaderboardDaily()
+    public function overallLeaderboardDaily(Request $request)
     {
          try {
-            $data = $this->overallGamePlayService->overallLeaderboardDaily();
+             $audience = $request->user();
+             $data["audience_id"] = $audience->id;
+             $data["leaderboard"] = $this->overallGamePlayService->overallLeaderboardDaily();
 
 
         }  catch (\Exception $e){
@@ -55,10 +59,12 @@ class OverallCampaignGamePlayLeaderboardController extends BaseController
     
     }
 
-    public function overallLeaderboardWeekly()
+    public function overallLeaderboardWeekly(Request $request)
     {
         try { 
-            $data = $this->overallGamePlayService->overallLeaderboardWeekly();
+            $audience = $request->user();
+            $data["audience_id"] = $audience->id;
+            $data["leaderboard"] = $this->overallGamePlayService->overallLeaderboardWeekly();
 
 
         }  catch (\Exception $e){
@@ -68,12 +74,13 @@ class OverallCampaignGamePlayLeaderboardController extends BaseController
     
     }
 
-    public function overallLeaderboardMonthly()
+    public function overallLeaderboardMonthly(Request $request)
     {
       
         try { 
-            $data = $this->overallGamePlayService->overallLeaderboardMonthly();
-
+            $audience = $request->user();
+            $data["audience_id"] = $audience->id;
+            $data["leaderboard"] = $this->overallGamePlayService->overallLeaderboardMonthly();
 
         }  catch (\Exception $e){
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
