@@ -11,8 +11,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use App\Http\Requests\GamePlayRequest;
 use App\Http\Requests\Campaign\UpdateCampaignGamePlayRequest;
+use App\Services\CampaignGamePlay\ArenaLeaderboardService;
 
-class CampaignGamePlayLeaderboardController extends Controller
+class CampaignGamePlayLeaderboardController extends BaseController
 {
     public function gameLeaderboardAllTime($campaignId, $gameId)
     {
@@ -90,6 +91,13 @@ class CampaignGamePlayLeaderboardController extends Controller
         }
 
         return response()->json(["audience" => $audience->id, "leaderboard" => $leaderboard]);
+    }
+
+    public function arenaLeaderboard(Request $request) {       
+
+        $data = (new ArenaLeaderboardService($request))->run();
+
+        return $this->sendResponse($data, "arena leaderboard");
     }
 
     public function gameLeaderboardDaily($campaignId, $gameId)
