@@ -22,7 +22,6 @@ class ForgotAudienceTransactionPin extends FormRequest
     public function rules(): array
     {
         return [
-            "otp" => "required|digits:4",
             "new_pin" => "required|digits:4|confirmed",
 
 
