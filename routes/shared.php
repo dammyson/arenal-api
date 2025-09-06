@@ -25,6 +25,7 @@ use App\Http\Controllers\OverallCampaignGamePlayLeaderboardController;
 Route::post('wallet/deduct-fee', [WalletController::class, 'deductFee']);
 Route::get('/brands',  [BrandController::class, 'index'])->name('index');
 Route::get('brand-leaderboard/{brand}', [CampaignGamePlayLeaderboardController::class, 'brandLeaderboard']);
+Route::get('arena-leaderboard', [CampaignGamePlayLeaderboardController::class, 'arenaLeaderboard']);
 Route::get('brand/{brand}/live', [LiveController::class, 'viewBrandLive']);
 
 Route::post('join-live', [LiveController::class, 'joinLive']);
