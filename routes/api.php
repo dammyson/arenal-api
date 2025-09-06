@@ -127,6 +127,7 @@ Route::middleware('auth:audience')->group(function () {
         Route::get("account-settings/profile", [ProfileController::class, "profile"]);
         Route::post("account-settings/profile/edit", [ProfileController::class, "editProfile"]);
         Route::get('account-settings/profile/get-otp', [ProfileController::class, 'getOtp']);
+        Route::post("account-settings/profile/validate-otp", [ProfileController::class, "validateOtp"]);
         Route::patch("account-settings/profile/set-pin", [ProfileController::class, "setPin"]);
         Route::patch("account-settings/profile/change-pin", [ProfileController::class, "changePin"]);
         Route::patch("account-settings/profile/forgot-pin", [ProfileController::class, "forgotPin"]);

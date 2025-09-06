@@ -91,25 +91,11 @@ class ProfileController extends BaseController
             $newPin = $request->input("new_pin");
             $user = $request->user();
 
-            $otp = Otp::where('otp', $request['otp'])
-                ->where('email_or_phone_no', $user->email)
-                ->Orwhere('email_or_phone_no', $user->phone_number)
-                ->where('created_at', '<' , now()->subMinutes(10))->first();
-
-
-            if (!$otp) {
-                return $this->sendError('wrong otp', null, 400);
-
-            }
-            if ($otp->is_verified) {
-                return $this->sendError('otp already verified', null, 400);
-            }
+          
             
-            $data = $this->profileService->changeAudiencePin($newPin);
+            $data = $this->profileService->setPin($newPin);
 
-            $otp->is_verified = true;
-            $otp->save();
-            return $this->sendResponse($otp, 'otp verifcation successfully');
+            return $this->sendResponse("verfication successfull", 'otp verifcation successfully');
            
 
         }  catch (\Exception $e){
@@ -152,6 +138,39 @@ class ProfileController extends BaseController
             }
 
             return $this->sendResponse($otpCode, "otp sent succcessfully", 200);
+
+        }  catch (\Exception $e){
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }        
+   
+    }
+
+    public function validateOtp(Request $request) 
+    {
+        try {
+
+            $user = $request->user();
+            $user = $request->user();
+
+            $otp = Otp::where('otp', $request['otp'])
+                ->where('email_or_phone_no', $user->email)
+                ->Orwhere('email_or_phone_no', $user->phone_number)
+                ->where('created_at', '<' , now()->subMinutes(10))->first();
+
+
+            if (!$otp) {
+                return $this->sendError('wrong otp', null, 400);
+
+            }
+            
+            if ($otp->is_verified) {
+                return $this->sendError('otp already verified', null, 400);
+            }
+
+            $otp->is_verified = true;
+            $otp->save();
+
+            return $this->sendResponse("success", "Otp verified succesfully", 200);
 
         }  catch (\Exception $e){
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
