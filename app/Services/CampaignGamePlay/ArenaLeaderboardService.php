@@ -26,7 +26,7 @@ class ArenaLeaderboardService
 
             // Base query: aggregate scores per audience
             $leaderboard = CampaignGamePlay::query()
-                // ->whereNull('brand_id')
+                ->whereNull('brand_id')
                 ->select('audience_id', DB::raw('SUM(score) as total_score'));
 
             // Apply date filter
