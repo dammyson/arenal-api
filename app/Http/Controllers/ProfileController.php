@@ -95,7 +95,7 @@ class ProfileController extends BaseController
             
             $data = $this->profileService->setPin($newPin);
 
-            return $this->sendResponse("verfication successfull", 'otp verifcation successfully');
+            return $this->sendResponse("pin changed successfully", 'pin changed successfully');
            
 
         }  catch (\Exception $e){
