@@ -10,7 +10,7 @@ class BrandAudienceReward extends Model
 {
     use HasFactory, HasUuids;
     //points
-    protected $fillable = ["brand_id", "detail", "points", "audience_id", "prize_id", "is_redeemed"];
+    protected $fillable = ["brand_id", "detail", "points", "audience_id", "prize_id", "is_arena", "is_redeemed"];
 
     public function prize() {
         return $this->belongsTo(Prize::class);

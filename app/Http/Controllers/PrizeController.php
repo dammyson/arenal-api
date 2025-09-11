@@ -22,6 +22,7 @@ use App\Services\Point\GetAudienceBrandPointService;
 use App\Services\Prize\GetBrandAudienceBadgeService;
 use App\Http\Requests\Prize\UpdatePrizeDeliveryRequest;
 use App\Services\Achievement\AudienceBrandAchievementService;
+use App\Services\Achievement\TestAudienceBrandAchievementService;
 
 class PrizeController extends BaseController
 {
@@ -46,6 +47,19 @@ class PrizeController extends BaseController
             // dd($brand);
             
             $data = (new AudienceBrandAchievementService($request, $brand->id))->run();
+
+        }  catch (\Exception $e){
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }        
+        return $this->sendResponse($data, "Brand prize retrieved succcessfully");
+    }
+
+    public function arenaAchievements(Request $request)
+    {
+        try {
+            // dd($brand);
+            
+            $data = (new TestAudienceBrandAchievementService($request))->run();
 
         }  catch (\Exception $e){
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);

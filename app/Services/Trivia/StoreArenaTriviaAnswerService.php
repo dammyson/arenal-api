@@ -12,19 +12,21 @@ use App\Models\CampaignGamePlay;
 use Illuminate\Support\Facades\DB;
 use App\Models\BrandAudienceReward;
 use App\Models\TriviaQuestionChoice;
+use App\Models\ArenaCampaignGamePlay;
 use App\Services\BaseServiceInterface;
 use App\Services\Utility\GetAudienceBadgeListService;
 use App\Http\Requests\Trivia\StoreTriviaAnswerRequest;
-use App\Models\ArenaCampaignGamePlay;
 use App\Services\Utility\GetAudienceCurrentAndNextBadge;
+use App\Services\Utility\GetArenaAudienceBadgeListService;
+use App\Services\Utility\GetArenaAudienceCurrentAndNextBadge;
 
-class StoreTriviaAnswerService implements BaseServiceInterface
+class StoreTriviaArenaAnswerService implements BaseServiceInterface
 {
     protected $request;
     protected $questions;
     protected $trivia;
 
-    public function __construct (StoreTriviaAnswerRequest $request, $questions, Trivia $trivia)
+    public function __construct(StoreTriviaAnswerRequest $request, $questions, Trivia $trivia)
     {
         $this->request = $request;
         $this->questions = $questions;
@@ -35,7 +37,6 @@ class StoreTriviaAnswerService implements BaseServiceInterface
     {
         $audience = $this->request->user();
         // dd($audience);
-        $brandId = $this->trivia->brand_id;
         $campaignId = $this->trivia->campaign_id;
         $gameId = $this->trivia->game_id;
 
@@ -60,48 +61,44 @@ class StoreTriviaAnswerService implements BaseServiceInterface
 
         // Start a transaction
         DB::beginTransaction();
-            
                  // Fetch the record and lock it for update
-                $campaignGamePlay = CampaignGamePlay::where('audience_id', $audience->id)
-                    ->where('brand_id', $brandId)
-                    ->where('campaign_id', $campaignId)
-                    ->where('game_id', $gameId)
-                    ->lockForUpdate()  // Apply pessimistic locking
-                    ->first();
+            $campaignGamePlay = ArenaCampaignGamePlay::where('audience_id', $audience->id)
+                ->where('campaign_id', $campaignId)
+                ->where('game_id', $gameId)
+                ->lockForUpdate()  // Apply pessimistic locking
+                ->first();
 
-                if (!$campaignGamePlay) {
-                    // If no record exists, create a new one
-                    $campaignGamePlay = CampaignGamePlay::create([
-                        'audience_id' => $audience->id,
-                        'campaign_id' => $campaignId,
-                        'game_id' => $gameId,
-                        'brand_id' => $brandId,
-                        'score' => $points,
-                        'played_at' => now()
-                    ]);
-                    
-                } else {
-                    // If record exists, increment score and update played_at
-                    $campaignGamePlay->score += $points;
-                    $campaignGamePlay->played_at = now();
-                    $campaignGamePlay->save();
-                }
+            if (!$campaignGamePlay) {
+                // If no record exists, create a new one
+                $campaignGamePlay = ArenaCampaignGamePlay::create([
+                    'audience_id' => $audience->id,
+                    'campaign_id' => $campaignId,
+                    'game_id' => $gameId,
+                    'score' => $points,
+                    'played_at' => now()
+                ]);
+                
+            } else {
+                // If record exists, increment score and update played_at
+                $campaignGamePlay->score += $points;
+                $campaignGamePlay->played_at = now();
+                $campaignGamePlay->save();
+            }
+            
            
 
         // Commit the transaction after updates
         DB::commit();
         
         // $points = 100;
-        $prize = Prize::where('brand_id', $brandId)
-            ->where('points', '<=', $points)
+        $prize = ArenaPrize::where('points', '<=', $points)
             ->inRandomOrder()
             ->first();
             
         // return $prize;
         
         if ($prize) {
-            $brandAudienceReward = BrandAudienceReward::create([
-                'brand_id' => $brandId,
+            $brandAudienceReward = ArenaBrandAudienceReward::create([
                 'audience_id' => $audience->id,
                 'prize_id' => $prize->id,
                 'is_redeemed' => false
@@ -111,25 +108,23 @@ class StoreTriviaAnswerService implements BaseServiceInterface
             // $brandAudienceReward = null;
         } 
         
-        $audienceBrandPoint = BrandPoint::where('brand_id', $brandId)        
-            ->where("audience_id", $audience->id)
+        $audiencePoint = ArenaPoint::where("audience_id", $audience->id)
             ->first();
 
-        if ($audienceBrandPoint) {
-            $audienceBrandPoint->points += $points;
-            $audienceBrandPoint->save();
+        if ($audiencePoint) {
+            $audiencePoint->points += $points;
+            $audiencePoint->save();
        
         } else {
-            $audienceBrandPoint = BrandPoint::create([
-                'brand_id' => $brandId,
+            $audienceBrandPoint = ArenaPoint::create([
                 'audience_id' => $audience->id,
                 'points' => $points
             ]);
         }
 
-        [$currentBadge, $nextBadge] = (new GetAudienceCurrentAndNextBadge($brandId, $audienceBrandPoint->points))->run();
+        [$currentBadge, $nextBadge] = (new GetArenaAudienceCurrentAndNextBadge($audienceBrandPoint->points))->run();
 
-        $audienceBadgesList = (new GetAudienceBadgeListService($brandId, $audience->id, $audienceBrandPoint->points))->run();
+        $audienceBadgesList = (new GetArenaAudienceBadgeListService($audience->id, $audienceBrandPoint->points))->run();
             
         return [
             "total_questions_count" => $totalQuestionsCount, 

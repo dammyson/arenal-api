@@ -93,9 +93,65 @@ class CampaignGamePlayLeaderboardController extends BaseController
         return response()->json(["audience" => $audience->id, "leaderboard" => $leaderboard]);
     }
 
-    public function arenaLeaderboard(Request $request) {       
+    public function testArenaLeaderboard(Request $request)
+    {
+      
+        try{
 
-        $data = (new ArenaLeaderboardService($request))->run();
+            $audience = $request->user();
+            $filter = $request->query('filter');
+
+            $leaderboard = CampaignGamePlay::with(['audience', 'audience.audienceBadges' => function($q)  { 
+                        $q->where('is_arena', true)
+                            ->with(['badge' => function ($b) {
+                                $b->select('id', 'name', 'points');
+                            }])
+                            ->orderBy(
+                                // order audience_badges by their related badge points (DESC)
+                                Badge::select('points')
+                                    ->whereColumn('badges.id', 'audience_badges.badge_id'),
+                                'desc'
+                            )
+                            // optional tiebreaker so equal points keep newest first
+                            ->orderBy('audience_badges.created_at', 'desc');
+                    }]) 
+                    ->select('audience_id', DB::raw('SUM(score) as total_score'))
+                    ->where('is_arena', true);
+
+                // return $leaderboard->get();
+
+           if ($filter == "daily") {
+                $leaderboard->whereDate('updated_at', Carbon::now()->toDateString());
+                  
+           } else if ($filter == "weekly") {
+                $start_week = Carbon::now()->startOfWeek()->format('Y-m-d');
+                $end_week = Carbon::now()->endOfWeek()->format('Y-m-d');
+
+                $leaderboard->whereDate('updated_at', '>=', $start_week)->whereDate('created_at', '<=', $end_week);
+
+           } else if ($filter == 'monthly') {            
+                $start_month = Carbon::now()->firstOfMonth()->format('Y-m-d');
+                $end_month = Carbon::now()->lastOfMonth()->format('Y-m-d');
+                $leaderboard->whereDate('updated_at', '>=', $start_month)->whereDate('created_at', '<=', $end_month);
+           } 
+
+            $leaderboard = $leaderboard->groupBy('audience_id')
+                ->orderBy('total_score', 'desc')
+                ->get();
+
+        }   catch (\Throwable $th) {
+            return response()->json([
+                'error' => true,
+                'message' => $th->getMessage()
+            ], 500);
+        }
+
+        return response()->json(["audience" => $audience->id, "leaderboard" => $leaderboard]);
+    }
+
+    public function arenaLeaderboard(Request $request, Brand $brandId) {       
+
+        $data = (new ArenaLeaderboardService($request, $brandId))->run();
 
         return $this->sendResponse($data, "arena leaderboard");
     }

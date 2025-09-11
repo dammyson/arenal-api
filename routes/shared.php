@@ -25,7 +25,7 @@ use App\Http\Controllers\OverallCampaignGamePlayLeaderboardController;
 Route::post('wallet/deduct-fee', [WalletController::class, 'deductFee']);
 Route::get('/brands',  [BrandController::class, 'index'])->name('index');
 Route::get('brand-leaderboard/{brand}', [CampaignGamePlayLeaderboardController::class, 'brandLeaderboard']);
-Route::get('arena-leaderboard', [CampaignGamePlayLeaderboardController::class, 'arenaLeaderboard']);
+Route::get('arena-leaderboard', [CampaignGamePlayLeaderboardController::class, 'testArenaLeaderboard']);
 Route::get('brand/{brand}/live', [LiveController::class, 'viewBrandLive']);
 
 Route::post('join-live', [LiveController::class, 'joinLive']);
@@ -38,6 +38,7 @@ Route::post('arena-demography', [BrandController::class, 'storeAudienceDemo']);
 Route::get('arena-demography', [BrandController::class, 'getAudienceDemo']);
 Route::get('brand/{brand}/prizes', [BrandController::class, 'brandPrizes']);
 Route::get('brand/{brand}/achievements', [PrizeController::class, 'achievements']);
+Route::get('arena/achievements/test', [PrizeController::class, 'arenaAchievements']);
 // Route::get('brand/{brand}/user-prizes', [PrizeController::class, 'audienceBrandPrize']);
 Route::post('brand-audience/delivery/{brandAudienceReward}', [PrizeController::class, 'audienceBrandPrizeDelivery']);
 Route::get('brand-audience/delivery/{audiencePrizeDelivery}', [PrizeController::class, 'getAudienceBrandPrizeDelivery']);
@@ -69,6 +70,7 @@ Route::get('campaign/{campaign_id}/game/{game_id}/rules', [CampaignGameRuleContr
 Route::get('campaign/games/game-plays', [CampaignGamePlayController::class, 'index']); // not seen in UI
 Route::get('campaign/{campaign_id}/games/{game_id}/show-campaign-game', [CampaignGameController::class, 'showCampaignGame']);
 Route::post('campaign/{campaign_id}/games/{game_id}/campaign-game-play', [CampaignGamePlayController::class, 'storeCampaignGamePlay']);
+Route::post('campaign/{campaign_id}/games/{game_id}/campaign-game-play/test', [CampaignGamePlayController::class, 'testStoreCampaignGamePlay']);
 Route::get('campaign/{campaign_id}/games/{game_id}/game-plays', [CampaignGamePlayController::class, 'show']);
 Route::put('campaign/{campaign_id}/games/{game_id}/game-plays', [CampaignGamePlayController::class, 'update']);
 Route::delete('campaign/{campaign_id}/games/{game_id}/game-plays', [CampaignGamePlayController::class, 'destroy']); // not seen in UI
@@ -90,3 +92,4 @@ Route::get('trivia/show-trivia/{trivia}', [TriviaController::class, 'show']);
 Route::get('trivia/questions', [TriviaQuestionController::class, 'index']);
 Route::get('trivia/{trivia}/questions', [TriviaQuestionController::class, 'show']);
 Route::post('trivia/{trivia}', [TriviaQuestionController::class, 'processAnswers']);
+Route::post('trivia/{trivia}/test', [TriviaQuestionController::class, 'testProcessAnswers']);
