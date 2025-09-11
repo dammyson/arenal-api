@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class BrandPoint extends Model
 {
     use HasUuids;
-    protected $fillable = ['audience_id', 'brand_id', 'points'];
+    protected $fillable = ['audience_id', 'brand_id', 'points', 'is_arena'];
 
     public function audience() {
         return $this->belongsTo(Audience::class);

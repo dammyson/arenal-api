@@ -12,23 +12,26 @@ use App\Models\CampaignGamePlay;
 use Illuminate\Support\Facades\DB;
 use App\Models\BrandAudienceReward;
 use App\Models\TriviaQuestionChoice;
-use App\Services\BaseServiceInterface;
-use App\Services\Utility\GetAudienceBadgeListService;
-use App\Http\Requests\Trivia\StoreTriviaAnswerRequest;
 use App\Models\ArenaCampaignGamePlay;
-use App\Services\Utility\GetAudienceCurrentAndNextBadge;
+use App\Services\BaseServiceInterface;
+use App\Http\Requests\Trivia\StoreTriviaAnswerRequest;
+use App\Services\Utility\GetArenaAudienceBadgeListService;
+use App\Services\Utility\GetTestAudienceCurrentAndNextBadge;
 
-class StoreTriviaAnswerService implements BaseServiceInterface
+class TestStoreTriviaAnswerService implements BaseServiceInterface
 {
     protected $request;
     protected $questions;
     protected $trivia;
+    protected $isArena;
 
-    public function __construct (StoreTriviaAnswerRequest $request, $questions, Trivia $trivia)
+    public function __construct(StoreTriviaAnswerRequest $request, $questions, Trivia $trivia)
     {
         $this->request = $request;
         $this->questions = $questions;
         $this->trivia = $trivia;
+        $this->isArena = $request->input('is_arena');
+
     }
 
     public function run()
@@ -61,20 +64,24 @@ class StoreTriviaAnswerService implements BaseServiceInterface
         // Start a transaction
         DB::beginTransaction();
             
-                 // Fetch the record and lock it for update
-                $campaignGamePlay = CampaignGamePlay::where('audience_id', $audience->id)
-                    ->where('brand_id', $brandId)
-                    ->where('campaign_id', $campaignId)
+                // Fetch the record and lock it for update
+                //  campaign has a brand
+
+                $campaignGamePlay = CampaignGamePlay::
+                    where('campaign_id', $campaignId)
+                    ->where('audience_id', $audience->id)
                     ->where('game_id', $gameId)
+                    ->where('is_arena', $this->isArena)
                     ->lockForUpdate()  // Apply pessimistic locking
                     ->first();
-
+ 
                 if (!$campaignGamePlay) {
                     // If no record exists, create a new one
                     $campaignGamePlay = CampaignGamePlay::create([
                         'audience_id' => $audience->id,
                         'campaign_id' => $campaignId,
                         'game_id' => $gameId,
+                        'is_arena' => $this->isArena,
                         'brand_id' => $brandId,
                         'score' => $points,
                         'played_at' => now()
@@ -104,6 +111,7 @@ class StoreTriviaAnswerService implements BaseServiceInterface
                 'brand_id' => $brandId,
                 'audience_id' => $audience->id,
                 'prize_id' => $prize->id,
+                'is_arena' => $this->isArena,
                 'is_redeemed' => false
             ]);
 
@@ -113,6 +121,7 @@ class StoreTriviaAnswerService implements BaseServiceInterface
         
         $audienceBrandPoint = BrandPoint::where('brand_id', $brandId)        
             ->where("audience_id", $audience->id)
+            ->where('is_arena', $this->isArena)
             ->first();
 
         if ($audienceBrandPoint) {
@@ -127,9 +136,9 @@ class StoreTriviaAnswerService implements BaseServiceInterface
             ]);
         }
 
-        [$currentBadge, $nextBadge] = (new GetAudienceCurrentAndNextBadge($brandId, $audienceBrandPoint->points))->run();
+        [$currentBadge, $nextBadge] = (new GetTestAudienceCurrentAndNextBadge($brandId, $audienceBrandPoint->points, $this->isArena))->run();
 
-        $audienceBadgesList = (new GetAudienceBadgeListService($brandId, $audience->id, $audienceBrandPoint->points))->run();
+        $audienceBadgesList = (new GetArenaAudienceBadgeListService($brandId, $audience->id, $audienceBrandPoint->points, $this->isArena))->run();
             
         return [
             "total_questions_count" => $totalQuestionsCount, 

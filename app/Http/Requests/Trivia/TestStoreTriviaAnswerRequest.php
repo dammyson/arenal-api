@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\User;
+namespace App\Http\Requests\Trivia;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreBrandBadges extends FormRequest
+class TestStoreTriviaAnswerRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -20,16 +20,12 @@ class StoreBrandBadges extends FormRequest
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     public function rules(): array
-    {
+    { 
         return [
-            "badges" => "required|array",
-            "badges.*.name" => "required|string",
-            "badges.*.brand_id" => "required|exists:brands,id",
-            "badges.*.image_url" => "required|string",
-            "badges.*.points" => "required|integer",
-            "badges.*.is_arena" => "required|boolean",
-
-
+            "questions" => "array|required",
+            "questions.*.question_id" => "required|uuid|exists:trivia_questions,id|distinct",
+            "questions.*.answer_id" => "required|uuid|exists:trivia_question_choices,id|distinct",
+            "is_arena" => "required|boolean"
         ];
     }
 }

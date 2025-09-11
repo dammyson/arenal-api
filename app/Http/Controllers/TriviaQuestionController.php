@@ -16,6 +16,7 @@ use App\Services\Trivia\ShowTriviaService;
 use App\Http\Requests\Trivia\StoreTriviaAnswers;
 use App\Http\Requests\Trivia\StoreTriviaRequest;
 use App\Services\Trivia\StoreTriviaAnswerService;
+use App\Services\Trivia\TestStoreTriviaAnswerService;
 use App\Http\Requests\Trivia\StoreTriviaAnswerRequest;
 use App\Http\Requests\TriviaQuestion\StoreTriviaQuestionsRequest;
 
@@ -76,6 +77,18 @@ class TriviaQuestionController extends BaseController
     public function processAnswers(Trivia $trivia, StoreTriviaAnswerRequest $request) {
         try {
             $data = (new StoreTriviaAnswerService($request, $request->validated()["questions"], $trivia))->run();
+        
+            return $this->sendResponse($data, "answer returned successfully");
+        } catch (\Throwable $e) {
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }
+
+      
+    }
+
+    public function testProcessAnswers(Trivia $trivia, StoreTriviaAnswerRequest $request) {
+        try {
+            $data = (new TestStoreTriviaAnswerService($request, $request->validated()["questions"], $trivia))->run();
         
             return $this->sendResponse($data, "answer returned successfully");
         } catch (\Throwable $e) {

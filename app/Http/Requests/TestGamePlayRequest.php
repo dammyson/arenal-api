@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\User;
+namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreBrandBadges extends FormRequest
+class TestGamePlayRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,14 +22,9 @@ class StoreBrandBadges extends FormRequest
     public function rules(): array
     {
         return [
-            "badges" => "required|array",
-            "badges.*.name" => "required|string",
-            "badges.*.brand_id" => "required|exists:brands,id",
-            "badges.*.image_url" => "required|string",
-            "badges.*.points" => "required|integer",
-            "badges.*.is_arena" => "required|boolean",
-
-
+            // 'played_at' => 'required',
+            'score' => 'required',
+            'is_arena' => 'sometimes|boolean'
         ];
     }
 }

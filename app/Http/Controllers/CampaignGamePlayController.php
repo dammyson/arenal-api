@@ -7,6 +7,7 @@ use App\Models\CampaignGamePlay;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use App\Http\Requests\GamePlayRequest;
+use App\Http\Requests\TestGamePlayRequest;
 use App\Services\CampaignGamePlay\CampaignGamePlayService;
 use App\Http\Requests\Campaign\UpdateCampaignGamePlayRequest;
 
@@ -22,6 +23,18 @@ class CampaignGamePlayController extends BaseController
     public function storeCampaignGamePlay(GamePlayRequest $request, $campaignId, $gameId) {
         try {
             $data =  $this->campaignGamePlayService->storeCampaignGamePlay($request, $campaignId, $gameId);
+    
+        } catch (\Exception $e){
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }        
+        return $this->sendResponse($data, "user score updated succcessfully", 201);
+    
+    }
+
+    public function testStoreCampaignGamePlay(TestGamePlayRequest $request, $campaignId, $gameId) {
+        try {
+            
+            $data =  $this->campaignGamePlayService->testStoreCampaignGamePlay($request, $campaignId, $gameId);
     
         } catch (\Exception $e){
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);

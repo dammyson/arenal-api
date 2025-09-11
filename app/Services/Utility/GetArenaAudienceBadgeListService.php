@@ -11,32 +11,42 @@ use App\Services\BaseServiceInterface;
 
 class GetArenaAudienceBadgeListService implements BaseServiceInterface
 {
+    protected $brandId;
     protected $audienceId;
     protected $points;
-    public function __construct($audienceId, $points)
+    protected $isArena;
+    public function __construct($brandId, $audienceId, $points, $isArena)
     {
+        $this->brandId = $brandId;
         $this->audienceId = $audienceId;
         $this->points = $points;
+        $this->isArena = $isArena;
         
     }
 
     public function run()
-    {
-        $arenaBadges = AudienceBadge::get();
+    {   
+
+       $brandBadges = $this->isArena ? Badge::where('is_arena', $this->isArena)->get() :  Badge::where('brand_id', $this->brandId)->get();
             
         $audienceBadgesList = [];
 
-        foreach ($arenaBadges as $brandBadge) {
+        foreach ($brandBadges as $brandBadge) {
             // dump($audienceBrandPoint->points, $brandBadge->points);
             if ($this->points >= $brandBadge->points) {
-                ArenaAudienceBadges::firstOrCreate([
+                AudienceBadge::firstOrCreate([
                     "audience_id" => $this->audienceId,
-                    "arena_badge_id" => $brandBadge->id
+                    "brand_id" => $this->brandId,
+                    "is_arena" => $this->isArena,
+                    "badge_id" => $brandBadge->id
                 ]);
                 $audienceBadgesList[] = $brandBadge;
 
             }
         }
+
+        
+
 
         return $audienceBadgesList;
 

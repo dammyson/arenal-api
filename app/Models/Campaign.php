@@ -37,4 +37,9 @@ class Campaign extends Model
             ->withPivot('details')
             ->withTimestamps();
     }
+
+    public function brand()
+    {
+        return $this->belongsTo(Brand::class);
+    }
 }

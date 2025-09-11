@@ -23,11 +23,9 @@ use App\Http\Controllers\TriviaQuestionController;
 use App\Http\Controllers\AudienceRegisterController;
 use App\Http\Controllers\CampaignGameRuleController;
 use App\Http\Controllers\SearchTransactionController;
-use App\Http\Controllers\SpinTheWheelSectorController;
 use App\Http\Controllers\TransactionHistoryController;
 use App\Http\Controllers\SpinTheWheelComponentController;
 use App\Http\Controllers\OverallCampaignGamePlayLeaderboardController;
-use App\Models\Brand;
 
 Route::post('users/auth/register', [UserRegisterController::class, 'userRegister']);
 Route::post('users/auth/login', [UserRegisterController::class, 'login']);
@@ -43,7 +41,6 @@ Route::post('audiences/auth/change-password', [AudienceRegisterController::class
 Route::post('auth/verify-otp', [UserRegisterController::class, 'verifyOtp']);
 
 Route::group(["middleware" => ["auth:api"]], function () {
-
     Route::prefix('users/')->group(function () {
 
         Route::post('wallets/create', [WalletController::class, 'createWallet']);
