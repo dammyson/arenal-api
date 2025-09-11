@@ -16,7 +16,6 @@ use App\Http\Requests\Campaign\StoreCampaignGameRequest;
 use App\Services\Utility\GetArenaAudienceBadgeListService;
 use App\Services\Utility\GetTestAudienceCurrentAndNextBadge;
 use App\Http\Requests\Campaign\UpdateCampaignGamePlayRequest;
-use App\Services\Utility\GetArenaAudienceCurrentAndNextBadge;
 
 class CampaignGamePlayService {
 

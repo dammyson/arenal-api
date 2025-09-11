@@ -14,12 +14,9 @@ use App\Models\BrandAudienceReward;
 use App\Models\TriviaQuestionChoice;
 use App\Models\ArenaCampaignGamePlay;
 use App\Services\BaseServiceInterface;
-use App\Services\Utility\GetAudienceBadgeListService;
 use App\Http\Requests\Trivia\StoreTriviaAnswerRequest;
-use App\Services\Utility\GetAudienceCurrentAndNextBadge;
 use App\Services\Utility\GetArenaAudienceBadgeListService;
 use App\Services\Utility\GetTestAudienceCurrentAndNextBadge;
-use App\Services\Utility\GetArenaAudienceCurrentAndNextBadge;
 
 class TestStoreTriviaAnswerService implements BaseServiceInterface
 {
