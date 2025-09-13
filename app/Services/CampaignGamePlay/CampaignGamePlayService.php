@@ -154,7 +154,7 @@ class CampaignGamePlayService {
             'current_badge' => $currentBadge,
             'next_badge' => $nextBadge,
             "audience_points" => $audienceBrandPoint->points,
-            "quiz_point" => $points, 
+            "game_point" => $points, 
             "reward" => $brandAudienceReward ?? null, 
             "audience_badges_list" => $audienceBadgesList, 
             "leaderboard" => $campaignGamePlay 
