@@ -24,7 +24,7 @@ class GetTestAudienceCurrentAndNextBadge implements BaseServiceInterface
     public function run()
     {
 
-        // dd(" i got here");
+        dd(" i got here");
         if ($this->brandId == null) {
             $currentBadge = Badge::where('is_arena', $this->isArena)
                 ->where('points', '<=', $this->points)
@@ -54,7 +54,7 @@ class GetTestAudienceCurrentAndNextBadge implements BaseServiceInterface
         
 
 
-        return [$currentBadge , $nextBadge];
+        return [$currentBadge, $nextBadge];
 
     }
     
