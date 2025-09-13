@@ -25,7 +25,7 @@ class GetTestAudienceCurrentAndNextBadge implements BaseServiceInterface
     {
 
         // dd(" i got here");
-        if ($this->brandId == null) {
+        if ($this->isArena == true) {
             $currentBadge = Badge::where('is_arena', $this->isArena)
                 ->where('points', '<=', $this->points)
                 ->orderBy('points', 'desc')
@@ -37,7 +37,7 @@ class GetTestAudienceCurrentAndNextBadge implements BaseServiceInterface
                 ->orderBy('points', 'asc')
                 ->first();
 
-        } else if ($this->isArena == false){
+        } else {
             $currentBadge = Badge::where('brand_id', $this->brandId)
                 ->where('is_arena', $this->isArena)
                 ->where('points', '<=', $this->points)
@@ -51,8 +51,6 @@ class GetTestAudienceCurrentAndNextBadge implements BaseServiceInterface
                 ->orderBy('points', 'asc')
                 ->first();
         }
-        
-        dd($currentBadge, $nextBadge);
 
         return [$currentBadge, $nextBadge];
 
