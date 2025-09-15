@@ -27,6 +27,7 @@ Route::get('/brands',  [BrandController::class, 'index'])->name('index');
 Route::get('brand-leaderboard/{brand}', [CampaignGamePlayLeaderboardController::class, 'brandLeaderboard']);
 Route::get('arena-leaderboard', [CampaignGamePlayLeaderboardController::class, 'testArenaLeaderboard']);
 Route::get('brand/{brand}/live', [LiveController::class, 'viewBrandLive']);
+// Route::get('brand-branch/{brand}/live', [LiveController::class, 'viewBranchLive']);
 
 Route::post('join-live', [LiveController::class, 'joinLive']);
 Route::get('brand/{brand}/live-history', [LiveController::class, 'liveHistory']);

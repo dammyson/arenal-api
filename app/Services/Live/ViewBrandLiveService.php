@@ -13,15 +13,24 @@ use App\Http\Requests\User\BrandStoreRequest;
 
 class ViewBrandLiveService implements BaseServiceInterface{
     protected $brandId;
+    protected $branchId;
 
-    public function __construct($brandId)
+    public function __construct($brandId, $branchId = null)
     {
         $this->brandId = $brandId;
+        $this->branchId = $branchId;
     }
 
     public function run() {
         try {
-            $live = Live::where("brand_id", $this->brandId)->first();
+
+            if ($this->branchId) {
+                $live = Live::where("branch_id", $this->branchId)->first();
+
+            } else {
+
+                $live = Live::where("brand_id", $this->brandId)->first();
+            }
 
             if (!$live) {
                 return [

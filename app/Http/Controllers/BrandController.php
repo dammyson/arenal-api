@@ -7,16 +7,18 @@ use App\Models\Brand;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Gate;
+use App\Http\Requests\DemographyRequest;
 use App\Services\Brand\IndexBrandService;
 use App\Services\Brand\StoreBrandService;
 use App\Services\Brand\DeleteBrandService;
 use App\Services\Brand\UpdateBrandService;
 use App\Http\Requests\Brand\GetBrandRequest;
-use App\Http\Requests\DemographyRequest;
 use App\Http\Requests\User\StoreBrandBadges;
 use App\Http\Requests\User\BrandStoreRequest;
 use App\Http\Requests\User\BrandUpdateRequest;
+use App\Services\Brand\AddBranchToBrandService;
 use App\Services\Brand\StoreBrandBadgesService;
+use App\Http\Requests\User\AddBranchToBrandRequest;
 use App\Services\Point\GetArenaAudienceDemoService;
 use App\Services\Point\GetAudienceBrandPointService;
 use App\Services\Point\StoreArenaAudienceDemoService;
@@ -205,10 +207,23 @@ class BrandController extends BaseController
             }
 
             $brand_id = $validated['brand_id'];
-            $data = Brand::find($brand_id);
+            $data = Brand::with('details', 'branches')->find($brand_id);
         } catch (\Exception $e) {
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
         }
         return $this->sendResponse($data, "Brand retrieved succcessfully");
+    }
+
+    public function addBranchToBrand(AddBranchToBrandRequest $request, Brand $brand) {
+        try {
+
+            $data = (new AddBranchToBrandService($request, $brand->id))->run();
+
+            return $this->sendResponse($data, "branches added to brand succcessfully");
+        }
+
+         catch (\Exception $e) {
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }        
     }
 }
