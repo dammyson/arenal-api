@@ -27,7 +27,7 @@ class AddBranchToBrandService implements BaseServiceInterface{
 
         foreach ($branches as $branch) {
            $created = Branch::create([
-                "name" => $branch["name"],
+                "name" => $branch["branch_name"],
                 "brand_id" => $this->brandId
             ]);
             $data[] = $created;

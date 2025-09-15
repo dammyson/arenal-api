@@ -23,7 +23,7 @@ class AddBranchToBrandRequest extends FormRequest
     {
         return [
             'branches' => 'required|array',
-            'branches.*.name' => 'required|string'
+            'branches.*.branch_name' => 'required|string'
         
         ];
     }
