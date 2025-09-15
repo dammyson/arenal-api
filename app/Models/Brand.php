@@ -24,4 +24,8 @@ class Brand extends Model
     public function details() {
         return $this->hasMany(BrandDetail::class);
     }
+
+    public function branches() {
+        return $this->hasMany(Branch::class);
+    }
 }

@@ -47,12 +47,15 @@ class LiveController extends BaseController
 
     }
 
-    public function viewBrandLive(Brand $brand) {
+    public function viewBrandLive(Request $request, Brand $brand) {
         try {
 
-            $brandLive = (new ViewBrandLiveService($brand->id))->run();
+            $branchId = $request->query('branch_id');
+
+            $brandLive = (new ViewBrandLiveService($brand->id, $branchId))->run(); 
+
     
-            return $this->sendResponse($brandLive, "live brand retrieved successfully");
+            return $this->sendResponse($brandLive, "Live brand retrieved successfully");
         
         } catch (\Exception $e){
 
@@ -61,6 +64,8 @@ class LiveController extends BaseController
 
 
     }
+
+   
 
 
     public function joinLive(StoreJoinLiveRequest $request) {

@@ -3,9 +3,10 @@
 namespace App\Services\Brand;
 
 use App\Models\Brand;
+use App\Models\Branch;
+use App\Models\BrandDetail;
 use App\Services\BaseServiceInterface;
 use App\Http\Requests\User\BrandStoreRequest;
-use App\Models\BrandDetail;
 
 class StoreBrandService implements BaseServiceInterface{
     protected $request;
@@ -18,6 +19,7 @@ class StoreBrandService implements BaseServiceInterface{
     public function run() {
         $user = $this->request->user();
         $brandDetails = $this->request['brand_details'];
+        $branches = $this->request['brand_branches'];
 
         $brand = Brand::create([
             ...$this->request->validated(),
@@ -33,6 +35,16 @@ class StoreBrandService implements BaseServiceInterface{
                 ]);
             }
         }
+
+        if (!empty($branches)) {
+            foreach($branches as $branch) {
+               Branch::create([
+                "name" => $branch["branch_name"],
+                "brand_id" => $brand->id
+            ]);
+            }
+        }
+        
 
         return $brand;
 

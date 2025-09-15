@@ -22,7 +22,8 @@ class StoreLiveRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "brand_id" => "required|string|exists:brands,id",
+            "brand_id" => "required|string|exists:brands,id",            
+            "branch_id" => "required|string|exists:branches,id",
             "duration" => "required|integer",
             "checkIn_amount" => "required|integer",
             "coins" => "required|integer",

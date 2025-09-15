@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Live;
+namespace App\Http\Requests\User;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateBrandLiveRequest extends FormRequest
+class AddBranchToBrandRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,13 +22,9 @@ class UpdateBrandLiveRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "brand_id" => "required|string|exists:brands,id",
-            "branch_id" => "required|string|exists:branches,id",
-            "duration" => "required|integer",
-            "checkIn_amount" => "required|integer",
-            "coins" => "required|integer",
-            "start_time" => "required|string",
-            "end_time" => "required|string"
+            'branches' => 'required|array',
+            'branches.*.name' => 'required|string'
+        
         ];
     }
 }
