@@ -32,17 +32,21 @@ class GetAudienceBrandPointService implements BaseServiceInterface
         try {
 
             $user = $this->request->user();
+            $isArena = $this->request->query('is_arena');
+
             $audiencePoints =  BrandPoint::where('brand_id', $this->brandId)
+                ->where('is_arena', $isArena)   
                 ->where('audience_id', $user->id)
                 ->first()
                 ?->points ?? 0;
             
             $audienceBadgeCount =  AudienceBadge::where('brand_id', $this->brandId)
+                ->where('is_arena', $isArena)   
                 ->where('audience_id', $user->id)
                 ->count(); 
 
             
-            $userBadge = Badge::where("points", "<=", $audiencePoints)->orderBy("points", "desc")->first();
+            $userBadge = Badge::where('is_arena', $isArena)->where("points", "<=", $audiencePoints)->orderBy("points", "desc")->first();
 
             $live = Live::where('brand_id', $this->brandId)->first();
             $liveStreak = AudienceLiveStreak::where('audience_id', $user->id)->where('live_id', $live->id)->first();
