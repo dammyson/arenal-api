@@ -55,7 +55,8 @@ class TestAudienceBrandAchievementService implements BaseServiceInterface{
         [$currentBadge, $nextBadge] = (new GetTestAudienceCurrentAndNextBadge(null, $points, true))->run();
 
 
-        $audienceBadgesList = AudienceBadge::where('audience_id', $audienceId)->where('is_arena', true)->with('badge')->get();
+        // $audienceBadgesList = AudienceBadge::where('audience_id', $audienceId)->where('is_arena', true)->with('badge')->get();
+        $audienceBadgesList = (new GetArenaAudienceBadgeListService(null, $audienceId, $points, true))->run();;
 
        
         $rank = (new TestGetAudienceRankService($audienceId))->run();

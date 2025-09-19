@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\BrandAudienceReward;
 use App\Models\AudiencePrizeDelivery;
 use App\Http\Controllers\BaseController;
+use App\Http\Requests\Arena\StoreArenaSpinTheWheelAudiencePrizeRequest;
 use App\Services\Brand\StoreBrandService;
 use App\Services\Prize\StorePrizeService;
 use App\Services\Prize\GetBrandPrizeService;
@@ -36,7 +37,7 @@ class PrizeController extends BaseController
         }  catch (\Exception $e){
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
         }        
-        return $this->sendResponse($data, "Brand info retrieved succcessfully");
+        return $this->sendResponse($data, "Prizes created succcessfully");
     }
 
    
@@ -156,6 +157,45 @@ class PrizeController extends BaseController
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
         }        
         return $this->sendResponse($data, "Brand info retrieved succcessfully");
+    }
+
+    public function getArenaPrizes()
+    {
+        try {            
+            $data = Prize::where('is_arena', true)->get();
+
+        }  catch (\Exception $e){
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }        
+        return $this->sendResponse($data, "Arena prizes retrieved succcessfully");
+    }
+
+    public function storeArenaAudiencesPrizes(StoreArenaSpinTheWheelAudiencePrizeRequest $request)
+    {
+        try {      
+            $prizes = $request->validated()['prizes'];
+            $audienceId = $request->user()->id;
+                
+
+            $data = [];
+            foreach ($prizes as $prize) {
+                $audienceReward = BrandAudienceReward::create([
+                    'prize_id' => $prize['prize_id'],
+                    'brand_id' => $prize['brand_id'],
+                    'audience_id' => $audienceId,
+                    'is_arena' => true,
+                    'is_redeemed' => false
+    
+                ]);
+
+                $data[] = $audienceReward;
+
+            }
+
+        }  catch (\Exception $e){
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }        
+        return $this->sendResponse($data, "Arena prizes retrieved succcessfully");
     }
 
     public function audienceBrandPrizeDelivery(BrandAudienceReward $brandAudienceReward, PrizeDeliveryRequest $prizeDeliveryRequest) {

@@ -22,13 +22,17 @@ class PrizeStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string'],
-            'game_id' => ['required', 'uuid', 'exists:games,id'],
-            'brand_id' => ['required', 'uuid', 'exists:brands,id'],
-            'campaign_id' => ['required', 'uuid', 'exists:campaigns,id'],
-            'description' => ['required', 'string'],
-            'image_url' => ["required", "string"],
-            'points' => ['required', 'numeric']
+            'game_id' => ['sometimes', 'uuid', 'exists:games,id'],
+            'brand_id' => ['sometimes', 'uuid', 'exists:brands,id'],
+            'campaign_id' => ['sometimes', 'uuid', 'exists:campaigns,id'],
+            "prizes" => "required|array",
+            'prizes.*.name' => ['required', 'string'],
+            'prizes.*.description' => ['required', 'string'],
+            'prizes.*.image_url' => ["required", "string"],
+            'prizes.*.points' => ['required', 'numeric'],
+            'prizes.*.amount' => ['sometimes', 'numeric'],
+            'prizes.*.quantity' => ['sometimes', 'numeric'],
+            'prizes.*.is_arena' => ['required', 'boolean']
            
         ];
     }
