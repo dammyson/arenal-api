@@ -24,6 +24,7 @@ class StoreGameRequest extends FormRequest
         return [
             'name' => 'required',
             'type' => 'required',
+            'description' => 'required|string',
             'image_url' => 'sometimes'
         ];
     }
