@@ -115,7 +115,6 @@ class VerifyCardPaymentService implements BaseServiceInterface
         return BrandTransaction::create([
             'audience_id'                 => $user->id,
             'wallet_id'                   => $wallet->id,
-            'brand_id'                    => $this->brandId,
             'payment_channel'             => $channel,
             'payment_method' => $description,
             'is_credit'                   => true,

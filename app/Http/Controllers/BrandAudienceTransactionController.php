@@ -7,11 +7,11 @@ use App\Services\Transactions\ListAudienceBrandTransactionService;
 
 class BrandAudienceTransactionController extends BaseController
 {
-      public function audienceTransactionHistory(Request $request, $brandId) {
+      public function audienceTransactionHistory(Request $request) {
           try {
             $filter = $request->query('filter');
             
-            $data = (new ListAudienceBrandTransactionService($brandId, $request->user()->id, $filter))->run();
+            $data = (new ListAudienceBrandTransactionService($request->user()->id, $filter))->run();
 
         }  catch (\Exception $e){
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);

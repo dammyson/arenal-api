@@ -7,12 +7,10 @@ use App\Models\BrandTransaction;
 use App\Services\BaseServiceInterface;
 
 class ListAudienceBrandTransactionService implements BaseServiceInterface {
-    protected $brandId;
     protected $audienceId;
     protected $filter;
 
-    public function __construct($brandId, $audienceId, $filter = null) {
-        $this->brandId = $brandId;
+    public function __construct($audienceId, $filter = null) {
         $this->audienceId = $audienceId;
         $this->filter = $filter;
     }

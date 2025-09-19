@@ -12,7 +12,6 @@ class BrandTransaction extends Model
     protected $fillable = [
         'audience_id', 
         'wallet_id',
-        'brand_id',
         'payment_channel', 
         'payment_method',
         'payment_reference',
