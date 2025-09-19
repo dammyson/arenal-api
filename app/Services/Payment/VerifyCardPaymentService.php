@@ -14,10 +14,9 @@ class VerifyCardPaymentService implements BaseServiceInterface
     protected $brandId;
     protected $refNumber;
 
-    public function __construct(Request $request, $brandId, $refNumber)
+    public function __construct(Request $request, $refNumber)
     {
         $this->request   = $request;
-        $this->brandId   = $brandId;
         $this->refNumber = $refNumber;
     }
 

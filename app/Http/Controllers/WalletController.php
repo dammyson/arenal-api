@@ -45,11 +45,11 @@ class WalletController extends BaseController
     }
 
 
-    public function cardPayment(Request $request, $brandId, $ref_number) {        
+    public function cardPayment(Request $request, $ref_number) {        
 
         try {
 
-            $response = (new VerifyCardPaymentService($request, $brandId, $ref_number))->run();
+            $response = (new VerifyCardPaymentService($request, $ref_number))->run();
 
             return  $this->sendResponse($response, "wallet fund successfuly");
           

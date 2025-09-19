@@ -134,7 +134,7 @@ Route::middleware('auth:audience')->group(function () {
         Route::patch('account-settings/security/change-password', [ChangePasswordController::class, 'changePassword']);
 
         Route::post('wallet/fund-wallet/transfer-funding', [WalletController::class, 'seerbit']);
-        Route::get('wallet/brand/{brand}/fund-wallet/card-funding/{ref}', [WalletController::class, 'cardPayment']);
+        Route::get('wallet/fund-wallet/card-funding/{ref}', [WalletController::class, 'cardPayment']);
         Route::get('/seerbit/get-seerbit-token', [WalletController::class, 'getSeerBitToken']);
         Route::get('wallet/brand/{brand}/seerbit/verify/{ref_id}', [WalletController::class, 'verifyTransfer']);
 
