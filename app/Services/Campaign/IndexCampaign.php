@@ -14,6 +14,6 @@ class IndexCampaign implements BaseServiceInterface{
     }
 
     public function run() {
-        return Campaign::get();
+        return Campaign::where('title', '!=', 'rmc world campaign')->get();
     }
 }
