@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Notification;
 use App\Http\Requests\Auth\AudienceLoginRequest;
 use App\Http\Requests\Auth\RegisterAudienceRequest;
 use App\Http\Requests\Auth\ChangeAudiencePasswordRequest;
+use App\Models\CampaignGamePlay;
 use App\Notifications\ArenaForgotPassword;
 use App\Notifications\ArenaOTP;
 
@@ -34,6 +35,19 @@ class AudienceRegisterController extends BaseController
             } else {
                 $userData['phone_number'] = $data['email_or_phone'];
             }
+
+            if (isset($data['referrer_id'])) {
+                // allocate 10 pints to referrer
+                $referrer = Audience::where('referrer_id', $data['referrer_id'])->first();
+                if ($referrer) {
+                    $userData['referred_by'] = $referrer->id;
+                    $referrer->total_referral_point += 10;
+                    $referrer->save();
+                                
+                }
+            }
+            
+            $userData['referrer_id'] = $this->generateReferralId();
 
             $audience = Audience::create($userData);
 
@@ -57,6 +71,15 @@ class AudienceRegisterController extends BaseController
         ], 201);
     }
 
+    private function generateReferralId($length = 8)
+    {
+        $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $referralId = '';
+        for ($i = 0; $i < $length; $i++) {
+            $referralId .= $characters[rand(0, strlen($characters) - 1)];
+        }
+        return $referralId;
+    }
 
 
     public function checkAudience(Request $request)
@@ -143,6 +166,46 @@ class AudienceRegisterController extends BaseController
             return response()->json(['message' => $exception->getMessage()], 500);
         }
     }
+
+    public function listReferrals(Request $request)
+    {
+        try {
+            $audience = $request->user();
+
+            $referrals = Audience::where('referred_by', $audience->id)->get();
+            $audience->total_referral_point = $audience->total_referral_point;
+            return response()->json(['error' => false, 'data' => $referrals, 'total_referral_point' => $audience->total_referral_point], 200);
+         
+        } catch (\Exception $exception) {
+            return response()->json(['error' => true, 'message' => $exception->getMessage()], 500);
+        }
+
+    }
+
+    public function redeemReferrals(Request $request)
+    {
+        try {
+            $audience = $request->user();
+
+           
+            // Redeem 50 points for 50 in wallet
+            $referral_points = $audience->total_referral_point;
+            if ($referral_points < 10) {
+                return response()->json(['error' => true,  "message" => "You need at least 10 referral points to redeem",  'total_referral_point' => $audience->total_referral_point], 400);
+            }
+            $audience->points = $referral_points;
+            $audience->total_referral_point = 0;
+            $audience->save();
+
+            return response()->json(['error' => false,  "message" => "Successfully redeemed {$referral_points} referral points balance",  'total_referral_point' => $audience->total_referral_point], 200);
+         
+        } catch (\Exception $exception) {
+            return response()->json(['error' => true, 'message' => $exception->getMessage()], 500);
+        }
+
+    }   
+
+
 
 
 

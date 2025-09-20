@@ -48,7 +48,8 @@ class RegisterAudienceRequest extends FormRequest
                 'regex:/[0-9]/',
                 'regex:/[_!@#$%]/',
                 'confirmed',
-            ]
+            ],
+            'referrer_id' => ['nullable', 'string', 'exists:audiences,referrer_id'],
         ];
     }
 }
