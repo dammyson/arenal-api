@@ -12,7 +12,14 @@ use Illuminate\Notifications\Notifiable;
 class Audience extends Authenticatable
 {
     use HasFactory, HasApiTokens, HasUuids, Notifiable;
-    protected $fillable = ['first_name', 'last_name', 'email', 'phone_number', 'profile_image', 'password', 'user_id', 'pin'];
+    protected $fillable = ['first_name', 'last_name', 'email', 'phone_number', 'profile_image', 'password', 
+      'user_id', 
+      'pin', 
+      'referrer_id', 
+      'referred_by', 
+      'total_referral_point', 
+      'points'
+    ];
     protected $hidden = ['password', 'remember_token'];
 
     public function leaderboards() {
