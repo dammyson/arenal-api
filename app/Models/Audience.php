@@ -12,7 +12,14 @@ use Illuminate\Notifications\Notifiable;
 class Audience extends Authenticatable
 {
     use HasFactory, HasApiTokens, HasUuids, Notifiable;
-    protected $fillable = ['first_name', 'last_name', 'email', 'phone_number', 'profile_image', 'password', 
+    protected $fillable = [
+      
+      'first_name', 
+      'last_name', 
+      'email', 
+      'phone_number', 
+      'profile_image', 
+      'password', 
       'user_id', 
       'pin', 
       'referrer_id', 
@@ -27,7 +34,7 @@ class Audience extends Authenticatable
     }
 
     public function wallet() {
-      return $this->hasOne(AudienceWallet::class);
+      return $this->hasOne(Wallet::class);
     }
 
     public function audienceBadges() {

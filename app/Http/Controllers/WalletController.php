@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
+use App\Models\User;
 use App\Models\Brand;
 use App\Models\Wallet;
 use App\Models\Transaction;
@@ -14,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Http;
 use App\Http\Requests\Wallet\FundWalletRequest;
+use App\Models\Audience;
 use App\Services\Payment\VerifyCardPaymentService;
 use App\Services\Payment\VerifyBankTransferService;
 
@@ -21,11 +23,13 @@ class WalletController extends BaseController
 {
     public function createWallet(Request $request) {
         $user = $request->user();
+        $revenueShareGroup = $request->input('revenue_share_group', 'audience');
 
         try {
             $userWallet = Wallet::create([
                 'user_id' => $user->id,
-                'revenue_share_group' => 'audience'
+                'revenue_share_group' => $revenueShareGroup,
+                'balance' => 0  
             ]);
 
         }  catch (\Throwable $th) {
@@ -41,6 +45,29 @@ class WalletController extends BaseController
             'user_wallet' => $userWallet
         ], 201);
 
+
+    }
+
+    public function createAudienceWallet(Request $request) {
+        try {
+            $userWallet = Wallet::create([
+                'audience_id' =>  $request->input('audience_id'),
+                'revenue_share_group' => 'audience',
+                'balance' => 0  
+            ]);
+
+        }  catch (\Throwable $th) {
+            report($th);
+            return response()->json([ 
+                "error" => true,
+                "message" => "unable to fetch transaction histories"
+            ], 500);
+        }
+
+        return response()->json([
+            "error" => false,
+            'user_wallet' => $userWallet
+        ], 201);
 
     }
 
@@ -69,9 +96,12 @@ class WalletController extends BaseController
         
         
         try {
-            $user = $request->user();
+            $audience = $request->user();
+
+            // dd($audience);
             $gameFee = $request->input('game_fee');
-            $wallet = $user->wallet;
+            $wallet = $audience->wallet;
+            $brandId = $request->input('brand_id') ?? null;
     
             if (!$wallet) {
                 // Optionally handle case where wallet doesn't exist
@@ -88,6 +118,58 @@ class WalletController extends BaseController
             DB::beginTransaction();
                 $wallet->balance -= (int) $gameFee;
                 $wallet->save();
+
+                $brandCommision =  0.1 * $gameFee; // 10% to brand
+                $userCommision = 0.05 * $gameFee; // 5% to user
+                $referrerCommission = 0.02 * $gameFee; // 2% to referrer
+
+                $userId = $audience->user_id;
+                
+                $user = User::find($userId);
+                // dd($user->id);
+                if ($user) {
+                    $userWallet = $user->wallet;
+                    if ($userWallet) {
+                        $userWallet->balance += (int) $userCommision;
+                        $userWallet->save();
+
+                        // dump($userWallet);
+                    }
+                }
+                
+                $brandCreatorId =  Brand::find($brandId)->created_by ?? null;
+                // dd($brandCreatorId);
+                if ($brandCreatorId) {
+                    $brandCreator = User::find($brandCreatorId);
+                    if ($brandCreator) {
+                        $brandCreatorWallet = $brandCreator->wallet;
+                        if ($brandCreatorWallet) {
+                            $brandCreatorWallet->balance += (int) $brandCommision;
+                            $brandCreatorWallet->save();
+
+                            // dump($brandCreatorWallet);
+                        }
+                    }
+                }  
+
+                $refferedBy = $audience->referred_by;
+                if ($refferedBy) {  
+                    // dd($refferedBy);
+                    $referrerAudience = Audience::find($refferedBy)->first();
+                    // dd($referrerAudience);
+                    if ($referrerAudience) {
+                        $referrerWallet = $referrerAudience->wallet;
+                        // dd($referrerWallet);
+                        if ($referrerWallet) {
+                            $referrerBonus = $referrerCommission; // 2% to referrer
+                            $referrerWallet->balance += (int) $referrerBonus;
+                            $referrerWallet->save();
+
+                            // dump($referrerWallet);
+                        }
+                    }
+                }
+                
     
             DB::commit();
 

@@ -23,6 +23,8 @@ use App\Http\Controllers\CampaignGamePlayLeaderboardController;
 use App\Http\Controllers\BrandAudienceTransactionHistoryController;
 use App\Http\Controllers\OverallCampaignGamePlayLeaderboardController;
 
+Route::post('wallets/create', [WalletController::class, 'createWallet']);
+Route::post('audience-wallets/create', [WalletController::class, 'createAudienceWallet']);
 Route::post('wallet/deduct-fee', [WalletController::class, 'deductFee']);
 Route::get('/brands',  [BrandController::class, 'index'])->name('index');
 Route::get('brand-leaderboard/{brand}', [CampaignGamePlayLeaderboardController::class, 'brandLeaderboard']);

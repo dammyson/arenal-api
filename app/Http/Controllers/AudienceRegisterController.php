@@ -51,7 +51,7 @@ class AudienceRegisterController extends BaseController
 
             $audience = Audience::create($userData);
 
-            $userWallet = AudienceWallet::create([
+            $audienceWallet = Wallet::create([
                 'audience_id' => $audience->id,
                 'revenue_share_group' => 'audience'
             ]);
@@ -67,7 +67,7 @@ class AudienceRegisterController extends BaseController
             'error' => false,
             'message' => 'Client registration successful. Verification code sent to your email.',
             'data' => $data,
-            'wallet' => $userWallet
+            'wallet' => $audienceWallet
         ], 201);
     }
 
