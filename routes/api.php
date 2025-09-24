@@ -43,8 +43,6 @@ Route::post('auth/verify-otp', [UserRegisterController::class, 'verifyOtp']);
 Route::group(["middleware" => ["auth:api"]], function () {
     Route::prefix('users/')->group(function () {
 
-        Route::post('wallets/create', [WalletController::class, 'createWallet']);
-
         Route::get('wallets/transactions/{id}', [TransactionController::class, 'show']);
         Route::get('companies', [CompanyController::class, 'index']);
         Route::post('companies', [CompanyController::class, 'storeCompany']);

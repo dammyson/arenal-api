@@ -24,6 +24,7 @@ class VerifyCardPaymentService implements BaseServiceInterface
     {
         try {
             $user   = $this->request->user();
+
             $wallet = $user->wallet;
 
             if (!$wallet) {
