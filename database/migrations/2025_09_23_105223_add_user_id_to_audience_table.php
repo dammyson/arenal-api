@@ -11,7 +11,6 @@ return new class extends Migration
      */
     public function up(): void
     {
-
         
         if (!Schema::hasColumn('audiences', 'user_id')) {     
             Schema::table('audiences', function (Blueprint $table) {
