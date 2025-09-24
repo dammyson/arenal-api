@@ -126,7 +126,8 @@ class CampaignController extends BaseController
 
             if ($validated['is_link']) {
                 $user = $validated['user_id'];
-                $audience =  Audience::where('id', auth()->user()->id)->firstOrFail();
+                $audience = Audience::where('id', auth()->user()->id)->firstOrFail();
+                // $audience->is_invited == true
                 $audience->user_id = $user;
                 $audience->save();
             }

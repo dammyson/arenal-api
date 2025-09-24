@@ -11,12 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('audiences', function (Blueprint $table) {
-            $table->uuid('user_id')->nullable()->after('id');
-            $table->foreign('user_id')->references('id')->on('users')
-                ->onDelete('set null')
-                ->onUpdate('cascade');
-        });
+
+        
+        if (!Schema::hasColumn('audiences', 'user_id')) {     
+            Schema::table('audiences', function (Blueprint $table) {
+                $table->uuid('user_id')->nullable()->after('id');
+                $table->foreign('user_id')->references('id')->on('users')
+                    ->onDelete('set null')
+                    ->onUpdate('cascade');
+            });
+        }
     }
 
     /**
@@ -24,10 +28,18 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('audiences', function (Blueprint $table) {
-            //
-            $table->dropForeign(['user_id']);
-            $table->dropColumn('user_id');  
-        });
+
+        if (Schema::hasColumn('audiences', 'user_id')) {
+           
+            Schema::table('audiences', function (Blueprint $table) {
+                //
+                $table->dropForeign(['user_id']);
+                $table->dropColumn('user_id');  
+
+
+            });
+
+        }
+
     }
 };
