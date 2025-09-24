@@ -60,6 +60,7 @@ class WalletController extends BaseController
             report($th);
             return response()->json([ 
                 "error" => true,
+                "actual_message" => $th->getMessage(),
                 "message" => "unable to fetch transaction histories"
             ], 500);
         }
