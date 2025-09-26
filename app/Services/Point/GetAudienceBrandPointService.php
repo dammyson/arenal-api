@@ -2,17 +2,18 @@
 
 namespace App\Services\Point;
 
+use App\Models\Live;
 use App\Models\Badge;
+use App\Models\Wallet;
 use App\Models\BrandPoint;
 use Illuminate\Http\Request;
 use App\Models\AudienceBadge;
 use App\Models\AudienceWallet;
 use App\Models\CampaignGamePlay;
+use App\Models\AudienceLiveStreak;
 use App\Services\BaseServiceInterface;
 use App\Services\Utility\GetUserRankService;
 use App\Http\Requests\Live\StoreJoinLiveRequest;
-use App\Models\AudienceLiveStreak;
-use App\Models\Live;
 use App\Services\Utility\GetAudienceRankService;
 use App\Services\Utility\GetAudienceBadgeListService;
 
@@ -33,6 +34,9 @@ class GetAudienceBrandPointService implements BaseServiceInterface
 
             $user = $this->request->user();
             $isArena = $this->request->query('is_arena');
+
+            $walletBalance = $user->wallet?->balance ?? 0;
+
 
             $audiencePoints =  BrandPoint::where('brand_id', $this->brandId)
                 ->where('is_arena', $isArena)   
@@ -58,7 +62,7 @@ class GetAudienceBrandPointService implements BaseServiceInterface
 
 
               
-            $walletBalance = AudienceWallet::where('audience_id', $user->id)->first()?->balance ?? 0;
+            // $walletBalance = Wallet::where('audience_id', $user->id)->first()?->balance ?? 0;
 
 
             return [
