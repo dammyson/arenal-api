@@ -200,8 +200,8 @@ class WalletController extends BaseController
     public function getWalletBalance(Request $request)
     {
         try {
-            $audienceId = $request->user()->id;
-            $wallet = AudienceWallet::where('audience_id', $audienceId)->first();
+            $user = $request->user();
+            $wallet = $user->wallet;
 
             
         } catch (\Throwable $th) {
