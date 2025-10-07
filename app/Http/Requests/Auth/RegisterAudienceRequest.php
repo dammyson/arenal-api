@@ -26,8 +26,8 @@ class RegisterAudienceRequest extends FormRequest
                 'required',
                 function ($attribute, $value, $fail) {
                     $isEmail = filter_var($value, FILTER_VALIDATE_EMAIL);
-                    $isPhone = preg_match('/^\d{11}$/', $value); // Nigerian phone number format
-    
+                    $isPhone = preg_match('/^\+?[1-9]\d{7,14}$/', $value); // International format
+
                     if (!$isEmail && !$isPhone) {
                         $fail('The ' . $attribute . ' must be a valid email address or 11-digit phone number.');
                     }
