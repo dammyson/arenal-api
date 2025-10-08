@@ -22,6 +22,7 @@ use App\Http\Controllers\ChangePasswordController;
 use App\Http\Controllers\TriviaQuestionController;
 use App\Http\Controllers\AudienceRegisterController;
 use App\Http\Controllers\CampaignGameRuleController;
+use App\Http\Controllers\FaqController;
 use App\Http\Controllers\SearchTransactionController;
 use App\Http\Controllers\TransactionHistoryController;
 use App\Http\Controllers\SpinTheWheelComponentController;
@@ -92,6 +93,12 @@ Route::group(["middleware" => ["auth:api"]], function () {
             Route::post('custom-text', [SpinTheWheelComponentController::class, 'storeCustomText'])->name('create.sector.segment');
 
         });
+
+        Route::prefix('faq')->group(function() {            
+            Route::put('{faq}/answer', [FaqController::class, 'answerFaq']);
+            Route::put('{faq}/update', [FaqController::class, 'updateFaq']);
+        });
+
         // Route::post('spin/{spinId}/sector/{sectorId}', [SpinTheWheelController::class, 'storeSpinSector'])->name('create.spin.sectore');
         Route::get('logout', [LogoutController::class, 'logout']);
 
