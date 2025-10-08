@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('faqs', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('question');
-            $table->string('answer')->nullable();
+            $table->text('question');
+            $table->text('answer')->nullable();
             $table->boolean('is_faq')->default(false);
             $table->uuid('audience_id')->nullable(); // the audience asking the question
             $table->uuid('user_id')->nullable(); // the user answering the question
