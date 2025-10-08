@@ -19,11 +19,11 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class CampaignController extends BaseController
 {
-    public function index()
+    public function index(Request $request)
     {
         try {
 
-            $data = (new IndexCampaign())->run();
+            $data = (new IndexCampaign($request))->run();
         } catch (\Exception $e) {
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
         }
