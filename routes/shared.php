@@ -21,6 +21,7 @@ use App\Http\Controllers\SpinTheWheelComponentController;
 use App\Http\Controllers\BrandAudienceTransactionController;
 use App\Http\Controllers\CampaignGamePlayLeaderboardController;
 use App\Http\Controllers\BrandAudienceTransactionHistoryController;
+use App\Http\Controllers\FaqController;
 use App\Http\Controllers\OverallCampaignGamePlayLeaderboardController;
 
 Route::post('wallets/create', [WalletController::class, 'createWallet']);
@@ -32,6 +33,8 @@ Route::get('arena-leaderboard', [CampaignGamePlayLeaderboardController::class, '
 Route::get('brand/{brand}/live', [LiveController::class, 'viewBrandLive']);
 Route::get('list-referrals', [AudienceRegisterController::class, 'listReferrals']);
 Route::put('redeem-referrals', [AudienceRegisterController::class, 'redeemReferrals']);
+Route::post('faq', [FaqController::class, 'createFaq']);
+Route::get('faq', [FaqController::class, 'getFaq']);
 
 Route::get('arena/prizes', [PrizeController::class, 'getArenaPrizes']);
 Route::post('arena-audience/prizes', [PrizeController::class, 'storeArenaAudiencesPrizes']);
