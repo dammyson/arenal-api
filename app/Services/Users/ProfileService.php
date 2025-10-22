@@ -45,6 +45,8 @@ class ProfileService   {
 			->where('audience_id', $this->audience->id)
 			->select('score')
 			->sum('score');
+
+			// include current badge, level 
 			
 
 		array_push($userInfo, $this->audience->first_name, $this->audience->profile_image, $audienceTotalPoint);
