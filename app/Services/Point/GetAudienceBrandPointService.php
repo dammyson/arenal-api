@@ -24,6 +24,7 @@ class GetAudienceBrandPointService implements BaseServiceInterface
 
     public function __construct(Request $request, $brandId)
     {
+
         $this->request = $request;
         $this->brandId = $brandId;
     }
@@ -71,6 +72,7 @@ class GetAudienceBrandPointService implements BaseServiceInterface
                 "last_name" => $user->last_name,
                 "user_image" => $user->profile_image,
                 "audience_badge_name" => $userBadge->name ?? "no badge yet",
+                "audience_badge_image_url" => $userBadge->image_url ?? null,
                 "live_duration" => $live->duration,
                 'streak_count' => $liveStreakCount,
                 'points' => $audiencePoints,
