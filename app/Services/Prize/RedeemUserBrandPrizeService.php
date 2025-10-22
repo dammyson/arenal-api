@@ -20,6 +20,7 @@ class RedeemUserBrandPrizeService implements BaseServiceInterface{
     public function run() {
         $audienceReward = BrandAudienceReward::where("id", $this->brandAudienceReward)
             ->where("audience_id", $this->userId)
+            ->with('prize')  
             ->first();
 
         if ($audienceReward) {
