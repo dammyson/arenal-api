@@ -47,7 +47,7 @@ class CampaignGamePlayLeaderboardController extends BaseController
             $leaderboard = CampaignGamePlay::with(['audience', 'audience.audienceBadges' => function($q) use($brand) { 
                         $q->where('brand_id', $brand->id)
                             ->with(['badge' => function ($b) {
-                                $b->select('id', 'name', 'points');
+                                $b->select('id', 'name', 'image_url', 'points');
                             }])
                             ->orderBy(
                                 // order audience_badges by their related badge points (DESC)
