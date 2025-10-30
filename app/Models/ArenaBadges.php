@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class ArenaBadges extends Model
 {
     use HasFactory, HasApiTokens, HasUuids;
+    
     protected $fillable = ['name', 'points'];
 
 
