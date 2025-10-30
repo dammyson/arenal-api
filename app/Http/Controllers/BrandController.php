@@ -29,7 +29,9 @@ class BrandController extends BaseController
     public function index(Request $request)
     {
         try {
+
             $data = (new IndexBrandService($request))->run();
+       
         } catch (\Exception $e) {
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
         }
