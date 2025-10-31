@@ -25,10 +25,9 @@ class StoreSpinTheWheelBackgroundRequest extends FormRequest
     {
         return [
             "spin_the_wheel_id" => "required|exists:spin_the_wheels,id",
-            "backgound_gradient" => "required|string", 
+            "background_gradient" => "required|string", 
             "background_color"  => "required|string", 
-            "background_image" => "required|string",
-            "interactive_component" => "required|string"
+            "background_image" => "required|string"
         ];
     }
 }

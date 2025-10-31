@@ -25,7 +25,9 @@ class StoreSpinTheWheelCustomGameTextRequest extends FormRequest
             "spin_the_wheel_id" => "required|exists:spin_the_wheels,id",
             "game_title" => "sometimes|string", 
             "description" => "sometimes|string", 
-            "style" => "sometimes|string"
+            "style" => "sometimes|string",
+            "error_message" => "sometimes|string",
+
         ];
     }
 }

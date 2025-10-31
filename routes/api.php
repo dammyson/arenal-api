@@ -81,14 +81,16 @@ Route::group(["middleware" => ["auth:api"]], function () {
         Route::prefix('spin-the-wheel')->group(function() {
             Route::post('/', [SpinTheWheelController::class, 'store'])->name('create');
             Route::post('background', [SpinTheWheelComponentController::class, 'storeBackground'])->name('create.sector.segment');
-            Route::post('sector', [SpinTheWheelComponentController::class, 'storeSector'])->name('create.spin.sectore');
+            // Route::post('sector', [SpinTheWheelComponentController::class, 'storeSector'])->name('create.spin.sectore');
             Route::post('segment', [SpinTheWheelComponentController::class, 'storeSegment'])->name('create.sector.segment');
             Route::put('segment/{segmentId}', [SpinTheWheelComponentController::class, 'updateSegment'])->name('create.sector.segment');
             Route::delete('segment/{segmentId}', [SpinTheWheelComponentController::class, 'deleteSegment'])->name('create.sector.segment');
             Route::post('button', [SpinTheWheelComponentController::class, 'storeButton'])->name('create.sector.segment');
             Route::post('form', [SpinTheWheelComponentController::class, 'storeForm'])->name('create.sector.segment');
-            Route::post('user-form', [SpinTheWheelComponentController::class, 'storeUserForm'])->name('create.sector.segment');
             Route::post('set-user-form', [SpinTheWheelComponentController::class, 'setUserForm'])->name('create.sector.segment');
+            Route::post('user-form', [SpinTheWheelComponentController::class, 'storeUserForm'])->name('create.sector.segment');
+            Route::post('participation-fee', [SpinTheWheelComponentController::class, 'participationFee'])->name('create.sector.segment');
+            Route::post('ads', [SpinTheWheelComponentController::class, 'ads'])->name('create.sector.segment');
             Route::post('reward-setup', [SpinTheWheelComponentController::class, 'storeRewardSetup'])->name('create.sector.segment');
             Route::post('custom-text', [SpinTheWheelComponentController::class, 'storeCustomText'])->name('create.sector.segment');
 

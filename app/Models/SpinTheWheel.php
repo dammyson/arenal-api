@@ -8,7 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class SpinTheWheel extends Model
 {
     use HasUuids;
-    protected $fillable = ["name", "game_id", "image_url", "user_id"];
+
+    protected $fillable = ["name", "game_id", "image_url", "user_id", "is_published", "publish_time"];
 
     public function spinTheWheelSectors(){
         return $this->hasMany(SpinTheWheelSector::class, 'spin_the_wheel_id', 'id');
@@ -35,5 +36,12 @@ class SpinTheWheel extends Model
 
     public function spinTheWheelCustomGameTexts() {
         return $this->hasMany(SpinTheWheelCustomGameText::class, 'spin_the_wheel_id', 'id');
+    }
+
+    public function spinTheWheelParticipationDetails() {
+        return $this->hasMany(SpinTheWheelParticipationDetails::class, 'spin_the_wheel_id', 'id');
+    }
+    public function spinTheWheelAds() {
+        return $this->hasMany(SpinTheWheelAds::class, 'spin_the_wheel_id', 'id');
     }
 }

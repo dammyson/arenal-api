@@ -14,7 +14,12 @@ class SpinTheWheelUserForm extends Model
         "user_name",
         "user_email", 
         "phone_number",
-        "is_marked_required"
+        "is_marked_required",
+        "is_user_name",
+        "is_user_email",
+        "is_phone_number",
+        "show_from_before_spin"
+
     ];
 
     public function spinTheWheel() {
