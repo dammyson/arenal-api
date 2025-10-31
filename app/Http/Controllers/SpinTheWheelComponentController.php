@@ -13,15 +13,19 @@ use App\Http\Requests\SpinTheWheel\StoreSpinTheWheelBackgroundRequest;
 use App\Http\Requests\SpinTheWheel\StoreSpinTheWheelRewardSetupRequest;
 use App\Http\Requests\SpinTheWheel\StoreSpinTheWheelSetUserFormRequest;
 use App\Http\Requests\Game\SpinTheWheel\CreateSpinTheWheelSectorRequest;
+use App\Http\Requests\SpinTheWheel\StoreSpinTheWheelAdsRequest;
 use App\Http\Requests\SpinTheWheel\StoreSpinTheWheelCustomGameTextRequest;
+use App\Http\Requests\SpinTheWheel\StoreSpinTheWheelParticipationRequest;
 use App\Services\SpinTheWheelComponentService\StoreSpinTheWheelFormService;
 use App\Services\SpinTheWheelComponentService\StoreSpinTheWheelButtonService;
 use App\Services\SpinTheWheelComponentService\StoreSpinTheWheelSegmentService;
 use App\Services\SpinTheWheelComponentService\DeleteSpinTheWheelSegmentService;
+use App\Services\SpinTheWheelComponentService\StoreSpinTheWheelAdsService;
 use App\Services\SpinTheWheelComponentService\StoreSpinTheWheelUserFormService;
 use App\Services\SpinTheWheelComponentService\UpdateSpinTheWheelSegmentService;
 use App\Services\SpinTheWheelComponentService\StoreSpinTheWheelBackgroundService;
 use App\Services\SpinTheWheelComponentService\StoreSpinTheWheelCustomTextService;
+use App\Services\SpinTheWheelComponentService\StoreSpinTheWheelParticipationService;
 use App\Services\SpinTheWheelComponentService\StoreSpinTheWheelRewardSetupService;
 use App\Services\SpinTheWheelComponentService\StoreSpinTheWheelSetUserFormService;
 
@@ -132,6 +136,28 @@ class SpinTheWheelComponentController extends BaseController
         try {
             $data = (new StoreSpinTheWheelCustomTextService($request))->run();
             return $this->sendResponse($data, "spin the wheel custom text created successfully", 201);
+
+        } catch (\Throwable $e) {
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);           
+        }
+
+    }
+
+    public function participationFee(StoreSpinTheWheelParticipationRequest $request) {
+        try {
+            $data = (new StoreSpinTheWheelParticipationService($request))->run();
+            return $this->sendResponse($data, "spin the wheel participation created successfully", 201);
+
+        } catch (\Throwable $e) {
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);           
+        }
+
+    }
+
+    public function ads(StoreSpinTheWheelAdsRequest $request) {
+        try {
+            $data = (new StoreSpinTheWheelAdsService($request))->run();
+            return $this->sendResponse($data, "spin the wheel participation created successfully", 201);
 
         } catch (\Throwable $e) {
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);           

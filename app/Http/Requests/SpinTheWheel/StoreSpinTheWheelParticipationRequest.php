@@ -4,7 +4,7 @@ namespace App\Http\Requests\SpinTheWheel;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreSpinTheWheelSegmentRequest extends FormRequest
+class StoreSpinTheWheelParticipationRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -21,15 +21,10 @@ class StoreSpinTheWheelSegmentRequest extends FormRequest
      */
     public function rules(): array
     {
-
         return [
             "spin_the_wheel_id" => "required|exists:spin_the_wheels,id",
-            "segments" => "required|array",
-            "segments.*.label_text" => "sometimes|string", 
-            "segments.*.label_color" => "sometimes|string", 
-            "segments.*.background_color" => "sometimes|string", 
-            "segments.*.icon" => "sometimes|string", 
-            "segments.*.probability" => 'sometimes|numeric|min:0|max:1'
+            "is_free" => "required|boolean",
+            "entry_fee" => "sometimes|integer"
         ];
     }
 }

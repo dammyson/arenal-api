@@ -21,14 +21,15 @@ class StoreSpinTheWheelButtonRequest extends FormRequest
      */
     public function rules(): array
     {   
+
         return [
             "spin_the_wheel_id" => "required|exists:spin_the_wheels,id",
-            "button_color" => "sometimes|string", 
-            "button_solid_style" => "sometimes|string", 
-            "button_outline_style" => "sometimes|string", 
-            "button_3d_styles" => "sometimes|string", 
-            "button_custom_png" => "sometimes|string",
-            "has_custom_png" => "sometimes|boolean"
+            "color" => "sometimes|string", 
+            "is_solid" => "sometimes|boolean", 
+            "border_radius" => "sometimes|string", 
+            "button_3d_styles" => "sometimes|boolean", 
+            "text" => "sometimes|string",
+            "custom_button_url" => "sometimes|boolean"
         ];
     }
 }

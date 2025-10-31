@@ -27,7 +27,11 @@ class StoreSpinTheWheelSetUserFormRequest extends FormRequest
             "is_user_name" => "sometimes|boolean", 
             "is_user_email" => "sometimes|boolean", 
             "is_phone_number" => "sometimes|boolean", 
-            "is_marked_required" => "sometimes|boolean"
+            "is_marked_required" => "sometimes|boolean",
+            'title'  => "sometimes|string",
+            'description'  => "sometimes|string",
+            'text_style'  => "sometimes|string",
+            'show_before_spin'  => "sometimes|boolean",
         ];
     }
 }

@@ -2,19 +2,20 @@
 
 namespace App\Services\SpinTheWheelComponentService;
 
-use App\Models\Button;
+use App\Models\SpinTheWheel;
+use App\Models\CustomGameText;
 use Illuminate\Support\Facades\DB;
 use App\Services\BaseServiceInterface;
-use App\Http\Requests\SpinTheWheel\StoreSectorButtonRequest;
-use App\Http\Requests\SpinTheWheel\StoreSectorSegmentRequest;
-use App\Http\Requests\SpinTheWheel\StoreSpinTheWheelButtonRequest;
-use App\Models\SpinTheWheelButton;
+use App\Models\SpinTheWheelCustomGameText;
+use App\Http\Requests\SpinTheWheel\StoreSpinTheWheelCustomGameTextRequest;
+use App\Http\Requests\SpinTheWheel\StoreSpinTheWheelParticipationRequest;
+use App\Models\SpinTheWheelParticipationDetails;
 
-class StoreSpinTheWheelButtonService implements BaseServiceInterface
+class StoreSpinTheWheelParticipationService implements BaseServiceInterface
 {
     protected $request;
 
-    public function __construct(StoreSpinTheWheelButtonRequest $request)
+    public function __construct(StoreSpinTheWheelParticipationRequest $request)
     {
         $this->request = $request;
     }
@@ -25,7 +26,7 @@ class StoreSpinTheWheelButtonService implements BaseServiceInterface
     
         try {
 
-            $spinTheWheel = SpinTheWheelButton::create(
+            $spinTheWheel = SpinTheWheelParticipationDetails::create(
                 $this->request->validated()
             );
     
@@ -36,7 +37,7 @@ class StoreSpinTheWheelButtonService implements BaseServiceInterface
             DB::rollBack();
     
             return [
-                'message' => 'Failed to store button',
+                'message' => 'Failed to store segments',
                 'error' => $e->getMessage()
             ];
         }

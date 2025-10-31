@@ -7,6 +7,9 @@ use App\Models\Company;
 use App\Models\CompanyUser;
 use App\Services\BaseServiceInterface;
 use App\Http\Requests\User\CompanyStoreRequest;
+use Exception;
+
+use Illuminate\Support\Facades\DB;
 
 class CreateCompanyService implements BaseServiceInterface
 {
@@ -20,14 +23,28 @@ class CreateCompanyService implements BaseServiceInterface
     }
 
     public function run()
-    {
-        $company = Company::create($this->request);
+    {   
+        try {
+            
+    
+	        DB::beginTransaction();
+            
+            $company = Company::create($this->request);
+    
+            $companyUser =  CompanyUser::create([
+                'company_id' => $company->id,
+                'user_id' =>  $this->userId
+            ]);
+            DB::commit();
+            return ["company" => $company, "companyUser" => $companyUser];
+        } catch (Exception $e) {
+		DB::rollBack();
 
-        $companyUser =  CompanyUser::create([
-            'company_id' => $company->id,
-            'user_id' =>  $this->userId
-        ]);
+		// Optionally log the error
+		// Log::error('User creation failed: ' . $e->getMessage());
 
-        return ["company" => $company, "companyUser" => $companyUser];
+		throw new Exception($e->getMessage());
+	}   
+
     }
 }

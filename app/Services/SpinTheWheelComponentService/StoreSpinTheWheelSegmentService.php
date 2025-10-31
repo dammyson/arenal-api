@@ -22,13 +22,30 @@ class StoreSpinTheWheelSegmentService implements BaseServiceInterface
     
         try {
 
-            $spinTheWheel = SpinTheWheelSegment::create(
-                $this->request->validated()
-            );
+            $segments = $this->request->validated()["segments"];
+            $spinTheWheelId = $this->request->validated()["spin_the_wheel_id"];
+            $spinTheWheelSegments = [];
+
+            foreach($segments as $segment) {
+
+                $spinTheWheel = SpinTheWheelSegment::create(
+                    [
+                        "spin_the_wheel_id" => $spinTheWheelId, 
+                        "label_text" => $segment["label_text"], 
+                        "label_color"=> $segment["label_color"], 
+                        "background_color" => $segment["background_color"], 
+                        "icon" => $segment["icon"], 
+                        "probability" => $segment["probability"]
+                        
+                    ]);
+
+                $spinTheWheelSegments[] = $spinTheWheel;
+                
+            }
     
             DB::commit();
     
-            return $spinTheWheel;
+            return $spinTheWheelSegments;
         } catch (\Throwable $e) {
             DB::rollBack();
     
