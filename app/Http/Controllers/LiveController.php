@@ -51,8 +51,9 @@ class LiveController extends BaseController
         try {
 
             $branchId = $request->query('branch_id');
+            $audienceId = $request->user()->id;
 
-            $brandLive = (new ViewBrandLiveService($brand->id, $branchId))->run(); 
+            $brandLive = (new ViewBrandLiveService($brand->id, $audienceId, $branchId))->run(); 
 
     
             return $this->sendResponse($brandLive, "Live brand retrieved successfully");
