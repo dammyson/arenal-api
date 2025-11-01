@@ -22,9 +22,9 @@ class StoreArenaSpinTheWheelAudiencePrizeRequest extends FormRequest
     public function rules(): array
     {
         return [
+        
             'prizes' => 'required|array',
-            'prizes.*.prize_id' => 'required|exists:prizes,id',
-            'prizes.*.brand_id' => 'required|exists:brands,id',
+           
         ];
     }
 }

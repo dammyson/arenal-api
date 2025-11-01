@@ -38,6 +38,9 @@ Route::get('faq', [FaqController::class, 'getFaq']);
 
 Route::get('arena/prizes', [PrizeController::class, 'getArenaPrizes']);
 Route::post('arena-audience/prizes', [PrizeController::class, 'storeArenaAudiencesPrizes']);
+Route::post('spin-the-wheel/{spinTheWheel}/spin', [PrizeController::class, 'playSpinTheWheel']);
+Route::get('arena-reward', [PrizeController::class, 'getArenaReward']);
+Route::put('redeem/arena-reward/{reward}', [PrizeController::class, 'redeemArenaReward']);
 
 // Route::get('brand-branch/{brand}/live', [LiveController::class, 'viewBranchLive']);
 
