@@ -251,13 +251,17 @@ class PrizeController extends BaseController
             
             $user = $request->user();
             // dd($user->email);
+            if ( $reward->is_redeemed) {
+                return $this->sendError("Prize already redeemed", [], 400);
+
+            }
             $reward->is_redeemed = true;
             $reward->save();
            
 
             $user->notify(new ArenaRewardCode( $reward->prize_name, $reward->prize_code));
            
-            return $this->sendResponse($reward->prize_code, "Prize redeem successfully and Email as been sent with your reward code");
+            return $this->sendResponse($reward->prize_code, "{$reward->prize_name} redeemed successfully an Email as been sent with your reward code");
 
         }  catch (\Exception $e){
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
