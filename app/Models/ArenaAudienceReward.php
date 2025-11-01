@@ -2,21 +2,21 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
-class ArenaAudienceBadges extends Model
+class ArenaAudienceReward extends Model
 {
     use HasFactory, HasUuids;
-    protected $fillable = ['arena_badge_id', 'audience_id'];
+
+    protected $fillable = ['game_id', 'audience_id', 'prize_name', 'prize_code', 'is_redeemed'];
 
     public function audience() {
         return $this->belongsTo(Audience::class);
     }
 
-    public function arenaBadge() {
-        return $this->belongsTo(ArenaBadges::class);
+    public function game() {
+        return $this->belongsTo(Game::class);
     }
-
 }

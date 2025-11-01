@@ -22,6 +22,9 @@ use App\Services\Prize\RedeemUserBrandPrizeService;
 use App\Services\Point\GetAudienceBrandPointService;
 use App\Services\Prize\GetBrandAudienceBadgeService;
 use App\Http\Requests\Prize\UpdatePrizeDeliveryRequest;
+use App\Models\ArenaAudienceReward;
+use App\Models\SpinTheWheel;
+use App\Notifications\ArenaRewardCode;
 use App\Services\Achievement\AudienceBrandAchievementService;
 use App\Services\Achievement\TestAudienceBrandAchievementService;
 
@@ -172,7 +175,7 @@ class PrizeController extends BaseController
 
     public function storeArenaAudiencesPrizes(StoreArenaSpinTheWheelAudiencePrizeRequest $request)
     {
-        try {      
+        try {     
             $prizes = $request->validated()['prizes'];
             $audienceId = $request->user()->id;
                 
@@ -196,6 +199,80 @@ class PrizeController extends BaseController
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
         }        
         return $this->sendResponse($data, "Arena prizes retrieved succcessfully");
+    }
+
+    public function playSpinTheWheel(SpinTheWheel $spinTheWheel, StoreArenaSpinTheWheelAudiencePrizeRequest $request)
+    {
+        try {  
+            $prizes = $request->validated()['prizes'];
+            $audienceId = $request->user()->id;
+
+            $gameId = $spinTheWheel->game_id;
+                
+
+            $data = [];
+
+            foreach ($prizes as $prize) {
+                $audienceReward =  ArenaAudienceReward::create([
+                    'game_id' => $gameId,
+                    'prize_name' => $prize,
+                    'audience_id' => $audienceId,
+                    'prize_code' => $this->generatePrizeCode(),
+                    'is_redeemed' => false
+    
+                ]);
+               
+
+                $data[] = $audienceReward;
+
+            }
+
+        }  catch (\Exception $e){
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }        
+        return $this->sendResponse($data, "Arena prizes retrieved succcessfully");
+    }
+
+    public function getArenaReward(Request $request) {
+        try {
+            $audienceId = $request->user()->id;
+            $data = ArenaAudienceReward::where('audience_id', $audienceId)->get();
+            
+            return $this->sendResponse($data, "Arena prizes retrieved succcessfully");
+
+        }  catch (\Exception $e){
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }        
+   
+    }
+
+    public function redeemArenaReward(ArenaAudienceReward $reward, Request $request) {
+        try {
+            
+            $user = $request->user();
+            // dd($user->email);
+            $reward->is_redeemed = true;
+            $reward->save();
+           
+
+            $user->notify(new ArenaRewardCode( $reward->prize_name, $reward->prize_code));
+           
+            return $this->sendResponse($reward->prize_code, "Prize redeem successfully and Email as been sent with your reward code");
+
+        }  catch (\Exception $e){
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }        
+   
+    }
+
+    private function generatePrizeCode($length = 8)
+    {
+        $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $referralId = '';
+        for ($i = 0; $i < $length; $i++) {
+            $referralId .= $characters[rand(0, strlen($characters) - 1)];
+        }
+        return $referralId;
     }
 
     public function audienceBrandPrizeDelivery(BrandAudienceReward $brandAudienceReward, PrizeDeliveryRequest $prizeDeliveryRequest) {
