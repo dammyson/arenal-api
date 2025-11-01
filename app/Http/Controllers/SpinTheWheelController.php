@@ -123,7 +123,7 @@ class SpinTheWheelController extends BaseController
             'spinTheWheelParticipationDetails',
             'showUserForm',
             'spinTheWheelCustomGameTexts',
-            'spinTheWheelRewardSetups',
+            // 'spinTheWheelRewardSetups',
             'spinTheWheelUserForms',
             'spinTheWheelForms',
         ]);
