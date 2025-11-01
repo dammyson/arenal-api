@@ -44,4 +44,8 @@ class SpinTheWheel extends Model
     public function spinTheWheelAds() {
         return $this->hasMany(SpinTheWheelAds::class, 'spin_the_wheel_id', 'id');
     }
+
+    public function showUserForm() {
+        return $this->hasMany(SpinTheWheelSetUserForm::class, 'spin_the_wheel_id', 'id');
+    }
 }

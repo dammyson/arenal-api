@@ -15,6 +15,7 @@ use App\Services\SpinTheWheelService\IndexUserSpinTheWheelService;
 use App\Services\SpinTheWheelService\StoreSpinTheWheelSectorService;
 use App\Http\Requests\Game\SpinTheWheel\CreateSpinTheWheelSectorRequest;
 use App\Http\Requests\SpinTheWheel\StoreSpinTheWheelAudienceRewardRequest;
+use App\Models\SpinTheWheel;
 use App\Services\SpinTheWheelService\StoreSpinTheWheelAudienceRewardService;
 
 class SpinTheWheelController extends BaseController
@@ -112,6 +113,22 @@ class SpinTheWheelController extends BaseController
         } catch (\Throwable $e) {
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);           
         }
+    }
+
+    public function getSpinTheWheelDetails(SpinTheWheel $spinTheWheel, Request $request) {
+        $details = $spinTheWheel->load([
+            'spinTheWheelAds', 
+            'spinTheWheelSegments', 
+            'spinTheWheelBackground',  
+            'spinTheWheelParticipationDetails',
+            'showUserForm',
+            'spinTheWheelCustomGameTexts',
+            'spinTheWheelRewardSetups',
+            'spinTheWheelUserForms',
+            'spinTheWheelForms',
+        ]);
+
+        return $details;
     }
 
 }
