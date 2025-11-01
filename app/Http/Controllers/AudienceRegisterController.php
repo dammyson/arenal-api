@@ -197,7 +197,7 @@ class AudienceRegisterController extends BaseController
             $audience->total_referral_point = 0;
             $audience->save();
 
-            return response()->json(['error' => false,  "message" => "Successfully redeemed {$referral_points} referral points balance",  'total_referral_point' => $audience->total_referral_point], 200);
+            return response()->json(['error' => false,  "message" => "Successfully redeemed {$referral_points} referral points balance",  'total_referral_point' => $referral_points], 200);
          
         } catch (\Exception $exception) {
             return response()->json(['error' => true, 'message' => $exception->getMessage()], 500);
