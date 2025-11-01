@@ -35,6 +35,8 @@ Route::get('list-referrals', [AudienceRegisterController::class, 'listReferrals'
 Route::put('redeem-referrals', [AudienceRegisterController::class, 'redeemReferrals']);
 Route::post('faq', [FaqController::class, 'createFaq']);
 Route::get('faq', [FaqController::class, 'getFaq']);
+Route::get('spin-the-wheel/{spinTheWheel}/details', [SpinTheWheelController::class, 'getSpinTheWheelDetails']);
+
 
 Route::get('arena/prizes', [PrizeController::class, 'getArenaPrizes']);
 Route::post('arena-audience/prizes', [PrizeController::class, 'storeArenaAudiencesPrizes']);
