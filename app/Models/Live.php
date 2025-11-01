@@ -9,6 +9,9 @@ class Live extends Model
 {
     use HasUuids;
     
+    protected $casts = [
+        'is_live' => 'boolean',
+    ];
     protected $fillable = ["user_id", "brand_id", "branch_id", "duration", "checkIn_amount", "coins", "start_time", "end_time"];
 
     public function brand() {
