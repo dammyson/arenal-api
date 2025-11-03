@@ -20,7 +20,7 @@ class ShowCampaign implements BaseServiceInterface{
         // return CampaignGame::where("campaign_id", $this->campaignId)->first();
         return CampaignGame::where("campaign_id", $this->campaignId)
             ->whereHas('game') // Just check if game relationship exists
-            ->with(['campaign', 'game.rules', 'game.spinTheWheels']) // Eager load both campaign and rules of game
+            ->with(['campaign', 'game.rules', 'game.spinTheWheels', 'game.trivias']) // Eager load both campaign and rules of game
             ->firstOrFail();
     //    return Campaign::where("id", $this->campaignId)->with('games')->first();
     }
