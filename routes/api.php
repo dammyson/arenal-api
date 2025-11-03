@@ -66,6 +66,7 @@ Route::group(["middleware" => ["auth:api"]], function () {
         Route::delete('badges/{id}', [BrandController::class, 'deleteBrandBadge']);
 
         Route::get('generate-brands-link/{brand}', [BrandController::class, 'generateCampaignLink']);
+        Route::delete('delete-trivia/{trivia}', [BrandController::class, 'deleteTriviaQuestion']);
 
         
         Route::post('campaign', [CampaignController::class, 'storeCampaign']);   
