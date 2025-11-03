@@ -18,7 +18,8 @@ class Brand extends Model
         'slug',
         'created_by',
         'client_id',
-        'description'
+        'description',
+        'is_arena'
     ];
 
     public function details() {
