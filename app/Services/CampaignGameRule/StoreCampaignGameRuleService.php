@@ -21,16 +21,19 @@ class StoreCampaignGameRuleService implements BaseServiceInterface {
     }
 
     public function run() {
+        $data = [];
         
         foreach ($this->request['rules_descriptions'] as $rules_description) {
-            CampaignGameRule::create([
+            $campGameRule = CampaignGameRule::create([
                 'campaign_id' => $this->campaignId,
                 'game_id' => $this->gameId,
-                'rule_description' => $rules_description["rule"]
+                'rule_description' => $rules_description
             ]);
+
+            $data[] = $campGameRule;
         }
 
-        return "campaign game rule created";
+        return $data;
 
 
 

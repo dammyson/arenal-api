@@ -23,7 +23,6 @@ class CampaignGameRuleRequest extends FormRequest
     {
         return [
             'rules_descriptions' => 'required|array',
-            'rules_descriptions.*.rule' => 'required|string'
         ];
     }
 }

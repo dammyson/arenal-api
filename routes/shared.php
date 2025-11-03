@@ -110,4 +110,5 @@ Route::get('trivia/show-trivia/{trivia}', [TriviaController::class, 'show']);
 Route::get('trivia/questions', [TriviaQuestionController::class, 'index']);
 Route::get('trivia/{trivia}/questions', [TriviaQuestionController::class, 'show']);
 Route::post('trivia/{trivia}', [TriviaQuestionController::class, 'processAnswers']);
+Route::post('arena/trivia/{trivia}', [TriviaQuestionController::class, 'processArenaTriviaAnswers']);
 Route::post('trivia/{trivia}/test', [TriviaQuestionController::class, 'testProcessAnswers']);
