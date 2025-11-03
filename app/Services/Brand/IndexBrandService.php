@@ -16,6 +16,7 @@ class IndexBrandService implements BaseServiceInterface{
         $filter = $this->request->query('filter');
 
         return  Brand::where('name', 'LIKE', "%{$filter}%")
+            ->where('is_arena', false)
             ->with('details')->get();
     }
 }
