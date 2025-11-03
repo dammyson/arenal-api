@@ -32,7 +32,7 @@ class BrandStoreRequest extends FormRequest
             'client_id' => ['required', 'uuid', 'exists:Clients,id'],
             "brand_details" => "sometimes|array",
             "brand_details.*.brand_detail" => "sometimes|string",
-            "brand_branches" => "required|array",
+            "brand_branches" => "sometimes|array",
             "brand_branches.*.branch_name" => "required|string",
         ];
     }
