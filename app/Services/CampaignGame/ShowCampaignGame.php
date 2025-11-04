@@ -7,6 +7,7 @@ use App\Models\CampaignGame;
 use App\Services\BaseServiceInterface;
 use App\Http\Requests\Campaign\StoreCampaignRequest;
 use App\Http\Requests\Campaign\StoreCampaignGameRequest;
+use App\Models\Game;
 
 class ShowCampaignGame implements BaseServiceInterface{
     protected $gameId;
@@ -19,13 +20,15 @@ class ShowCampaignGame implements BaseServiceInterface{
     }
 
     public function run() {
+
+        $game = Game::where('id', $this->gameId)->first();
+       
         $campaigns =  CampaignGame::where('campaign_id', $this->campaignId)
             ->where('game_id', $this->gameId)
             ->whereHas('game')
-            ->with('campaign', 'game.rules', 'game.trivias')
+            ->with('campaign', 'game.rules', "game.{$game->type}")
             ->firstOrFail();
-        
-        
+            
         return $campaigns;
     
     }
