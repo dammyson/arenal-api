@@ -2,16 +2,12 @@
 
 namespace App\Services\Achievement;
 
+use App\Models\ArenaAudienceReward;
 use App\Models\Badge;
 use App\Models\BrandPoint;
 use Illuminate\Http\Request;
-use App\Models\AudienceBadge;
-use App\Models\BrandAudienceReward;
 use App\Services\BaseServiceInterface;
-use App\Services\Utility\GetAudienceRankService;
 use App\Services\Utility\TestGetAudienceRankService;
-use App\Services\Utility\GetAudienceBadgeListService;
-use App\Services\Utility\GetAudienceCurrentAndNextBadge;
 use App\Services\Utility\GetArenaAudienceBadgeListService;
 use App\Services\Utility\GetTestAudienceCurrentAndNextBadge;
 
@@ -26,9 +22,9 @@ class TestAudienceBrandAchievementService implements BaseServiceInterface{
 
     public function run() {
         $audienceId =  $this->request->user()->id;
-        $audiencReward = BrandAudienceReward::where('is_arena', true)
-            ->where('audience_id', $audienceId)
-            ->with('prize')
+
+        
+        $audienceReward = ArenaAudienceReward::where('audience_id', $audienceId)
             ->get();
 
         // $audienceBadges = AudienceBadge::where('brand_id', $this->brandId)
@@ -62,7 +58,7 @@ class TestAudienceBrandAchievementService implements BaseServiceInterface{
         $rank = (new TestGetAudienceRankService($audienceId))->run();
 
 
-        return ["point" => $points, "rank" => $rank, "current_badge" => $currentBadge, "next_badge" => $nextBadge,  "badges" => $allBadges , "audience_badges" => $audienceBadgesList, "audience_reward" => $audiencReward];
+        return ["point" => $points, "rank" => $rank, "current_badge" => $currentBadge, "next_badge" => $nextBadge,  "badges" => $allBadges , "audience_badges" => $audienceBadgesList, "audience_reward" => $audienceReward];
 
     }
 }
