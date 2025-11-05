@@ -17,10 +17,11 @@ class ShowCampaign implements BaseServiceInterface{
 
     public function run() {
         
-        // return CampaignGame::where("campaign_id", $this->campaignId)->first();
+       $campaignGame = CampaignGame::where("campaign_id", $this->campaignId)->first();
+        $game = $campaignGame?->game;
         return CampaignGame::where("campaign_id", $this->campaignId)
             ->whereHas('game') // Just check if game relationship exists
-            ->with(['campaign', 'game.rules', 'game.spinTheWheels', 'game.trivias']) // Eager load both campaign and rules of game
+            ->with(['campaign', 'game.rules', "game.{$game->type}"]) // Eager load both campaign and rules of game
             ->firstOrFail();
     //    return Campaign::where("id", $this->campaignId)->with('games')->first();
     }

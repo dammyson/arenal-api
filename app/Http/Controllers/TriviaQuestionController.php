@@ -19,7 +19,14 @@ use App\Services\Trivia\StoreTriviaAnswerService;
 use App\Services\Trivia\TestStoreTriviaAnswerService;
 use App\Http\Requests\Trivia\StoreTriviaAnswerRequest;
 use App\Http\Requests\TriviaQuestion\StoreTriviaQuestionsRequest;
+use App\Models\ArenaAudienceReward;
+use App\Models\BrandPoint;
+use App\Models\Game;
 use App\Services\Trivia\StoreArenaTriviaAnswerService;
+use App\Services\Utility\GenerateRandomLetters;
+use App\Services\Utility\GetArenaAudienceBadgeListService;
+use App\Services\Utility\GetTestAudienceCurrentAndNextBadge;
+use Illuminate\Http\Request;
 
 class TriviaQuestionController extends BaseController
 {
@@ -104,6 +111,118 @@ class TriviaQuestionController extends BaseController
             $data = (new TestStoreTriviaAnswerService($request, $request->validated()["questions"], $trivia))->run();
         
             return $this->sendResponse($data, "answer returned successfully");
+        } catch (\Throwable $e) {
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }
+
+      
+    }
+
+    public function wordTrivia(Trivia $trivia, Request $request) {
+        try {
+            $points = 100;
+            $brandId = $trivia->brand_id;
+            
+            if (!$request->is_completed) {
+                return $this->sendError("sorry you did not complete the challenge", [], 500);
+            }
+            $audience = $request->user();
+            $prize = Prize::where('is_arena', true)
+                ->where('points', '<=', $points)
+                ->inRandomOrder()
+                ->first();
+                
+            // return $prize;
+
+            // Generate a unique prize code
+            $randomCode = (new GenerateRandomLetters())->randomLetters();
+
+            // Optional: ensure the generated code is unique
+            while (ArenaAudienceReward::where('prize_code', $randomCode)->exists()) {
+                $randomCode = (new GenerateRandomLetters())->randomLetters();
+            }
+
+            
+            if ($prize) {
+                $arenaAudienceReward = ArenaAudienceReward::create([
+                    'game_id' => $trivia->game_id,
+                    'audience_id' => $audience->id,
+                    'prize_name' => $prize->name,
+                    'prize_code' => $randomCode,
+                    'is_redeemed' => false
+                ]);
+
+                // $brandAudienceReward->load('prize:id,name,description');
+                // $brandAudienceReward = null;
+            } 
+
+
+            // Start a transaction
+            DB::beginTransaction();
+                
+                // Fetch the record and lock it for update
+                $campaignGamePlay = CampaignGamePlay::where('audience_id', $audience->id)
+                    ->where('is_arena', true)
+                    ->lockForUpdate()  // Apply pessimistic locking
+                    ->first();
+
+                if (!$campaignGamePlay) {
+                    // If no record exists, create a new one
+                    $campaignGamePlay = CampaignGamePlay::create([
+                        'audience_id' => $audience->id,
+                        'is_arena'=> true,
+                        'campaign_id' => $trivia->campaign_id,
+                        'game_id' => $trivia->game_id,
+                        'brand_id' => $trivia->brand_id,
+                        'score' => $points,
+                        'played_at' => now()
+                    ]);
+                    
+                } else {
+                    // If record exists, increment score and update played_at
+                    $campaignGamePlay->score += $points;
+                    $campaignGamePlay->played_at = now();
+                    $campaignGamePlay->save();
+                }
+            
+
+                // Commit the transaction after updates
+
+                $audienceBrandPoint = BrandPoint::where('is_arena', true)        
+                ->where("audience_id", $audience->id)
+                ->first();
+
+                if ($audienceBrandPoint) {
+                    $audienceBrandPoint->points += $points;
+                    $audienceBrandPoint->save();
+            
+                } else {
+                    $audienceBrandPoint = BrandPoint::create([
+                        'is_arena' => true,
+                        'audience_id' => $audience->id,
+                        'brand_id' => $brandId,
+                        'points' => $points
+                    ]);
+                }
+
+                // [$currentBadge, $nextBadge] = (new GetAudienceCurrentAndNextBadge($brandId, $audienceBrandPoint->points))->run();
+                [$currentBadge, $nextBadge] = (new GetTestAudienceCurrentAndNextBadge($brandId, $audienceBrandPoint->points, true))->run();
+
+                $audienceBadgesList = (new GetArenaAudienceBadgeListService($brandId, $audience->id, $audienceBrandPoint->points, true))->run();
+        
+            DB::commit();
+
+              
+               
+
+            $data = [
+                "arena_audience_reward" => $arenaAudienceReward,
+                // "leaderboard" => $campaignGamePlay,
+                "current_badge" => $currentBadge,
+                "next_badge" => $nextBadge,
+                // "audience_badges_list" => $audienceBadgesList
+            ];
+            return $this->sendResponse($data, "trivia reward allocated successfully");
         } catch (\Throwable $e) {
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
         }
