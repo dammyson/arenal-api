@@ -84,9 +84,10 @@ class TriviaQuestionController extends BaseController
 
     public function processAnswers(Trivia $trivia, StoreTriviaAnswerRequest $request) {
         try {
-            $isArena = $request->query("is_arena");
-
+          $isArena = $request->boolean('is_arena');
+            // dd($isArena);
             if ($isArena) {
+
                 $data = (new StoreArenaTriviaAnswerService($request, $request->validated()["questions"], $trivia))->run();
 
             } else {
