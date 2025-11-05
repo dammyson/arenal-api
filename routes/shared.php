@@ -56,7 +56,7 @@ Route::post('arena-demography', [BrandController::class, 'storeAudienceDemo']);
 Route::get('arena-demography', [BrandController::class, 'getAudienceDemo']);
 Route::get('brand/{brand}/prizes', [BrandController::class, 'brandPrizes']);
 Route::get('brand/{brand}/achievements', [PrizeController::class, 'achievements']);
-Route::get('arena/achievements', [PrizeController::class, 'arenaAchievements']);
+Route::get('arena/achievements/test', [PrizeController::class, 'arenaAchievements']);
 // Route::get('brand/{brand}/user-prizes', [PrizeController::class, 'audienceBrandPrize']);
 Route::post('brand-audience/delivery/{brandAudienceReward}', [PrizeController::class, 'audienceBrandPrizeDelivery']);
 Route::get('brand-audience/delivery/{audiencePrizeDelivery}', [PrizeController::class, 'getAudienceBrandPrizeDelivery']);
