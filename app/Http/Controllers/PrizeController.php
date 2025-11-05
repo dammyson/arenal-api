@@ -23,6 +23,7 @@ use App\Services\Point\GetAudienceBrandPointService;
 use App\Services\Prize\GetBrandAudienceBadgeService;
 use App\Http\Requests\Prize\UpdatePrizeDeliveryRequest;
 use App\Models\ArenaAudienceReward;
+use App\Models\Badge;
 use App\Models\SpinTheWheel;
 use App\Notifications\ArenaRewardCode;
 use App\Services\Achievement\AudienceBrandAchievementService;
@@ -143,6 +144,21 @@ class PrizeController extends BaseController
     {
         try {            
             $data = (new GetBrandBadgesService($brand->id))->run();
+
+        }  catch (\Exception $e){
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }        
+        return $this->sendResponse($data, "Brand info retrieved succcessfully");
+    }
+
+    public function getArenaBadges(Brand $brand)
+    {
+        try {            
+            $badges = Badge::where('is_arena', true)
+                ->get();
+
+            $prizes = Prize::where('is_arena', true)
+                ->get();
 
         }  catch (\Exception $e){
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
