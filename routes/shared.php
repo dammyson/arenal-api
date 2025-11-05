@@ -104,7 +104,6 @@ Route::get('general/overall-leaderboard/monthly', [OverallCampaignGamePlayLeader
 Route::get('general/overall-leaderboard/alltime', [OverallCampaignGamePlayLeaderboardController::class, 'overallLeaderboard']);
 
 // Route::get('rules', [CampaignGameRuleController::class, 'index']);
-
 Route::get('trivia/brand/{brand}', [TriviaController::class, 'index']);
 Route::get('trivia/show-trivia/{trivia}', [TriviaController::class, 'show']);
 Route::get('trivia/questions', [TriviaQuestionController::class, 'index']);
@@ -112,3 +111,4 @@ Route::get('trivia/{trivia}/questions', [TriviaQuestionController::class, 'show'
 Route::post('trivia/{trivia}', [TriviaQuestionController::class, 'processAnswers']);
 Route::post('arena/trivia/{trivia}', [TriviaQuestionController::class, 'processArenaTriviaAnswers']);
 Route::post('trivia/{trivia}/test', [TriviaQuestionController::class, 'testProcessAnswers']);
+Route::post('trivia-words/{trivia}', [TriviaQuestionController::class, 'wordTrivia']);
