@@ -26,11 +26,12 @@ class GetArenaAudienceBadgeListService implements BaseServiceInterface
 
     public function run()
     {   
-
+        // dd($this->isArena);
         $brandBadges = Badge::when($this->isArena, fn($q) => $q->where('is_arena', true))
                     ->when(!$this->isArena, fn($q) => $q->where('brand_id', $this->brandId))
                     ->get();
 
+        // dd($brandBadges);
         $audienceBadgesList = [];
 
         foreach ($brandBadges as $brandBadge) {

@@ -9,10 +9,12 @@ class GetAudienceRankService implements BaseServiceInterface
 {
     protected $brandId;
     protected $audienceId;
-    public function __construct($brandId, $audienceId)
+    protected $isArena;
+    public function __construct($brandId, $audienceId, $isArena = false)
     {
         $this->brandId = $brandId;
         $this->audienceId = $audienceId;
+        $this->isArena = $isArena;
         
     }
 
@@ -23,12 +25,27 @@ class GetAudienceRankService implements BaseServiceInterface
         //     ->orderByDesc('score')
         //     ->pluck('audience_id'); // Just get audience IDs
 
+        if ($this->isArena) {
+            $gamePlays = CampaignGamePlay::where('is_arena', true)
+                ->select('audience_id')
+                ->selectRaw('MAX(score) as max_score')
+                ->groupBy('audience_id')
+                ->orderByDesc('max_score')
+                ->pluck('audience_id');
+            
+        } else {
+
+            
         $gamePlays = CampaignGamePlay::where('brand_id', $this->brandId)
             ->select('audience_id')
             ->selectRaw('MAX(score) as max_score')
             ->groupBy('audience_id')
             ->orderByDesc('max_score')
             ->pluck('audience_id');
+
+            
+        }
+           
 
         // Search for current audience position (add 1 for 1-based index)
         $rank = $gamePlays->search($this->audienceId);

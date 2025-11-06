@@ -96,7 +96,7 @@ class BrandController extends BaseController
         }
     }
 
-    public function arenaProfile(Request $request, Brand $brand) {
+    public function arenaProfile(Request $request) {
    
         try {
 
