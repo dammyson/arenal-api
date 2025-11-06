@@ -24,6 +24,7 @@ class StoreCampaignRequest extends FormRequest
         return [
             'type' => 'required|string|min:3',
             'title' => 'required|string',
+            'image_url' => 'required|string',
             'brand_id' => ['required', 'uuid', 'exists:brands,id'],
             'client_id' => ['required', 'uuid', 'exists:clients,id'],
             'company_id' => ['required', 'uuid', 'exists:companies,id'],
