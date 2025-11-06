@@ -15,6 +15,7 @@ use App\Models\ArenaAudienceBadges;
 use App\Services\BaseServiceInterface;
 use App\Services\Utility\GetUserRankService;
 use App\Http\Requests\Live\StoreJoinLiveRequest;
+use App\Models\Wallet;
 use App\Services\Utility\GetAudienceRankService;
 use App\Services\Utility\GetAudienceBadgeListService;
 use App\Services\Utility\GetArenaAudienceBadgeListService;
@@ -33,27 +34,28 @@ class GetArenaAudienceProfileService implements BaseServiceInterface
         try {
 
             $user = $this->request->user();
-            $isArena = $this->request->query('is_arena');
-            $audiencePoints =  CampaignGamePlay::where('brand_id', null)
+            $isArena = $this->request->query('is_arena') == "true" ? true : false;
+            // dd($isArena);
+            
+            $audiencePoints =  CampaignGamePlay::where('is_arena', true)
                 ->where('audience_id', $user->id)
                 ->first()
                 ?->score ?? 0;
             
-            $audienceBadgeCount =  ArenaAudienceBadges::where('audience_id', $user->id)
-                ->count(); 
+            $audienceBadgeCount =  Badge::where('is_arena', true)->count(); 
 
             
-            $userBadge = ArenaBadges::where("points", "<=", $audiencePoints)->orderBy("points", "desc")->first();
+            $userBadge = Badge::where("is_arena", true)->where("points", "<=", $audiencePoints)->orderBy("points", "desc")->first();
 
 
-            $rank = (new GetAudienceRankService(null, $user->id))->run();
-            $leaderboardCount = CampaignGamePlay::where("brand_id", null)->count();
+            $rank = (new GetAudienceRankService(null, $user->id, true))->run();
+            $leaderboardCount = CampaignGamePlay::where("is_arena", true)->count();
             // dd(" ig ot here");
             $audienceBadgesList = (new GetArenaAudienceBadgeListService(null, $user->id, $audiencePoints, $isArena))->run();
 
 
               
-            $walletBalance = AudienceWallet::where('audience_id', $user->id)->first()?->balance ?? 0;
+            $walletBalance = Wallet::where('audience_id', $user->id)->first()?->balance ?? 0;
 
 
             return [
