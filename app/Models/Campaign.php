@@ -14,6 +14,7 @@ class Campaign extends Model
     protected $fillable = [
         'type',
         'title',
+        'image_url',
         'created_by',
         'client_id',
         'brand_id',
