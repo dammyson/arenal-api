@@ -11,9 +11,9 @@ class SpinTheWheel extends Model
 
     protected $fillable = ["name", "game_id", "image_url", "user_id", "is_published", "publish_time"];
 
-    public function spinTheWheelSectors(){
-        return $this->hasMany(SpinTheWheelSector::class, 'spin_the_wheel_id', 'id');
-    }
+    // public function spinTheWheelSectors(){
+    //     return $this->hasMany(SpinTheWheelSector::class, 'spin_the_wheel_id', 'id');
+    // }
 
     public function spinTheWheelForms() {
         return $this->hasMany(SpinTheWheelForm::class, 'spin_the_wheel_id', 'id');
