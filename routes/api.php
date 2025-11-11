@@ -102,6 +102,9 @@ Route::group(["middleware" => ["auth:api"]], function () {
             Route::put('{faq}/update', [FaqController::class, 'updateFaq']);
         });
 
+        
+        Route::put('upload-questions/csv', [TriviaController::class, 'uploadQuestionCsv']);
+
         // Route::post('spin/{spinId}/sector/{sectorId}', [SpinTheWheelController::class, 'storeSpinSector'])->name('create.spin.sectore');
         Route::get('logout', [LogoutController::class, 'logout']);
 

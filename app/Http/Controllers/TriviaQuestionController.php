@@ -7,6 +7,7 @@ use App\Models\Trivia;
 use App\Models\Campaign;
 use App\Models\TriviaQuestion;
 use App\Models\CampaignGamePlay;
+use League\Csv\Reader;
 use Illuminate\Support\Facades\DB;
 use App\Models\TriviaQuestionChoice;
 use Illuminate\Support\Facades\Auth;
@@ -18,6 +19,7 @@ use App\Http\Requests\Trivia\StoreTriviaRequest;
 use App\Services\Trivia\StoreTriviaAnswerService;
 use App\Services\Trivia\TestStoreTriviaAnswerService;
 use App\Http\Requests\Trivia\StoreTriviaAnswerRequest;
+use App\Http\Requests\TriviaQuestion\StoreTriviaQuestionsCsvRequest;
 use App\Http\Requests\TriviaQuestion\StoreTriviaQuestionsRequest;
 use App\Models\ArenaAudienceReward;
 use App\Models\BrandPoint;
@@ -27,6 +29,8 @@ use App\Services\Utility\GenerateRandomLetters;
 use App\Services\Utility\GetArenaAudienceBadgeListService;
 use App\Services\Utility\GetTestAudienceCurrentAndNextBadge;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class TriviaQuestionController extends BaseController
 {
@@ -57,6 +61,64 @@ class TriviaQuestionController extends BaseController
                 'message' => 'An error occurred while processing your request.',
                 'error' => $e->getMessage()
             ], 500);
+        }
+    }
+
+    public function uploadQuestionCsv(StoreTriviaQuestionsCsvRequest $request) {
+        try {
+            $filePath = $request->file('file')->store('uploads');
+            $csvPath = Storage::path($filePath);
+
+            // Read CSV file
+            $csv = Reader::createFromPath($csvPath, 'r');
+            $csv->setHeaderOffset(0); // Assuming the first row contains column headers
+
+
+            $user = $request->user();
+            $users = [];
+            $errors = [];
+
+            foreach ($csv as $index => $row) {
+                // Validate required fields
+
+                $question = TriviaQuestion::create([
+                    'trivia_id' => $row['trivia_id'], //$trivia->id,
+                    'question' => $row['question_name'],
+                    'is_general' => $row['is_general'] ?? true,
+                    'points' => $row['points'] ?? 0,
+                    'duration' => $row['duration'] ?? 0,
+                    'media_type' => $row['media_type'] ?? null,
+                    'asset_url' => $row['asset_url'] ?? null,
+                    'difficulty_level' => $row['difficulty_level'] ?? 'EASY',
+                    'company_id' => $user->companies[0]->id,
+                    'user_id' => $user->id,
+                ]);
+
+
+                $choices = [];               
+    
+                foreach ($row['choices'] as $choiceData) {
+                    $choice = TriviaQuestionChoice::create([
+                        'question_id' => $question->id,
+                        'choice' => $choiceData['choice'],
+                        'is_correct_choice' => $choiceData['is_correct_choice'],
+                        'media_type' => $choiceData['media_type'] ?? null,
+                        'asset_url' => $choiceData['asset_url'] ?? null,
+                    ]);
+
+                    $choices[] = $choice;
+                }
+
+            }
+    
+            $question->setRelation('choices', collect($choices));
+            $createdQuestions[] = $question;
+            
+    
+            // return response()->json(['status' => true, 'data' => new UserCollection($new_user), 'message' => 'User invitation successful'], 200);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            return response()->json(['status' => false, 'message' => 'Error processing CSV upload'], 500);
         }
     }
 

@@ -23,7 +23,7 @@ class showSpinTheWheelService implements BaseServiceInterface
                     'spinTheWheelForms',
                     'spinTheWheelSegments',
                     'spinTheWheelUserForms',
-                    'spinTheWheelRewardSetups',
+                    // 'spinTheWheelRewardSetups',
                     'spinTheWheelcustomGameTexts'
                 
                 ])
