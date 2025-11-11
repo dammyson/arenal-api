@@ -21,10 +21,14 @@ class showSpinTheWheelService implements BaseServiceInterface
         try {
             $spinTheWheels = SpinTheWheel::with([
                     'spinTheWheelForms',
+                    'spinTheWheelBackground',
                     'spinTheWheelSegments',
                     'spinTheWheelUserForms',
+                    'spinTheWheelCustomGameTexts',
+                    'spinTheWheelParticipationDetails',
+                    'spinTheWheelAds',
+                    'showUserForm'
                     // 'spinTheWheelRewardSetups',
-                    'spinTheWheelcustomGameTexts'
                 
                 ])
                 ->findOrFail($this->id);
