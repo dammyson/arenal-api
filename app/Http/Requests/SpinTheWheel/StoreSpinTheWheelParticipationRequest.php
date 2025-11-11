@@ -24,7 +24,8 @@ class StoreSpinTheWheelParticipationRequest extends FormRequest
         return [
             "spin_the_wheel_id" => "required|exists:spin_the_wheels,id",
             "is_free" => "required|boolean",
-            "entry_fee" => "sometimes|integer"
+            "entry_fee" => "sometimes|integer",
+            "no_of_free_trials" => "sometimes|integer"
         ];
     }
 }
