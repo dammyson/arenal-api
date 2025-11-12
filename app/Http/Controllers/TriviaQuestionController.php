@@ -144,6 +144,20 @@ class TriviaQuestionController extends BaseController
         }
     }
 
+    public function questionChoices(Trivia $trivia){
+        try {
+            $data = $trivia->load(['questions', 'questions.choices']);
+            
+           return $data;
+
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'An error occurred while processing your request.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function processAnswers(Trivia $trivia, StoreTriviaAnswerRequest $request) {
         try {
           $isArena = $request->boolean('is_arena');
