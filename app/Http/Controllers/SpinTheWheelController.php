@@ -148,6 +148,7 @@ class SpinTheWheelController extends BaseController
         $data = [
             'user_trial_used' => $trial ? $trial->trial_count : 0,
             'no_of_free_trials' => $participationDetails->no_of_free_trials,
+            'entry_fee' => $participationDetails->entry_fee,
         ];
 
         return $this->sendResponse($data, "trial record retrieved succcessfully");
