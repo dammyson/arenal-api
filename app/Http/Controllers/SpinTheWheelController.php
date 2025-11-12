@@ -16,6 +16,8 @@ use App\Services\SpinTheWheelService\StoreSpinTheWheelSectorService;
 use App\Http\Requests\Game\SpinTheWheel\CreateSpinTheWheelSectorRequest;
 use App\Http\Requests\SpinTheWheel\StoreSpinTheWheelAudienceRewardRequest;
 use App\Models\SpinTheWheel;
+use App\Models\SpinTheWheelParticipationDetails;
+use App\Models\TrialRecord;
 use App\Services\SpinTheWheelService\StoreSpinTheWheelAudienceRewardService;
 
 class SpinTheWheelController extends BaseController
@@ -129,6 +131,27 @@ class SpinTheWheelController extends BaseController
         ]);
 
         return $details;
+    }
+
+    
+    public function trialCheck(Request $request, SpinTheWheelParticipationDetails $participationDetails)
+    {   
+        $audienceId = $request->user()->id;
+        // Get today's record
+        $today = now()->toDateString();
+
+        $trial = TrialRecord::where('audience_id', $audienceId)
+            ->where('spin_the_wheel_participation_details_id', $participationDetails->id)
+            ->where('trial_date', $today)
+            ->first();
+
+        $data = [
+            'user_trial_used' => $trial ? $trial->trial_count : 0,
+            'no_of_free_trials' => $participationDetails->no_of_free_trials,
+        ];
+
+        return $this->sendResponse($data, "trial record retrieved succcessfully");
+        
     }
 
 }

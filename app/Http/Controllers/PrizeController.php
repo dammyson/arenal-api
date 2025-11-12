@@ -25,6 +25,7 @@ use App\Http\Requests\Prize\UpdatePrizeDeliveryRequest;
 use App\Models\ArenaAudienceReward;
 use App\Models\Badge;
 use App\Models\SpinTheWheel;
+use App\Models\TrialRecord;
 use App\Notifications\ArenaRewardCode;
 use App\Services\Achievement\AudienceBrandAchievementService;
 use App\Services\Achievement\TestAudienceBrandAchievementService;
@@ -217,13 +218,38 @@ class PrizeController extends BaseController
         return $this->sendResponse($data, "Arena prizes retrieved succcessfully");
     }
 
+    
+
     public function playSpinTheWheel(SpinTheWheel $spinTheWheel, StoreArenaSpinTheWheelAudiencePrizeRequest $request)
     {
         try {  
             $prizes = $request->validated()['prizes'];
             $audienceId = $request->user()->id;
-
+            
             $gameId = $spinTheWheel->game_id;
+           
+            $spinTheWheelParticipationDetails = $spinTheWheel->spinTheWheelParticipationDetails[0];
+            
+            if (!$spinTheWheelParticipationDetails->is_free) {
+                $maxFreeTrials = $spinTheWheelParticipationDetails->no_of_free_trials;
+
+                $today = now()->toDateString();
+
+                // Retrieve today's trial record
+                $trial = TrialRecord::firstOrCreate([
+                    'audience_id' => $audienceId,
+                    'spin_the_wheel_participation_details_id' => $spinTheWheelParticipationDetails->id,
+                    'trial_date' => $today,
+                ]);
+
+                $isFreePlay = $trial->trial_count < $maxFreeTrials;
+
+                if ($isFreePlay) {
+                    // Increment trial usage
+                    $trial->increment('trial_count');
+                } 
+            }
+            
                 
 
             $data = [];

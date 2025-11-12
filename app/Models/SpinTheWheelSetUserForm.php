@@ -21,6 +21,15 @@ class SpinTheWheelSetUserForm extends Model
         'show_before_spin',
     ];
 
+
+    protected $casts = [
+        'is_user_name' => 'boolean',
+        'is_user_email' => 'boolean',
+        'is_phone_number' => 'boolean',
+        'is_marked_required' => 'boolean',
+        'show_before_spin' => 'boolean',
+    ];
+
     public function spinTheWheel() {
         return $this->belongsTo(SpinTheWheel::class, 'spin_the_wheel_id', 'id');
     }
