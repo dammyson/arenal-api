@@ -134,12 +134,14 @@ class SpinTheWheelController extends BaseController
     }
 
     
-    public function trialCheck(Request $request, SpinTheWheelParticipationDetails $participationDetails)
+    public function trialCheck(Request $request, SpinTheWheel $spinTheWheel)
     {   
         $audienceId = $request->user()->id;
         // Get today's record
         $today = now()->toDateString();
 
+        $participationDetails = $spinTheWheel->spinTheWheelParticipationDetails[0];
+        
         $trial = TrialRecord::where('audience_id', $audienceId)
             ->where('spin_the_wheel_participation_details_id', $participationDetails->id)
             ->where('trial_date', $today)
