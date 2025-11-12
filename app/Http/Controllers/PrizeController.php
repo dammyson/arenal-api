@@ -229,23 +229,27 @@ class PrizeController extends BaseController
             $gameId = $spinTheWheel->game_id;
            
             $spinTheWheelParticipationDetails = $spinTheWheel->spinTheWheelParticipationDetails[0];
-            $maxFreeTrials = $spinTheWheelParticipationDetails->no_of_free_trials;
+            
+            if (!$spinTheWheelParticipationDetails->is_free) {
+                $maxFreeTrials = $spinTheWheelParticipationDetails->no_of_free_trials;
 
-            $today = now()->toDateString();
+                $today = now()->toDateString();
 
-            // Retrieve today's trial record
-            $trial = TrialRecord::firstOrCreate([
-                'audience_id' => $audienceId,
-                'spin_the_wheel_participation_details_id' => $spinTheWheelParticipationDetails->id,
-                'trial_date' => $today,
-            ]);
+                // Retrieve today's trial record
+                $trial = TrialRecord::firstOrCreate([
+                    'audience_id' => $audienceId,
+                    'spin_the_wheel_participation_details_id' => $spinTheWheelParticipationDetails->id,
+                    'trial_date' => $today,
+                ]);
 
-            $isFreePlay = $trial->trial_count < $maxFreeTrials;
+                $isFreePlay = $trial->trial_count < $maxFreeTrials;
 
-            if ($isFreePlay) {
-                // Increment trial usage
-                $trial->increment('trial_count');
-            } 
+                if ($isFreePlay) {
+                    // Increment trial usage
+                    $trial->increment('trial_count');
+                } 
+            }
+            
                 
 
             $data = [];
@@ -261,8 +265,7 @@ class PrizeController extends BaseController
                 ]);
                
 
-                $data["audience_reward"] = $audienceReward;
-                $data["trials"] = $trial;
+                $data[] = $audienceReward;
 
             }
 
