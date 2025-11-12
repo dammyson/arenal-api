@@ -49,7 +49,7 @@ class TriviaController extends BaseController
         }
     }
 
-    public function show(Trivia $trivia){
+    public function show(Trivia $trivia) {
         try {
             
             return $trivia->load('game.prizes');

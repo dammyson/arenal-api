@@ -243,10 +243,11 @@ class PrizeController extends BaseController
                 ]);
 
                 $isFreePlay = $trial->trial_count < $maxFreeTrials;
-
+                // $isFreePlay = true;
                 if ($isFreePlay) {
                     // Increment trial usage
-                    $trial->increment('trial_count');
+                    $trial->trial_count = $request->input('trial_count');
+                    $trial->save();
                 } 
             }
             
