@@ -24,6 +24,7 @@ class StoreArenaSpinTheWheelAudiencePrizeRequest extends FormRequest
         return [
         
             'prizes' => 'required|array',
+            "trial_count" => 'sometimes|integer|min:0'
            
         ];
     }

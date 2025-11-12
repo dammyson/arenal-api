@@ -147,7 +147,7 @@ class TriviaQuestionController extends BaseController
     public function questionChoices(Trivia $trivia){
         try {
             $data = $trivia->load(['questions', 'questions.choices']);
-            
+
            return $data;
 
         } catch (\Throwable $e) {
@@ -199,10 +199,9 @@ class TriviaQuestionController extends BaseController
         } catch (\Throwable $e) {
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
         }
-
-      
     }
 
+    
     public function wordTrivia(Trivia $trivia, Request $request) {
         try {
             $points = 100;
