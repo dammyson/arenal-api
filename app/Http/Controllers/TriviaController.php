@@ -51,7 +51,11 @@ class TriviaController extends BaseController
 
     public function show(Trivia $trivia) {
         try {
-            
+             
+            if (!Trivia::isAccessibleToday()) {
+                return response()->json([ 'message' => 'Trivia is unavailable on Sunday.', "data" => $trivia->load('game.prizes')], 403);
+            }
+
             return $trivia->load('game.prizes');
 
 

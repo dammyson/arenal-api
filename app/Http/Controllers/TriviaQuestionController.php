@@ -134,6 +134,7 @@ class TriviaQuestionController extends BaseController
     }
     public function show(Trivia $trivia){
         try {
+           
             $data = (new ShowTriviaService($trivia->id))->run();
             return ["question_count" => count($data["questions"]), "data" => $data];
         } catch (\Throwable $e) {
@@ -160,9 +161,12 @@ class TriviaQuestionController extends BaseController
 
     public function processAnswers(Trivia $trivia, StoreTriviaAnswerRequest $request) {
         try {
-          $isArena = $request->boolean('is_arena');
+            $isArena = $request->boolean('is_arena') == "true" ? true : false;
             // dd($isArena);
             if ($isArena) {
+                if (!Trivia::isAccessibleToday()) {
+                    return $this->sendError("Trivia is unavailable on Sunday.", [], 403);
+                }
 
                 $data = (new StoreArenaTriviaAnswerService($request, $request->validated()["questions"], $trivia))->run();
 
