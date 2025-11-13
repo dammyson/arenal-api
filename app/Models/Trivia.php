@@ -9,7 +9,7 @@ class Trivia extends Model
 {
     use HasUuids;
     //
-   protected $fillable = [
+    protected $fillable = [
         "name", 
         "game_id", 
         "brand_id", 
@@ -19,6 +19,15 @@ class Trivia extends Model
         "entry_fee",
         "time_limit"
     ];
+
+    // In Trivia model
+    public static function isAccessibleToday(): bool
+    {
+        $today = now()->format('l');
+        // dd($today);
+        // return $today !== 'Thursday';
+        return $today !== 'Sunday';
+    }
 
 
     public function questions() {
