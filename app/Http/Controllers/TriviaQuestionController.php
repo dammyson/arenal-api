@@ -165,7 +165,8 @@ class TriviaQuestionController extends BaseController
             // dd($isArena);
             if ($isArena) {
                 if (!Trivia::isAccessibleToday()) {
-                    return $this->sendError("This week Trivia has been wrapped up.", [], 403);
+                    return $this->sendError("TThis week’s trivia has wrapped up! 🏆.
+                            Trivia returns Monday at 12:00 AM — get ready for a brand-new week of fun, learning, and friendly competition!", [], 403);
                 }
 
                 $data = (new StoreArenaTriviaAnswerService($request, $request->validated()["questions"], $trivia))->run();
