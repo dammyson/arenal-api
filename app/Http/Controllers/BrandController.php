@@ -20,11 +20,13 @@ use App\Services\Brand\AddBranchToBrandService;
 use App\Services\Brand\StoreBrandBadgesService;
 use App\Http\Requests\User\AddBranchToBrandRequest;
 use App\Models\Trivia;
+use App\Models\TriviaQuestion;
 use App\Models\TriviaQuestionChoice;
 use App\Services\Point\GetArenaAudienceDemoService;
 use App\Services\Point\GetAudienceBrandPointService;
 use App\Services\Point\StoreArenaAudienceDemoService;
 use App\Services\Point\GetArenaAudienceProfileService;
+
 
 class BrandController extends BaseController
 {
@@ -65,6 +67,24 @@ class BrandController extends BaseController
 
                 
             }
+        } catch (\Exception $e) {
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }
+        return $this->sendResponse("question and choices deleted successfuly", "Brand info retrieved succcessfully");
+    }
+
+    public function UpdateTriviaQuestion(Request $reqeust)
+    {
+        try {
+            $questions = TriviaQuestion::query()->update([
+                    "points" => 10
+                ]);
+
+            return TriviaQuestion::get();
+
+
+         
+           
         } catch (\Exception $e) {
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
         }
