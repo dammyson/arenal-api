@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Trivia\ProcessWordTriviaRequest;
 use App\Models\Prize;
 use App\Models\Trivia;
 use App\Models\Campaign;
@@ -203,14 +204,22 @@ class TriviaQuestionController extends BaseController
 
 
     
-    public function wordTrivia(Trivia $trivia, Request $request) {
+    public function wordTrivia(Trivia $trivia, ProcessWordTriviaRequest $request) {
         try {
-            $points = 100;
+            // $points = 100;
             $brandId = $trivia->brand_id;
-            
-            if (!$request->is_completed) {
-                return $this->sendError("sorry you did not complete the challenge", [], 500);
+
+            $noOfCompletedWords = $request->input('no_of_words_completed');
+
+            $points = $noOfCompletedWords * 2;
+            // dd($request->input('is_completed'));
+
+            if ($request->input('is_completed')) {
+                $points += 10;
             }
+
+            // dd($points);
+           
             $audience = $request->user();
             $prize = Prize::where('is_arena', true)
                 ->where('points', '<=', $points)
