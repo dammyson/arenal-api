@@ -52,7 +52,15 @@ class TriviaController extends BaseController
     public function show(Request $request, Trivia $trivia) {
         try {
 
+             $brand = $trivia->brand;
+            // dd(now()->format('l'));
 
+            if ($brand["closes_on"] == now()->format('l')) {
+                return response()->json([ 'message' => 'This week’s trivia has wrapped up! 🏆.
+                    Trivia returns Monday at 12:00 AM — get ready for a brand-new week of fun, learning, and friendly competition!', "data" => $trivia->load('game.prizes')], 403);
+            
+            }
+            
             return $trivia->load('game.prizes');
 
 
