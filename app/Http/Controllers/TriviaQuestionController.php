@@ -134,6 +134,16 @@ class TriviaQuestionController extends BaseController
     }
     public function show(Trivia $trivia){
         try {
+
+            
+            $brand = $trivia->brand;
+            // dd(now()->format('l'));
+
+            if ($brand["closes_on"] == now()->format('l')) {
+                return response()->json([ 'message' => 'This week’s trivia has wrapped up! 🏆.
+                    Trivia returns Monday at 12:00 AM — get ready for a brand-new week of fun, learning, and friendly competition!', "data" => $trivia->load('game.prizes')], 403);
+            
+            }
            
             $data = (new ShowTriviaService($trivia->id))->run();
             return ["question_count" => count($data["questions"]), "data" => $data];
@@ -164,11 +174,6 @@ class TriviaQuestionController extends BaseController
             $isArena = $request->boolean('is_arena') == "true" ? true : false;
             // dd($isArena);
             if ($isArena) {
-                if (!Trivia::isAccessibleToday()) {
-                    return $this->sendError("TThis week’s trivia has wrapped up! 🏆.
-                            Trivia returns Monday at 12:00 AM — get ready for a brand-new week of fun, learning, and friendly competition!", [], 403);
-                }
-
                 $data = (new StoreArenaTriviaAnswerService($request, $request->validated()["questions"], $trivia))->run();
 
             } else {
@@ -196,15 +201,6 @@ class TriviaQuestionController extends BaseController
       
     }
 
-    public function testProcessAnswers(Trivia $trivia, StoreTriviaAnswerRequest $request) {
-        try {
-            $data = (new TestStoreTriviaAnswerService($request, $request->validated()["questions"], $trivia))->run();
-        
-            return $this->sendResponse($data, "answer returned successfully");
-        } catch (\Throwable $e) {
-            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
-        }
-    }
 
     
     public function wordTrivia(Trivia $trivia, Request $request) {

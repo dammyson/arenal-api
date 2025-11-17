@@ -17,7 +17,8 @@ class Trivia extends Model
         "image_url", 
         "user_id", 
         "entry_fee",
-        "time_limit"
+        "time_limit",
+        "closes_on"
     ];
 
     // In Trivia model
@@ -36,6 +37,10 @@ class Trivia extends Model
 
     public function game() {
         return $this->belongsTo(Game::class);
+    }
+
+    public function brand() {
+        return $this->belongsTo(Brand::class);
     }
 
 

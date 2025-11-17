@@ -19,7 +19,8 @@ class Brand extends Model
         'created_by',
         'client_id',
         'description',
-        'is_arena'
+        'is_arena',
+        'closes_on'
     ];
 
     public function details() {

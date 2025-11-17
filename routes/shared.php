@@ -113,5 +113,4 @@ Route::get('trivia/{trivia}/questions', [TriviaQuestionController::class, 'show'
 Route::get('trivia/{trivia}/questions-with-choices', [TriviaQuestionController::class, 'questionChoices']);
 Route::post('trivia/{trivia}', [TriviaQuestionController::class, 'processAnswers']);
 Route::post('arena/trivia/{trivia}', [TriviaQuestionController::class, 'processArenaTriviaAnswers']);
-// Route::post('trivia/{trivia}/test', [TriviaQuestionController::class, 'testProcessAnswers']);
 Route::post('trivia-words/{trivia}', [TriviaQuestionController::class, 'wordTrivia']);
