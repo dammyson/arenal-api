@@ -22,9 +22,9 @@ class StoreTriviaAnswerRequest extends FormRequest
     public function rules(): array
     { 
         return [
-            "questions" => "array|required",
-            "questions.*.question_id" => "required|uuid|exists:trivia_questions,id|distinct",
-            "questions.*.answer_id" => "required|uuid|exists:trivia_question_choices,id|distinct",
+            "questions" => "array|sometimes",
+            "questions.*.question_id" => "sometimes|uuid|exists:trivia_questions,id|distinct",
+            "questions.*.answer_id" => "sometimes|uuid|exists:trivia_question_choices,id|distinct",
             "is_arena" => "sometimes|boolean"
         ];
     }
