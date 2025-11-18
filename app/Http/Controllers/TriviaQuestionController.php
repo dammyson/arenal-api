@@ -173,6 +173,10 @@ class TriviaQuestionController extends BaseController
     public function processAnswers(Trivia $trivia, StoreTriviaAnswerRequest $request) {
         try {
             $isArena = $request->boolean('is_arena') == "true" ? true : false;
+
+            if (count($request->validated()["questions"]) < 1) {
+                return $this->sendError("Submitted Answers has no content", [], 422);
+            } 
             // dd($isArena);
             if ($isArena) {
                 $data = (new StoreArenaTriviaAnswerService($request, $request->validated()["questions"], $trivia))->run();
@@ -192,6 +196,10 @@ class TriviaQuestionController extends BaseController
 
     public function processArenaTriviaAnswers(Trivia $trivia, StoreTriviaAnswerRequest $request) {
         try {
+
+            if (count($request->validated()["questions"]) < 1) {
+                return $this->sendError("Submitted Answers has no content", [], 422);
+            } 
             $data = (new StoreArenaTriviaAnswerService($request, $request->validated()["questions"], $trivia))->run();
         
             return $this->sendResponse($data, "answer returned successfully");

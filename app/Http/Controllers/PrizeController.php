@@ -255,19 +255,22 @@ class PrizeController extends BaseController
 
             $data = [];
 
-            foreach ($prizes as $prize) {
-                $audienceReward =  ArenaAudienceReward::create([
-                    'game_id' => $gameId,
-                    'prize_name' => $prize,
-                    'audience_id' => $audienceId,
-                    'prize_code' => $this->generatePrizeCode(),
-                    'is_redeemed' => false
+            if (count($prizes) > 0) {
+
+                foreach ($prizes as $prize) {
+                    $audienceReward =  ArenaAudienceReward::create([
+                        'game_id' => $gameId,
+                        'prize_name' => $prize,
+                        'audience_id' => $audienceId,
+                        'prize_code' => $this->generatePrizeCode(),
+                        'is_redeemed' => false
+        
+                    ]);
+                   
     
-                ]);
-               
-
-                $data[] = $audienceReward;
-
+                    $data[] = $audienceReward;
+    
+                }
             }
 
         }  catch (\Exception $e){
