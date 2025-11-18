@@ -209,18 +209,25 @@ class TriviaQuestionController extends BaseController
             // $points = 100;
             $brandId = $trivia->brand_id;
 
-            $noOfCompletedWords = $request->input('no_of_words_completed');
+            $percentageOfCompletedWords = $request->input('percentage_of_completion');
 
-            $points = $noOfCompletedWords * 2;
+            $totalNoOfWords = $request->input('total_no_of_words');
+         
+
+            $points = ($percentageOfCompletedWords * $totalNoOfWords) * 2;
             // dd($request->input('is_completed'));
 
-            if ($request->input('is_completed')) {
+            if ($percentageOfCompletedWords == 1) {
                 $points += 10;
             }
 
             // dd($points);
            
             $audience = $request->user();
+
+            $arenaAudienceReward = null;
+            
+          
             $prize = Prize::where('is_arena', true)
                 ->where('points', '<=', $points)
                 ->inRandomOrder()
@@ -236,6 +243,10 @@ class TriviaQuestionController extends BaseController
                 $randomCode = (new GenerateRandomLetters())->randomLetters();
             }
 
+              // Start a transaction
+            DB::beginTransaction();
+
+           
             
             if ($prize) {
                 $arenaAudienceReward = ArenaAudienceReward::create([
@@ -251,8 +262,6 @@ class TriviaQuestionController extends BaseController
             } 
 
 
-            // Start a transaction
-            DB::beginTransaction();
                 
                 // Fetch the record and lock it for update
                 $campaignGamePlay = CampaignGamePlay::where('audience_id', $audience->id)
@@ -318,6 +327,8 @@ class TriviaQuestionController extends BaseController
             ];
             return $this->sendResponse($data, "trivia reward allocated successfully");
         } catch (\Throwable $e) {
+
+            DB::rollBack();
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
         }
 
