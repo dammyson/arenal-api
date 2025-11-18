@@ -22,8 +22,8 @@ class ProcessWordTriviaRequest extends FormRequest
     public function rules(): array
     { 
         return [
-          "no_of_words_completed" => "required|integer",
-          "is_completed" => "required|boolean",
+            "percentage_of_completion" => "required|numeric|min:0|max:1",
+            "total_no_of_words" => "required|integer|min:1",
         ];
     }
 }
