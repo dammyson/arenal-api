@@ -19,6 +19,8 @@ use App\Http\Requests\User\BrandUpdateRequest;
 use App\Services\Brand\AddBranchToBrandService;
 use App\Services\Brand\StoreBrandBadgesService;
 use App\Http\Requests\User\AddBranchToBrandRequest;
+use App\Models\AudienceBranch;
+use App\Models\BrandAudienceBranch;
 use App\Models\Trivia;
 use App\Models\TriviaQuestion;
 use App\Models\TriviaQuestionChoice;
@@ -26,7 +28,7 @@ use App\Services\Point\GetArenaAudienceDemoService;
 use App\Services\Point\GetAudienceBrandPointService;
 use App\Services\Point\StoreArenaAudienceDemoService;
 use App\Services\Point\GetArenaAudienceProfileService;
-
+use Illuminate\Support\Facades\DB;
 
 class BrandController extends BaseController
 {
@@ -239,7 +241,7 @@ class BrandController extends BaseController
     public function showBrand(GetBrandRequest $request)
     {
         try {
-
+            // dd("iran");
             $validated = $request->validated();
             if ($validated['is_link']) {
                 if (!$request->hasValidSignature()) {
@@ -250,8 +252,38 @@ class BrandController extends BaseController
                 }
             }
 
+            // $data = Brand::with('details', 'branches')->find($brand_id);
+
             $brand_id = $validated['brand_id'];
-            $data = Brand::with('details', 'branches')->find($brand_id);
+            $audience_id = $request->user()->id;
+
+            // dd("here");
+            $data = Brand::with([
+                'details',
+                'branches',
+                'branches' => function ($q) use ($audience_id, $brand_id) {
+                    $q->with(['audience' => function ($sub) use ($audience_id, $brand_id) {
+                        $sub->where('audience_id', $audience_id)
+                            ->wherePivot('brand_id', $brand_id);
+                    }]);
+                }
+            ])->findOrFail($brand_id);
+            // dd($data);
+
+            // get the specific branch selected by audience (if any)
+            $selectedBranch = AudienceBranch::where('audience_id', $audience_id)
+                ->where('brand_id', $brand_id)
+                ->first();
+
+            $selectedBranch = $selectedBranch ? $selectedBranch->branch->name : null;
+
+            return $this->sendResponse([
+                'selected_branch' => $selectedBranch,
+                'brand' => $data,
+            ], "Brand retrieved successfully");
+        
+        
+        
         } catch (\Exception $e) {
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
         }
@@ -269,5 +301,31 @@ class BrandController extends BaseController
          catch (\Exception $e) {
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
         }        
+    }
+
+
+    public function selectBranch(Request $request)
+    {
+        try {   
+
+            $audience = $request->user();
+            $branchId = $request->branch_id;
+            $brandId = $request->brand_id;
+
+            $data = AudienceBranch::updateOrCreate(
+                [
+                    'audience_id' => $audience->id,
+                    'brand_id' => $request->brand_id,
+                ],
+                [
+                    'branch_id' => $request->branch_id,
+                ]
+            );
+
+        }  catch (\Exception $e){
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }        
+        return $this->sendResponse($data, "branch selected successfully", 200);
+   
     }
 }
