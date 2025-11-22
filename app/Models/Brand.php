@@ -30,4 +30,10 @@ class Brand extends Model
     public function branches() {
         return $this->hasMany(Branch::class);
     }
+
+    public function audienceBranch()
+    {
+        return $this->hasOne(AudienceBranch::class)
+            ->where('audience_id', auth()->id());
+    }
 }

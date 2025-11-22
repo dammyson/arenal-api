@@ -29,6 +29,13 @@ class Audience extends Authenticatable
     ];
     protected $hidden = ['password', 'remember_token'];
 
+    public function branches()
+    {
+        return $this->belongsToMany(Branch::class, 'audience_branch')
+            ->withPivot('brand_id')
+            ->withTimestamps();
+    }
+
     public function leaderboards() {
       return  $this->hasMany(CampaignLeaderboard::class, 'audience_id');
     }

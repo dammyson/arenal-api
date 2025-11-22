@@ -17,4 +17,11 @@ class Branch extends Model
         return $this->hasMany(Brand::class);
     }
 
+    public function audience()
+    {
+        return $this->belongsToMany(Audience::class, 'audience_branch')
+            ->withPivot('brand_id')
+            ->withTimestamps();
+    }
+
 }
