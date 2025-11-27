@@ -73,6 +73,7 @@ Route::group(["middleware" => ["auth:api"]], function () {
         Route::post('campaign', [CampaignController::class, 'storeCampaign']);   
         Route::post('campaign/{campaign_id}/campaign-game', [CampaignGameController::class, 'storeCampaignGame']);     
         Route::post('games', [GameController::class, 'storeGame']);        
+        Route::post('store-recall', [GameController::class, 'storeRecallMatch']);        
         Route::patch('games/{game_id}/update-game', [GameController::class, 'updateGame']);
         Route::post('games/{game_id}/upload-images',  [GameController::class, 'uploadImages']);        
         Route::post('campaign/{campaign_id}/game/{game_id}/rules', [CampaignGameRuleController::class, 'store']);

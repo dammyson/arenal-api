@@ -23,6 +23,7 @@ use App\Http\Controllers\CampaignGamePlayLeaderboardController;
 use App\Http\Controllers\BrandAudienceTransactionHistoryController;
 use App\Http\Controllers\FaqController;
 use App\Http\Controllers\OverallCampaignGamePlayLeaderboardController;
+use App\Http\Controllers\PlayGameController;
 
 Route::post('wallets/create', [WalletController::class, 'createWallet']);
 Route::post('audience-wallets/create', [WalletController::class, 'createAudienceWallet']);
@@ -114,3 +115,5 @@ Route::get('trivia/{trivia}/questions-with-choices', [TriviaQuestionController::
 Route::post('trivia/{trivia}', [TriviaQuestionController::class, 'processAnswers']);
 Route::post('arena/trivia/{trivia}', [TriviaQuestionController::class, 'processArenaTriviaAnswers']);
 Route::post('trivia-words/{trivia}', [TriviaQuestionController::class, 'wordTrivia']);
+Route::post('recall-and-match/play/{campaign}', [PlayGameController::class, 'playRecallAndMatch']);
+

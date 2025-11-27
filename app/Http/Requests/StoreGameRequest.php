@@ -26,7 +26,8 @@ class StoreGameRequest extends FormRequest
             'type' => 'required',
             'description' => 'required|string',
             'image_url' => 'sometimes',
-            'slug' => 'sometimes'
+            'slug' => 'sometimes',
+            'price' => 'sometimes|numeric',
         ];
     }
 }
