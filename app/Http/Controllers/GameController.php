@@ -18,6 +18,7 @@ use App\Services\Games\UpdateGameService;
 use App\Services\Games\ToogleFavoriteGame;
 use App\Http\Requests\Game\UpdateGameRequest;
 use App\Http\Requests\UploadImageRequest;
+use App\Models\RecallMatch;
 use App\Services\CampaignGame\FilterCampaignGame;
 use App\Services\Games\ShowGameService;
 use App\Services\Games\UploadGameImageService;
@@ -137,6 +138,27 @@ class GameController extends BaseController
         
     }
     
+    public function storeRecallMatch(Request $request) {
+        $validated = $request->validate([
+            'name' => 'required|string',
+            'image_url' => 'required|string',
+            'game_id' => 'required|uuid',
+            'campaign_id' => 'required|uuid',
+            'entry_fee' => 'sometimes|numeric',
+        ]);
+
+        try {
+            $recallMatch = RecallMatch::create([...$validated, 
+                'user_id' => auth()->user()->id
+            ]);
+
+        } catch (\Exception $e){
+
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }         
+        return $this->sendResponse($recallMatch, "Recall Match created succcessfully", 201);
+        
+    }
 
 
 }
