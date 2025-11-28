@@ -17,6 +17,11 @@ class PlayGameController extends BaseController
     {
         
         try {
+
+            $request->validate([
+                'difficulty' => 'required|in:easy,medium,hard',
+                'game_id' => 'required'
+            ]);
         
             // $points = 100;
             $brandId = $campaign->brand_id;
