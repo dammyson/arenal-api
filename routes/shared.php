@@ -41,6 +41,8 @@ Route::get('spin-the-wheel-participation-details/{spinTheWheel}/trial-check', [S
 
 
 Route::get('arena/prizes', [PrizeController::class, 'getArenaPrizes']);
+Route::get('get-prizes', [PrizeController::class, 'getPrizes']);
+Route::get('select-prize/{prize}', [PrizeController::class, 'selectPrize']);
 Route::post('arena-audience/prizes', [PrizeController::class, 'storeArenaAudiencesPrizes']);
 Route::post('spin-the-wheel/{spinTheWheel}/spin', [PrizeController::class, 'playSpinTheWheel']);
 Route::get('arena-reward', [PrizeController::class, 'getArenaReward']);
