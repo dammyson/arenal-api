@@ -222,10 +222,10 @@ class PrizeController extends BaseController
             return $this->sendError("sorry you need at least {$prize->points} to select this prize", "unable to select prize");
         }
 
-        $campaignGamePlay = CampaignGamePlay::where('audience_id', $audience->id)
-                ->when($isArena, fn($q) =>  $q->where('is_arena', true))
-                ->when((!$isArena), fn($q) =>  $q->where('brand_id', $brandId))
-                ->first();
+        // $campaignGamePlay = CampaignGamePlay::where('audience_id', $audience->id)
+        //         ->when($isArena, fn($q) =>  $q->where('is_arena', true))
+        //         ->when((!$isArena), fn($q) =>  $q->where('brand_id', $brandId))
+        //         ->first();
         
         if ($isArena) {
             $randomCode = (new GenerateRandomLetters())->randomLetters();
@@ -250,8 +250,8 @@ class PrizeController extends BaseController
         }
 
         // If no record exists, create a new one
-        $campaignGamePlay->score = -$prize->points;
-        $campaignGamePlay->save();
+        // $campaignGamePlay->score = -$prize->points;
+        // $campaignGamePlay->save();
 
         $brandPoints->points -= $prize->points;
         $brandPoints->save();
