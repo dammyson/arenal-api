@@ -24,11 +24,13 @@ use App\Services\Prize\GetBrandAudienceBadgeService;
 use App\Http\Requests\Prize\UpdatePrizeDeliveryRequest;
 use App\Models\ArenaAudienceReward;
 use App\Models\Badge;
+use App\Models\BrandPoint;
 use App\Models\SpinTheWheel;
 use App\Models\TrialRecord;
 use App\Notifications\ArenaRewardCode;
 use App\Services\Achievement\AudienceBrandAchievementService;
 use App\Services\Achievement\TestAudienceBrandAchievementService;
+use App\Services\Utility\GenerateRandomLetters;
 
 class PrizeController extends BaseController
 {
@@ -179,15 +181,72 @@ class PrizeController extends BaseController
         return $this->sendResponse($data, "Brand info retrieved succcessfully");
     }
 
-    public function getArenaPrizes()
+    public function getPrizes(Request $request)
     {
-        try {            
-            $data = Prize::where('is_arena', true)->get();
+        try {    
+            $isArena = $request->query('is_arena') == "true" ? true : false;
+            $brandId = $request->query("brand_id");
+            if ($isArena) {
+
+                $data = Prize::where('is_arena', true)->get();
+            }  else {
+               $data = Prize::where('brand_id', $brandId)->get();
+            }
 
         }  catch (\Exception $e){
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
         }        
         return $this->sendResponse($data, "Arena prizes retrieved succcessfully");
+    }
+
+    public function selectPrize(Request $request, Prize $prize) {
+        
+        $audience = $request->user();
+
+
+        $isArena = $request->query('is_arena') == "true" ? true : false;
+        $brandId = $request->query("brand_id");
+
+        $brandPoints = BrandPoint::when($isArena, fn($query) => $query->where('is_arena', true))
+            ->when((!$isArena), fn($query) => $query->where('brand_id', $brandId))
+            ->where('audience_id', $audience->id)
+            ->first(); 
+
+        if (!$brandPoints) {
+            $type = $isArena ? "Arena" : "Brand"; 
+            return $this->sendError("Play {$type} games to get points to select this prize");
+        }
+
+        if( $brandPoints->points < $prize->points) {
+            return $this->sendError("sorry you need at least {$prize->points} to select this prize", "unable to select prize");
+        }
+
+        
+        
+        if ($isArena) { 
+            
+            $randomCode = (new GenerateRandomLetters())->randomLetters();
+            ArenaAudienceReward::create([
+                'game_id' => $prize->game->id,
+                'audience_id' => $audience->id,
+                'prize_name' => $prize->name,
+                'prize_code' => $randomCode,
+                'is_redeemed' => false
+            ]);
+
+        } else {
+
+            BrandAudienceReward::create([
+                'brand_id' => $brandId,
+                'audience_id' => $audience->id,
+                'prize_id' => $prize->id,
+                'is_redeemed' => false
+            ]);
+        }
+
+        return $this->sendResponse("{$prize->name} selected succesffully", "{$prize->name} selected succesffully");
+
+
     }
 
     public function storeArenaAudiencesPrizes(StoreArenaSpinTheWheelAudiencePrizeRequest $request)
