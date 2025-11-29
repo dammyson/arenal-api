@@ -19,8 +19,10 @@ use App\Http\Requests\User\BrandUpdateRequest;
 use App\Services\Brand\AddBranchToBrandService;
 use App\Services\Brand\StoreBrandBadgesService;
 use App\Http\Requests\User\AddBranchToBrandRequest;
+use App\Models\AudienceBadge;
 use App\Models\AudienceBranch;
 use App\Models\BrandAudienceBranch;
+use App\Models\BrandPoint;
 use App\Models\Trivia;
 use App\Models\TriviaQuestion;
 use App\Models\TriviaQuestionChoice;
@@ -106,6 +108,43 @@ class BrandController extends BaseController
     }
 
     public function getProfile(Request $request, Brand $brand) {
+   
+        try {
+
+            $user = $request->user();
+            $isArena = $request->query('is_arena')  == "true" ? true: false;
+            $brand = $request->query('brand_id');
+
+            // $walletBalance = $user->wallet?->balance ?? 0;
+
+
+            $audiencePoints =  BrandPoint::when($isArena, fn($q) => $q->where('is_arena', true))
+                ->when((!$isArena), fn($q) => $q->where('brand_id', $brand))
+                ->where('audience_id', $user->id)
+                ->first()
+                ?->points ?? 0;
+            
+            $audienceBadgeCount =  AudienceBadge::when($isArena, fn($q) => $q->where('is_arena', true))
+                ->when((!$isArena), fn($q) => $q->where('brand_id', $brand))  
+                ->where('audience_id', $user->id)
+                ->count();
+                
+            $data = [
+                "first_name" => $user->first_name,
+                "last_name" => $user->last_name,
+                "user_image" => $user->profile_image,
+                'points' => $audiencePoints,
+                'badge_count' => $audienceBadgeCount,
+            ];
+
+            return $this->sendResponse($data, "audience points");
+        } catch (\Exception $e) {
+
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function getBrandProfile(Request $request, Brand $brand) {
    
         try {
 
