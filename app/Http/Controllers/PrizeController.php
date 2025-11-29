@@ -25,6 +25,7 @@ use App\Http\Requests\Prize\UpdatePrizeDeliveryRequest;
 use App\Models\ArenaAudienceReward;
 use App\Models\Badge;
 use App\Models\BrandPoint;
+use App\Models\CampaignGamePlay;
 use App\Models\SpinTheWheel;
 use App\Models\TrialRecord;
 use App\Notifications\ArenaRewardCode;
@@ -221,10 +222,12 @@ class PrizeController extends BaseController
             return $this->sendError("sorry you need at least {$prize->points} to select this prize", "unable to select prize");
         }
 
+        $campaignGamePlay = CampaignGamePlay::where('audience_id', $audience->id)
+                ->when($isArena, fn($q) =>  $q->where('is_arena', true))
+                ->when((!$isArena), fn($q) =>  $q->where('brand_id', $brandId))
+                ->first();
         
-        
-        if ($isArena) { 
-            
+        if ($isArena) {
             $randomCode = (new GenerateRandomLetters())->randomLetters();
             ArenaAudienceReward::create([
                 'game_id' => $prize->game->id,
@@ -233,6 +236,8 @@ class PrizeController extends BaseController
                 'prize_code' => $randomCode,
                 'is_redeemed' => false
             ]);
+
+          
 
         } else {
 
@@ -243,6 +248,13 @@ class PrizeController extends BaseController
                 'is_redeemed' => false
             ]);
         }
+
+        // If no record exists, create a new one
+        $campaignGamePlay->score = -$prize->points;
+        $campaignGamePlay->save();
+
+        $brandPoints->points -= $prize->points;
+        $brandPoints->save();
 
         return $this->sendResponse("{$prize->name} selected succesffully", "{$prize->name} selected succesffully");
 
