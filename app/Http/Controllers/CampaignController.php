@@ -14,6 +14,7 @@ use App\Services\Campaign\StoreCampaign;
 use App\Services\CampaignGame\ShowCampaignGame;
 use App\Http\Requests\Campaign\StoreCampaignRequest;
 use App\Models\Audience;
+use App\Models\CampaignCard;
 use App\Notifications\CampaignGameLink;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
@@ -69,6 +70,36 @@ class CampaignController extends BaseController
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
         }
         return $this->sendResponse($data, "Campaign retrieved succcessfully", 200);
+    }
+
+    public function storeCampaignCard(Request $request)
+    {
+        try {
+
+            $campaignCard = CampaignCard::create([
+                'campaign_id' => $request->campaign_id,
+                'title' => $request->title,
+                'description' => $request->description,
+                'image_url' => $request->image_url,
+                'link_text' => $request->link_text,
+            ]);
+
+        } catch (\Exception $e) {
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }
+        return $this->sendResponse($campaignCard, "Campaign Card created succcessfully", 201);
+    }
+
+    public function getCampaignCards(Request $request, Campaign $campaign)
+    {
+        try {
+
+            $campaignCards = CampaignCard::get();
+
+        } catch (\Exception $e) {
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }
+        return $this->sendResponse($campaignCards, "Campaign Card created succcessfully", 201);
     }
 
     public function startCampaign($campaignId)
