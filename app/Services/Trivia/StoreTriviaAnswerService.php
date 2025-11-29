@@ -90,26 +90,7 @@ class StoreTriviaAnswerService implements BaseServiceInterface
 
         // Commit the transaction after updates
         DB::commit();
-        
-        // $points = 100;
-        $prize = Prize::where('brand_id', $brandId)
-            ->where('points', '<=', $points)
-            ->inRandomOrder()
-            ->first();
-            
-        // return $prize;
-        
-        if ($prize) {
-            $brandAudienceReward = BrandAudienceReward::create([
-                'brand_id' => $brandId,
-                'audience_id' => $audience->id,
-                'prize_id' => $prize->id,
-                'is_redeemed' => false
-            ]);
-
-            $brandAudienceReward->load('prize:id,name,description');
-            // $brandAudienceReward = null;
-        } 
+    
         
         $audienceBrandPoint = BrandPoint::where('brand_id', $brandId)        
             ->where("audience_id", $audience->id)
@@ -138,7 +119,7 @@ class StoreTriviaAnswerService implements BaseServiceInterface
             'next_badge' => $nextBadge,
             "audience_points" => $audienceBrandPoint->points,
             "quiz_point" => $points, 
-            "reward" => $brandAudienceReward ?? null, 
+            // "reward" => $brandAudienceReward ?? null, 
             "audience_badges_list" => $audienceBadgesList, 
             "leaderboard" => $campaignGamePlay 
         ];
