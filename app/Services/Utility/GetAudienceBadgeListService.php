@@ -13,17 +13,21 @@ class GetAudienceBadgeListService implements BaseServiceInterface
     protected $brandId;
     protected $audienceId;
     protected $points;
-    public function __construct($brandId, $audienceId, $points)
+    protected $isArena;
+    public function __construct($brandId, $audienceId, $points, $isArena = false)
     {
         $this->brandId = $brandId;
         $this->audienceId = $audienceId;
         $this->points = $points;
+        $this->isArena = $isArena;
         
     }
 
     public function run()
     {
-        $brandBadges = Badge::where('brand_id', $this->brandId)->get();
+        $brandBadges = Badge::when($this->isArena, fn($q) => $q->where('is_arena', true))
+                    ->when(!$this->isArena, fn($q) => $q->where('brand_id', $this->brandId))
+                    ->get();
             
         $audienceBadgesList = [];
 
@@ -33,7 +37,8 @@ class GetAudienceBadgeListService implements BaseServiceInterface
                 AudienceBadge::firstOrCreate([
                     "audience_id" => $this->audienceId,
                     "brand_id" => $this->brandId,
-                    "badge_id" => $brandBadge->id
+                    "badge_id" => $brandBadge->id,
+                    "is_arena" => $this->isArena,
                 ]);
                 $audienceBadgesList[] = $brandBadge;
 

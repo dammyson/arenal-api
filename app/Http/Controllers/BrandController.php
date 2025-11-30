@@ -21,8 +21,11 @@ use App\Services\Brand\StoreBrandBadgesService;
 use App\Http\Requests\User\AddBranchToBrandRequest;
 use App\Models\AudienceBadge;
 use App\Models\AudienceBranch;
+use App\Models\AudienceLiveStreak;
 use App\Models\BrandAudienceBranch;
 use App\Models\BrandPoint;
+use App\Models\CampaignGamePlay;
+use App\Models\Live;
 use App\Models\Trivia;
 use App\Models\TriviaQuestion;
 use App\Models\TriviaQuestionChoice;
@@ -30,6 +33,8 @@ use App\Services\Point\GetArenaAudienceDemoService;
 use App\Services\Point\GetAudienceBrandPointService;
 use App\Services\Point\StoreArenaAudienceDemoService;
 use App\Services\Point\GetArenaAudienceProfileService;
+use App\Services\Utility\GetAudienceBadgeListService;
+use App\Services\Utility\GetAudienceRankService;
 use Illuminate\Support\Facades\DB;
 
 class BrandController extends BaseController
@@ -113,29 +118,79 @@ class BrandController extends BaseController
 
             $user = $request->user();
             $isArena = $request->query('is_arena')  == "true" ? true: false;
-            $brand = $request->query('brand_id');
+            $brandId = $request->query('brand_id');
 
             // $walletBalance = $user->wallet?->balance ?? 0;
 
 
             $audiencePoints =  BrandPoint::when($isArena, fn($q) => $q->where('is_arena', true))
-                ->when((!$isArena), fn($q) => $q->where('brand_id', $brand))
+                ->when((!$isArena), fn($q) => $q->where('brand_id', $brandId))
                 ->where('audience_id', $user->id)
                 ->first()
                 ?->points ?? 0;
             
             $audienceBadgeCount =  AudienceBadge::when($isArena, fn($q) => $q->where('is_arena', true))
-                ->when((!$isArena), fn($q) => $q->where('brand_id', $brand))  
+                ->when((!$isArena), fn($q) => $q->where('brand_id', $brandId))  
                 ->where('audience_id', $user->id)
                 ->count();
+
                 
-            $data = [
+                
+            // $data = [
+            //     "first_name" => $user->first_name,
+            //     "last_name" => $user->last_name,
+            //     "user_image" => $user->profile_image,
+            //     'points' => $audiencePoints,
+            //     'badge_count' => $audienceBadgeCount,
+            // ];
+
+
+
+
+            $walletBalance = $user->wallet?->balance ?? 0;
+
+
+            
+            $userBadge = Badge::when($isArena, fn($q) => $q->where('is_arena', true))
+                ->when((!$isArena), fn($q) => $q->where('brand_id', $brand))
+                ->where("points", "<=", $audiencePoints)->orderBy("points", "desc")->first();
+            
+            if (!$isArena) {
+                $live = Live::where('brand_id', $brandId)->first();
+                $liveStreak = AudienceLiveStreak::where('audience_id', $user->id)->where('live_id', $live->id)->first();
+                $liveStreakCount = $liveStreak->streak_count ?? 0;
+
+            }
+
+
+            $rank = (new GetAudienceRankService($brandId, $user->id, $isArena))->run();
+            $leaderboardCount = CampaignGamePlay::when($isArena, fn($q) => $q->where('is_arena', true))
+                ->when((!$isArena), fn($q) => $q->where('brand_id', $brandId))
+                ->count();
+                
+            $audienceBadgesList = (new GetAudienceBadgeListService( $brandId, $user->id, $audiencePoints))->run();
+
+
+              
+            // $walletBalance = Wallet::where('audience_id', $user->id)->first()?->balance ?? 0;
+
+
+            return [
+                // "user" => $user,
                 "first_name" => $user->first_name,
                 "last_name" => $user->last_name,
                 "user_image" => $user->profile_image,
+                "audience_badge_name" => $userBadge->name ?? "no badge yet",
+                "audience_badge_image_url" => $userBadge->image_url ?? null,
+                "live_duration" => (!$isArena ) ? $live->duration : null,
+                'streak_count' => (!$isArena) ? $liveStreakCount : null,
                 'points' => $audiencePoints,
                 'badge_count' => $audienceBadgeCount,
-            ];
+                "rank" => $rank,
+                "leaderboard_count" => $leaderboardCount,
+                "audience_badges" => $audienceBadgesList,
+                "wallet_balance" => $walletBalance
+            ];  
 
             return $this->sendResponse($data, "audience points");
         } catch (\Exception $e) {
