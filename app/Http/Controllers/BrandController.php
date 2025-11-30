@@ -168,7 +168,7 @@ class BrandController extends BaseController
                 ->when((!$isArena), fn($q) => $q->where('brand_id', $brandId))
                 ->count();
                 
-            $audienceBadgesList = (new GetAudienceBadgeListService( $brandId, $user->id, $audiencePoints))->run();
+            $audienceBadgesList = (new GetAudienceBadgeListService( $brandId, $user->id, $audiencePoints, $isArena))->run();
 
 
               
