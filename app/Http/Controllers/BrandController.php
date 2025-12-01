@@ -179,6 +179,7 @@ class BrandController extends BaseController
                 // "user" => $user,
                 "first_name" => $user->first_name,
                 "last_name" => $user->last_name,
+                'email' => $user->email,
                 "user_image" => $user->profile_image,
                 "audience_badge_name" => $userBadge->name ?? "no badge yet",
                 "audience_badge_image_url" => $userBadge->image_url ?? null,
