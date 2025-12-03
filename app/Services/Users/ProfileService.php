@@ -30,7 +30,8 @@ class ProfileService   {
 		return $this->audience;
 	}
 
-	public function userInfo() {	
+	public function userInfo($request) {
+
             
 		$userInfo = [];
 	  

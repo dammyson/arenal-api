@@ -20,22 +20,46 @@ class PlayGameController extends BaseController
 
             $request->validate([
                 'difficulty' => 'required|in:easy,medium,hard',
-                'game_id' => 'required'
+                'game_id' => 'required',
+                "percentage_of_completion" => "required|numeric|min:0|max:1",
+                "total_matched_image" => "required|integer|min:1",
             ]);
-        
+            
             // $points = 100;
             $brandId = $campaign->brand_id;
             $gameId = $request->input('game_id');
-
-            $difficulty = $request->input('difficulty');
+            $difficulty = $request->input('difficulty');            
+            $percentageOfCompletedWords = $request->input('percentage_of_completion');
+            $totalMatchImage = $request->input('total_matched_image');
 
             $difficultyMultipliers = [
-                'easy' => 20,
-                'medium' => 30,
-                'hard' => 40,
+                'easy' => [
+                   "regular_point" => 2,
+                   "max_point" => 70
+                ],
+                'medium' => [
+                    "regular_point" => 3,
+                    "max_point" => 100
+                ],
+                'hard' => [
+                    "regular_point" => 4,
+                    "max_point" => 150     
+                ]
             ];
 
-            $points = $difficultyMultipliers[$difficulty] ?? 0;         
+            
+
+
+            $mode = $difficultyMultipliers[$difficulty];  
+
+            
+            if ($percentageOfCompletedWords < 1) {
+                $points = ($percentageOfCompletedWords * $totalMatchImage ) * $mode['regular_point'];
+
+            } else {
+                $points = $mode['max_point'];
+            }
+
 
 
             // dd($points);
@@ -74,8 +98,8 @@ class PlayGameController extends BaseController
                 // Commit the transaction after updates
 
                 $audienceBrandPoint = BrandPoint::where('is_arena', true)        
-                ->where("audience_id", $audience->id)
-                ->first();
+                    ->where("audience_id", $audience->id)
+                    ->first();
 
                 if ($audienceBrandPoint) {
                     $audienceBrandPoint->points += $points;
@@ -97,11 +121,9 @@ class PlayGameController extends BaseController
         
             DB::commit();
 
-              
-               
-
             $data = [
                 "leaderboard" => $campaignGamePlay,
+                "user_points" => $audienceBrandPoint?->points,
                 "current_badge" => $currentBadge,
                 "next_badge" => $nextBadge,
                 "audience_badges_list" => $audienceBadgesList

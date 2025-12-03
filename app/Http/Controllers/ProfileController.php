@@ -203,7 +203,7 @@ class ProfileController extends BaseController
     public function userInfo(Request $request)
     {
         try {   
-            $data = $this->profileService->userInfo();
+            $data = $this->profileService->userInfo($request);
 
         }  catch (\Exception $e){
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
