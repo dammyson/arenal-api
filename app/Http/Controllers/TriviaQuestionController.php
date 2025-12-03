@@ -26,6 +26,7 @@ use App\Models\ArenaAudienceReward;
 use App\Models\BrandPoint;
 use App\Models\Game;
 use App\Services\Trivia\StoreArenaTriviaAnswerService;
+use App\Services\Utility\CheckDailyBonusService;
 use App\Services\Utility\GenerateRandomLetters;
 use App\Services\Utility\GetArenaAudienceBadgeListService;
 use App\Services\Utility\GetTestAudienceCurrentAndNextBadge;
@@ -185,6 +186,7 @@ class TriviaQuestionController extends BaseController
                 $data = (new StoreTriviaAnswerService($request, $request->validated()["questions"], $trivia))->run();
 
             }
+
         
             return $this->sendResponse($data, "answer returned successfully");
         } catch (\Throwable $e) {
@@ -226,50 +228,24 @@ class TriviaQuestionController extends BaseController
             // dd($request->input('is_completed'));
 
             if ($percentageOfCompletedWords == 1) {
-                $points += 10;
+                $points += 100;
             }
 
-            // dd($points);
+            // dump($points);
            
-            $audience = $request->user();
-
-            $arenaAudienceReward = null;
+            $audience = $request->user();  
             
-          
-            $prize = Prize::where('is_arena', true)
-                ->where('points', '<=', $points)
-                ->inRandomOrder()
-                ->first();
-                
-            // return $prize;
-
-            // Generate a unique prize code
-            $randomCode = (new GenerateRandomLetters())->randomLetters();
-
-            // Optional: ensure the generated code is unique
-            while (ArenaAudienceReward::where('prize_code', $randomCode)->exists()) {
-                $randomCode = (new GenerateRandomLetters())->randomLetters();
+            
+            [$eligibilityStatus, $bonusId] = (new CheckDailyBonusService())->checkEligibility($brandId, $audience->id, true);
+            // dump($eligibilityStatus);
+            
+            if ($eligibilityStatus == true) {
+                $dailyBonus = (new CheckDailyBonusService())->allocatedDailyBonus($bonusId, $audience->id, $brandId, true);
+                $points += $dailyBonus;
             }
-
-              // Start a transaction
+            // dump($points);
+            // Start a transaction
             DB::beginTransaction();
-
-           
-            
-            if ($prize) {
-                $arenaAudienceReward = ArenaAudienceReward::create([
-                    'game_id' => $trivia->game_id,
-                    'audience_id' => $audience->id,
-                    'prize_name' => $prize->name,
-                    'prize_code' => $randomCode,
-                    'is_redeemed' => false
-                ]);
-
-                // $brandAudienceReward->load('prize:id,name,description');
-                // $brandAudienceReward = null;
-            } 
-
-
                 
                 // Fetch the record and lock it for update
                 $campaignGamePlay = CampaignGamePlay::where('audience_id', $audience->id)
@@ -327,11 +303,12 @@ class TriviaQuestionController extends BaseController
                
 
             $data = [
-                "arena_audience_reward" => $arenaAudienceReward,
+                "audience_point" => $audienceBrandPoint?->points,
                 // "leaderboard" => $campaignGamePlay,
                 "current_badge" => $currentBadge,
                 "next_badge" => $nextBadge,
-                // "audience_badges_list" => $audienceBadgesList
+                "daily_bonus" => $dailyBonus ?? null,
+                "audience_badges_list" => $audienceBadgesList
             ];
             return $this->sendResponse($data, "trivia reward allocated successfully");
         } catch (\Throwable $e) {

@@ -18,6 +18,7 @@ use App\Http\Requests\Trivia\StoreTriviaAnswerRequest;
 use App\Models\ArenaAudienceReward;
 use App\Models\ArenaCampaignGamePlay;
 use App\Models\Brand;
+use App\Services\Utility\CheckDailyBonusService;
 use App\Services\Utility\GetArenaAudienceBadgeListService;
 use App\Services\Utility\GetAudienceCurrentAndNextBadge;
 use App\Services\Utility\GetTestAudienceCurrentAndNextBadge;
@@ -62,6 +63,16 @@ class StoreArenaTriviaAnswerService implements BaseServiceInterface
                $triviaQuestion = TriviaQuestion::find( $question["question_id"]);
                $points += $triviaQuestion->points;
             }
+        }
+
+        
+              
+        [$eligibilityStatus, $bonusId] = (new CheckDailyBonusService())->checkEligibility($brandId, $audience->id, true);
+            // dd($eligibilityStatus);
+            
+        if ($eligibilityStatus == true) {
+                $dailyBonus = (new CheckDailyBonusService())->allocatedDailyBonus($bonusId, $audience->id, $brandId, true);
+                $points += $dailyBonus;
         }
 
         // Start a transaction
@@ -147,6 +158,7 @@ class StoreArenaTriviaAnswerService implements BaseServiceInterface
             "audience_points" => $audienceBrandPoint->points,
             "quiz_point" => $points, 
             "reward" => $brandAudienceReward ?? null, 
+            'daily_bonus' => $dailyBonus ?? null,
             "audience_badges_list" => $audienceBadgesList, 
             "leaderboard" => $campaignGamePlay 
         ];

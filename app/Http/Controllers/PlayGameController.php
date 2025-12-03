@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\BrandPoint;
 use App\Models\Campaign;
 use App\Models\CampaignGamePlay;
+use App\Services\Utility\CheckDailyBonusService;
 use App\Services\Utility\GetArenaAudienceBadgeListService;
 use App\Services\Utility\GetTestAudienceCurrentAndNextBadge;
 use Illuminate\Http\Request;
@@ -60,11 +61,19 @@ class PlayGameController extends BaseController
                 $points = $mode['max_point'];
             }
 
-
-
-            // dd($points);
-           
             $audience = $request->user();
+            // dump($points);
+
+              
+            [$eligibilityStatus, $bonusId] = (new CheckDailyBonusService())->checkEligibility($brandId, $audience->id, true);
+            // dd($eligibilityStatus);
+            
+            if ($eligibilityStatus == true) {
+                $dailyBonus = (new CheckDailyBonusService())->allocatedDailyBonus($bonusId, $audience->id, $brandId, true);
+                $points += $dailyBonus;
+            }
+            // dump($points);
+           
               // Start a transaction
             DB::beginTransaction();
 
@@ -125,7 +134,8 @@ class PlayGameController extends BaseController
                 "leaderboard" => $campaignGamePlay,
                 "user_points" => $audienceBrandPoint?->points,
                 "current_badge" => $currentBadge,
-                "next_badge" => $nextBadge,
+                "next_badge" => $nextBadge,                
+                'daily_bonus' => $dailyBonus ?? null,
                 "audience_badges_list" => $audienceBadgesList
             ];
             return $this->sendResponse($data, "trivia reward allocated successfully");
