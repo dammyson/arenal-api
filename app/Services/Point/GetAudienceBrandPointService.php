@@ -71,6 +71,7 @@ class GetAudienceBrandPointService implements BaseServiceInterface
                 "first_name" => $user->first_name,
                 "last_name" => $user->last_name,
                 "user_image" => $user->profile_image,
+                "phone_number" => $user->phone_number,
                 "audience_badge_name" => $userBadge->name ?? "no badge yet",
                 "audience_badge_image_url" => $userBadge->image_url ?? null,
                 "live_duration" => $live->duration,
