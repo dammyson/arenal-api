@@ -30,6 +30,7 @@ use App\Services\Utility\CheckDailyBonusService;
 use App\Services\Utility\GenerateRandomLetters;
 use App\Services\Utility\GetArenaAudienceBadgeListService;
 use App\Services\Utility\GetTestAudienceCurrentAndNextBadge;
+use App\Services\Utility\LeaderboardService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -219,6 +220,7 @@ class TriviaQuestionController extends BaseController
             // $points = 100;
             $brandId = $trivia->brand_id;
             $gameId = $trivia->game_id;
+            $campaignId = $trivia->campaign_id;
 
             $percentageOfCompletedWords = $request->input('percentage_of_completion');
 
@@ -253,32 +255,12 @@ class TriviaQuestionController extends BaseController
             }
             // dump($points);
             // Start a transaction
-            DB::beginTransaction();
-                
-                // Fetch the record and lock it for update
-                $campaignGamePlay = CampaignGamePlay::where('audience_id', $audience->id)
-                    ->where('is_arena', true)
-                    ->lockForUpdate()  // Apply pessimistic locking
-                    ->first();
-
-                if (!$campaignGamePlay) {
-                    // If no record exists, create a new one
-                    $campaignGamePlay = CampaignGamePlay::create([
-                        'audience_id' => $audience->id,
-                        'is_arena'=> true,
-                        'campaign_id' => $trivia->campaign_id,
-                        'game_id' => $trivia->game_id,
-                        'brand_id' => $trivia->brand_id,
-                        'score' => $points,
-                        'played_at' => now()
-                    ]);
-                    
-                } else {
-                    // If record exists, increment score and update played_at
-                    $campaignGamePlay->score += $points;
-                    $campaignGamePlay->played_at = now();
-                    $campaignGamePlay->save();
-                }
+             // Start a transaction
+        DB::beginTransaction();
+            $campaignGamePlay = (new LeaderboardService())->storeLeaderboard($audience->id, $campaignId, $gameId, $brandId,  true, $points);
+            
+        // Commit the transaction after updates
+        DB::commit();
             
 
                 // Commit the transaction after updates

@@ -22,6 +22,7 @@ use App\Services\Utility\CheckDailyBonusService;
 use App\Services\Utility\GetArenaAudienceBadgeListService;
 use App\Services\Utility\GetAudienceCurrentAndNextBadge;
 use App\Services\Utility\GetTestAudienceCurrentAndNextBadge;
+use App\Services\Utility\LeaderboardService;
 
 class StoreArenaTriviaAnswerService implements BaseServiceInterface
 {
@@ -80,35 +81,10 @@ class StoreArenaTriviaAnswerService implements BaseServiceInterface
                 $points += $dailyBonus;
         }
 
-        // Start a transaction
+              // Start a transaction
         DB::beginTransaction();
+            $campaignGamePlay = (new LeaderboardService())->storeLeaderboard($audience->id, $campaignId, $gameId, $brandId,  true, $points);
             
-                 // Fetch the record and lock it for update
-                $campaignGamePlay = CampaignGamePlay::where('audience_id', $audience->id)
-                    ->where('is_arena', true)
-                    ->lockForUpdate()  // Apply pessimistic locking
-                    ->first();
-
-                if (!$campaignGamePlay) {
-                    // If no record exists, create a new one
-                    $campaignGamePlay = CampaignGamePlay::create([
-                        'audience_id' => $audience->id,
-                        'is_arena'=> true,
-                        'campaign_id' => $campaignId,
-                        'game_id' => $gameId,
-                        'brand_id' => $brandId,
-                        'score' => $points,
-                        'played_at' => now()
-                    ]);
-                    
-                } else {
-                    // If record exists, increment score and update played_at
-                    $campaignGamePlay->score += $points;
-                    $campaignGamePlay->played_at = now();
-                    $campaignGamePlay->save();
-                }
-           
-
         // Commit the transaction after updates
         DB::commit();
         
