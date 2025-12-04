@@ -65,13 +65,18 @@ class StoreArenaTriviaAnswerService implements BaseServiceInterface
             }
         }
 
+        [ $isHighScore, $highScoreBonus ] = (new CheckDailyBonusService())->checkHighScore($audience->id, $points, $brandId, true);
+
+        if ($isHighScore) {
+            $points += $highScoreBonus; 
+        }
         
               
-        [$eligibilityStatus, $bonusId] = (new CheckDailyBonusService())->checkEligibility($brandId, $audience->id, true);
+        [$eligibilityStatus, $bonusId] = (new CheckDailyBonusService())->checkEligibility($brandId, $gameId, $audience->id, true);
             // dd($eligibilityStatus);
             
         if ($eligibilityStatus == true) {
-                $dailyBonus = (new CheckDailyBonusService())->allocatedDailyBonus($bonusId, $audience->id, $brandId, true);
+                $dailyBonus = (new CheckDailyBonusService())->allocatedDailyBonus($bonusId, $audience->id, $brandId, $gameId, true);
                 $points += $dailyBonus;
         }
 
@@ -107,27 +112,6 @@ class StoreArenaTriviaAnswerService implements BaseServiceInterface
         // Commit the transaction after updates
         DB::commit();
         
-        // $points = 100;
-        $prize = Prize::where('is_arena', true)
-            ->where('points', '<=', $points)
-            ->inRandomOrder()
-            ->first();
-            
-        // return $prize;
-        
-        if ($prize) {
-            $brandAudienceReward = ArenaAudienceReward::create([
-                'game_id' => $gameId,
-                'audience_id' => $audience->id,
-                'prize_name' => $prize->name,
-                'prize_code' => $this->generatePrizeCode(),
-                'is_redeemed' => false
-            ]);
-
-            // $brandAudienceReward->load('prize:id,name,description');
-            // $brandAudienceReward = null;
-        } 
-        
         $audienceBrandPoint = BrandPoint::where('is_arena', true)        
             ->where("audience_id", $audience->id)
             ->first();
@@ -157,7 +141,8 @@ class StoreArenaTriviaAnswerService implements BaseServiceInterface
             'next_badge' => $nextBadge,
             "audience_points" => $audienceBrandPoint->points,
             "quiz_point" => $points, 
-            "reward" => $brandAudienceReward ?? null, 
+            "reward" => $brandAudienceReward ?? null,            
+            'high_score_bonus' => $highScoreBonus ?? null,
             'daily_bonus' => $dailyBonus ?? null,
             "audience_badges_list" => $audienceBadgesList, 
             "leaderboard" => $campaignGamePlay 

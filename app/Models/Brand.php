@@ -21,7 +21,8 @@ class Brand extends Model
         'description',
         'is_arena',
         'closes_on',
-        'daily_bonus'
+        'daily_bonus',
+        'high_score_bonus'
     ];
 
     public function details() {

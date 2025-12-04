@@ -62,6 +62,15 @@ class BrandController extends BaseController
         return $this->sendResponse($data, "Brand info retrieved succcessfully");
     }
 
+    public function updateBonus() {
+        Brand::query()->update([
+            'high_score_bonus' => 10,
+            'daily_bonus' => 10
+       ]);
+       return Brand::all();
+
+    }
+
     public function deleteTriviaQuestion(Trivia $trivia)
     {
         try {
