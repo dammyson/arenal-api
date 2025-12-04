@@ -218,6 +218,7 @@ class TriviaQuestionController extends BaseController
         try {
             // $points = 100;
             $brandId = $trivia->brand_id;
+            $gameId = $trivia->game_id;
 
             $percentageOfCompletedWords = $request->input('percentage_of_completion');
 
@@ -235,12 +236,19 @@ class TriviaQuestionController extends BaseController
            
             $audience = $request->user();  
             
+            [ $isHighScore, $highScoreBonus ] = (new CheckDailyBonusService())->checkHighScore($audience->id, $points, $brandId, false);
             
-            [$eligibilityStatus, $bonusId] = (new CheckDailyBonusService())->checkEligibility($brandId, $audience->id, true);
-            // dump($eligibilityStatus);
+            if ($isHighScore) {
+                // dd($highScoreBonus);
+               
+                $points += $highScoreBonus; 
+            }
+            
+            [$eligibilityStatus, $bonusId] = (new CheckDailyBonusService())->checkEligibility($brandId, $gameId, $audience->id, true);
+            // dd($eligibilityStatus);
             
             if ($eligibilityStatus == true) {
-                $dailyBonus = (new CheckDailyBonusService())->allocatedDailyBonus($bonusId, $audience->id, $brandId, true);
+                $dailyBonus = (new CheckDailyBonusService())->allocatedDailyBonus($bonusId, $audience->id, $brandId, $gameId, true);
                 $points += $dailyBonus;
             }
             // dump($points);

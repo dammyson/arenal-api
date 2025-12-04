@@ -63,13 +63,17 @@ class PlayGameController extends BaseController
 
             $audience = $request->user();
             // dump($points);
+            [ $isHighScore, $highScoreBonus ] = (new CheckDailyBonusService())->checkHighScore($audience->id, $points, $brandId, true);
 
+            if ($isHighScore) {
+                $points += $highScoreBonus; 
+            }
               
-            [$eligibilityStatus, $bonusId] = (new CheckDailyBonusService())->checkEligibility($brandId, $audience->id, true);
+            [$eligibilityStatus, $bonusId] = (new CheckDailyBonusService())->checkEligibility($brandId, $gameId, $audience->id, true);
             // dd($eligibilityStatus);
             
             if ($eligibilityStatus == true) {
-                $dailyBonus = (new CheckDailyBonusService())->allocatedDailyBonus($bonusId, $audience->id, $brandId, true);
+                $dailyBonus = (new CheckDailyBonusService())->allocatedDailyBonus($bonusId, $audience->id, $brandId, $gameId, true);
                 $points += $dailyBonus;
             }
             // dump($points);
@@ -134,7 +138,8 @@ class PlayGameController extends BaseController
                 "leaderboard" => $campaignGamePlay,
                 "user_points" => $audienceBrandPoint?->points,
                 "current_badge" => $currentBadge,
-                "next_badge" => $nextBadge,                
+                "next_badge" => $nextBadge,    
+                'high_score_bonus' => $highScoreBonus ?? null,
                 'daily_bonus' => $dailyBonus ?? null,
                 "audience_badges_list" => $audienceBadgesList
             ];
