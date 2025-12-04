@@ -33,7 +33,7 @@ class CheckDailyBonusService
             }
 
         } else {
-            dd("seond");
+            // dd("seond");
             $audienceDailyBonus = AudienceDailyBonus::where('audience_id', $audienceId)
                 ->when($isArena, fn($q) => ($q->where('is_arena', true)))
                 ->when(!$isArena, fn($q) => ($q->where('brand_id', $brandId)))
