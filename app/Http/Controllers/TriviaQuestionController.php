@@ -235,15 +235,16 @@ class TriviaQuestionController extends BaseController
             }
 
             // dump($points);
+            $totalPoints = $points;
            
             $audience = $request->user();  
             
-            [ $isHighScore, $highScoreBonus ] = (new CheckDailyBonusService())->checkHighScore($audience->id, $points, $brandId, false);
+            [ $isHighScore, $highScoreBonus ] = (new CheckDailyBonusService())->checkHighScore($audience->id, $totalPoints, $brandId, false);
             
             if ($isHighScore) {
                 // dd($highScoreBonus);
                
-                $points += $highScoreBonus; 
+                $totalPoints += $highScoreBonus; 
             }
             
             [$eligibilityStatus, $bonusId] = (new CheckDailyBonusService())->checkEligibility($brandId, $gameId, $audience->id, true);
@@ -251,13 +252,13 @@ class TriviaQuestionController extends BaseController
             
             if ($eligibilityStatus == true) {
                 $dailyBonus = (new CheckDailyBonusService())->allocatedDailyBonus($bonusId, $audience->id, $brandId, $gameId, true);
-                $points += $dailyBonus;
+                $totalPoints += $dailyBonus;
             }
             // dump($points);
             // Start a transaction
              // Start a transaction
         DB::beginTransaction();
-            $campaignGamePlay = (new LeaderboardService())->storeLeaderboard($audience->id, $campaignId, $gameId, $brandId,  true, $points);
+            $campaignGamePlay = (new LeaderboardService())->storeLeaderboard($audience->id, $campaignId, $gameId, $brandId,  true, $totalPoints);
             
         // Commit the transaction after updates
         DB::commit();
@@ -270,7 +271,7 @@ class TriviaQuestionController extends BaseController
                 ->first();
 
                 if ($audienceBrandPoint) {
-                    $audienceBrandPoint->points += $points;
+                    $audienceBrandPoint->points += $totalPoints;
                     $audienceBrandPoint->save();
             
                 } else {
@@ -278,7 +279,7 @@ class TriviaQuestionController extends BaseController
                         'is_arena' => true,
                         'audience_id' => $audience->id,
                         'brand_id' => $brandId,
-                        'points' => $points
+                        'points' => $totalPoints
                     ]);
                 }
 
@@ -295,9 +296,12 @@ class TriviaQuestionController extends BaseController
             $data = [
                 "audience_point" => $audienceBrandPoint?->points,
                 // "leaderboard" => $campaignGamePlay,
+                "points" => $points,
+                "total_points" => $totalPoints,
                 "current_badge" => $currentBadge,
                 "next_badge" => $nextBadge,
                 "daily_bonus" => $dailyBonus ?? null,
+                'high_score_bonus' => $highScoreBonus ?? null,
                 "audience_badges_list" => $audienceBadgesList
             ];
             return $this->sendResponse($data, "trivia reward allocated successfully");

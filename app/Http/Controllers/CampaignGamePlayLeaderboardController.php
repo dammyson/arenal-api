@@ -105,20 +105,20 @@ class CampaignGamePlayLeaderboardController extends BaseController
             $filter = $request->query('filter');
 
             $leaderboard = CampaignGamePlay::with(['audience', 'audience.audienceBadges' => function($q)  { 
-                        $q->where('is_arena', true)
-                            ->with(['badge' => function ($b) {
-                                $b->select('id', 'name', 'image_url', 'points');
-                            }])
-                            ->orderBy(
-                                // order audience_badges by their related badge points (DESC)
-                                Badge::select('points')
-                                    ->whereColumn('badges.id', 'audience_badges.badge_id'),
-                                'desc'
-                            )
-                            // optional tiebreaker so equal points keep newest first
-                            ->orderBy('audience_badges.created_at', 'desc');
-                    }])                     
-                    ->where('is_arena', true);
+                    $q->where('is_arena', true)
+                        ->with(['badge' => function ($b) {
+                            $b->select('id', 'name', 'image_url', 'points');
+                        }])
+                        ->orderBy(
+                            // order audience_badges by their related badge points (DESC)
+                            Badge::select('points')
+                                ->whereColumn('badges.id', 'audience_badges.badge_id'),
+                            'desc'
+                        )
+                        // optional tiebreaker so equal points keep newest first
+                        ->orderBy('audience_badges.created_at', 'desc');
+                }])                     
+                ->where('is_arena', true);
 
                 // return $leaderboard->get();
 
