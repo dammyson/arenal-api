@@ -80,7 +80,7 @@ class StoreArenaTriviaAnswerService implements BaseServiceInterface
             
         if ($eligibilityStatus == true) {
                 $dailyBonus = (new CheckDailyBonusService())->allocatedDailyBonus($bonusId, $audience->id, $brandId, $gameId, true);
-                $points += $dailyBonus;
+                $totalPoints += $dailyBonus;
         }
 
               // Start a transaction
