@@ -61,12 +61,12 @@ class StoreTriviaAnswerService implements BaseServiceInterface
             }
         }
         // dump($points);
-
+        $totalPoints = $points;
       
-       [ $isHighScore, $highScoreBonus ] = (new CheckDailyBonusService())->checkHighScore($audience->id, $points, $brandId, false);
+       [ $isHighScore, $highScoreBonus ] = (new CheckDailyBonusService())->checkHighScore($audience->id, $totalPoints, $brandId, false);
 
         if ($isHighScore) {
-            $points += $highScoreBonus; 
+            $totalPoints += $highScoreBonus; 
         }
 
         // dump($points);
@@ -74,12 +74,12 @@ class StoreTriviaAnswerService implements BaseServiceInterface
         // dd($eligibilityStatus);
         if ($eligibilityStatus == true) {
             $dailyBonus = (new CheckDailyBonusService())->allocatedDailyBonus($bonusId, $audience->id, $brandId, $gameId, false);
-            $points += $dailyBonus;
+            $totalPoints += $dailyBonus;
         }
         // dd($points);
         // Start a transaction
         DB::beginTransaction();
-            $campaignGamePlay = (new LeaderboardService())->storeLeaderboard($audience->id, $campaignId, $gameId, $brandId,  false, $points);
+            $campaignGamePlay = (new LeaderboardService())->storeLeaderboard($audience->id, $campaignId, $gameId, $brandId,  false, $totalPoints);
             
         // Commit the transaction after updates
         DB::commit();
@@ -90,14 +90,14 @@ class StoreTriviaAnswerService implements BaseServiceInterface
             ->first();
 
         if ($audienceBrandPoint) {
-            $audienceBrandPoint->points += $points;
+            $audienceBrandPoint->points += $totalPoints;
             $audienceBrandPoint->save();
        
         } else {
             $audienceBrandPoint = BrandPoint::create([
                 'brand_id' => $brandId,
                 'audience_id' => $audience->id,
-                'points' => $points
+                'points' => $totalPoints
             ]);
         }
 
@@ -110,6 +110,7 @@ class StoreTriviaAnswerService implements BaseServiceInterface
             "correct_answers_count" => $correctAnswersCount, 
             'current_badge' => $currentBadge,
             'next_badge' => $nextBadge,
+            'total_points' => $totalPoints,
             'high_score_bonus' => $highScoreBonus ?? null,
             'daily_bonus' => $dailyBonus ?? null,
             "audience_points" => $audienceBrandPoint->points,

@@ -66,10 +66,12 @@ class StoreArenaTriviaAnswerService implements BaseServiceInterface
             }
         }
 
-        [ $isHighScore, $highScoreBonus ] = (new CheckDailyBonusService())->checkHighScore($audience->id, $points, $brandId, true);
+        $totalPoints = $points;
+
+        [ $isHighScore, $highScoreBonus ] = (new CheckDailyBonusService())->checkHighScore($audience->id, $totalPoints, $brandId, true);
 
         if ($isHighScore) {
-            $points += $highScoreBonus; 
+            $totalPoints += $highScoreBonus; 
         }
         
               
@@ -83,7 +85,7 @@ class StoreArenaTriviaAnswerService implements BaseServiceInterface
 
               // Start a transaction
         DB::beginTransaction();
-            $campaignGamePlay = (new LeaderboardService())->storeLeaderboard($audience->id, $campaignId, $gameId, $brandId,  true, $points);
+            $campaignGamePlay = (new LeaderboardService())->storeLeaderboard($audience->id, $campaignId, $gameId, $brandId,  true, $totalPoints);
             
         // Commit the transaction after updates
         DB::commit();
@@ -93,7 +95,7 @@ class StoreArenaTriviaAnswerService implements BaseServiceInterface
             ->first();
 
         if ($audienceBrandPoint) {
-            $audienceBrandPoint->points += $points;
+            $audienceBrandPoint->points += $totalPoints;
             $audienceBrandPoint->save();
        
         } else {
@@ -101,7 +103,7 @@ class StoreArenaTriviaAnswerService implements BaseServiceInterface
                 'is_arena' => true,
                 'audience_id' => $audience->id,
                 'brand_id' => $brandId,
-                'points' => $points
+                'points' => $totalPoints
             ]);
         }
 
@@ -117,6 +119,7 @@ class StoreArenaTriviaAnswerService implements BaseServiceInterface
             'next_badge' => $nextBadge,
             "audience_points" => $audienceBrandPoint->points,
             "quiz_point" => $points, 
+            "total_points" => $totalPoints,
             "reward" => $brandAudienceReward ?? null,            
             'high_score_bonus' => $highScoreBonus ?? null,
             'daily_bonus' => $dailyBonus ?? null,
