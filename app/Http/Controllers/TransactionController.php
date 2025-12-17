@@ -11,6 +11,7 @@ use App\Services\GetTransactionCategoryID;
 use App\Services\GetTransactionChannelID;
 use App\Http\Resources\TransactionResource;
 use App\Http\Controllers\Controller;
+use App\Models\BrandPoint;
 use App\Services\Transactions\ShowTransactionService;
 use Carbon\Carbon;
 
@@ -63,6 +64,8 @@ class TransactionController extends Controller
         
         return new TransactionResource($transaction);
     }
+
+   
 
    
 

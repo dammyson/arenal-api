@@ -121,6 +121,7 @@ Route::middleware('auth:audience')->group(function () {
 
     Route::prefix('audiences/')->group(function () {
         Route::put('select-branch', [BrandController::class, 'selectBranch']);
+
         Route::get('user-info', [ProfileController::class, 'userInfo']);
         Route::get('user-profile', [ProfileController::class, 'profile']);
         Route::get('top-three', [OverallCampaignGamePlayLeaderboardController::class, 'overallGamePlayTopThree']);
