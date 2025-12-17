@@ -49,12 +49,9 @@ class PlayGameController extends BaseController
                 ]
             ];
 
-            
-
-
             $mode = $difficultyMultipliers[$difficulty];  
 
-            
+            $points = 0;
             if ($percentageOfCompletedWords < 1) {
                 $points = ($percentageOfCompletedWords * $totalMatchImage ) * $mode['regular_point'];
 
@@ -62,16 +59,19 @@ class PlayGameController extends BaseController
                 $points = $mode['max_point'];
             }
 
+            // dump($points);
+
             $audience = $request->user();
             // dump($points);
             [ $isHighScore, $highScoreBonus ] = (new CheckDailyBonusService())->checkHighScore($audience->id, $points, $brandId, true);
-
+            // dump($highScoreBonus);
             if ($isHighScore) {
                 $points += $highScoreBonus; 
             }
+            // dd($points);
               
             [$eligibilityStatus, $bonusId] = (new CheckDailyBonusService())->checkEligibility($brandId, $gameId, $audience->id, true);
-            // dd($eligibilityStatus);
+            // dd($eligibilityStatus, $bonusId);
             
             if ($eligibilityStatus == true) {
                 $dailyBonus = (new CheckDailyBonusService())->allocatedDailyBonus($bonusId, $audience->id, $brandId, $gameId, true);

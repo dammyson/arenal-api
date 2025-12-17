@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Notification;
 use App\Http\Requests\Auth\AudienceLoginRequest;
 use App\Http\Requests\Auth\RegisterAudienceRequest;
 use App\Http\Requests\Auth\ChangeAudiencePasswordRequest;
+use App\Models\BrandPoint;
 use App\Models\CampaignGamePlay;
 use App\Notifications\ArenaForgotPassword;
 use App\Notifications\ArenaOTP;
@@ -50,6 +51,7 @@ class AudienceRegisterController extends BaseController
             $userData['referrer_id'] = $this->generateReferralId();
 
             $audience = Audience::create($userData);
+
 
             $audienceWallet = Wallet::create([
                 'audience_id' => $audience->id,

@@ -62,12 +62,12 @@ class CheckDailyBonusService
 
     public function allocatedDailyBonus($audienceDailyBonusId, $audienceId, $brandId = null, $gameId, $isArena) {
         
-        $brandPoint = BrandPoint::firstOrCreate(
-            [
-                'audience_id' => $audienceId,
-                'is_arena' => $isArena,
-                'brand_id' => $brandId
-            ], ['points' => 0]);
+        // $brandPoint = BrandPoint::firstOrCreate(
+        //     [
+        //         'audience_id' => $audienceId,
+        //         'is_arena' => $isArena,
+        //         'brand_id' => $brandId
+        //     ], ['points' => 0]);
         
         
         $dailyBonus = 10;
@@ -82,7 +82,7 @@ class CheckDailyBonusService
             
         } 
 
-        $brandPoint->increment('points', $dailyBonus);
+        // $brandPoint->increment('points', $dailyBonus);
 
         // Mark as used today
         $dailyBonusRecord = AudienceDailyBonus::findOrFail($audienceDailyBonusId);
