@@ -227,7 +227,8 @@ class TriviaQuestionController extends BaseController
             $totalNoOfWords = $request->input('total_no_of_words');
          
 
-            $points = ($percentageOfCompletedWords * $totalNoOfWords) * 2;
+            $points = (int) floor(($percentageOfCompletedWords * $totalNoOfWords) * 2);
+            // dd($points);
             // dd($request->input('is_completed'));
 
             if ($percentageOfCompletedWords == 1) {
