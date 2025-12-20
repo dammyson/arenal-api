@@ -401,7 +401,21 @@ class BrandController extends BaseController
         return $this->sendResponse($data, "Brand retrieved succcessfully");
     }
 
-    public function addDetaialsToBrand(Request $request, Brand $brand) {
+    public function addBranchToBrand(AddBranchToBrandRequest $request, Brand $brand) {
+        try {
+
+            $data = (new AddBranchToBrandService($request, $brand->id))->run();
+
+            return $this->sendResponse($data, "branches added to brand succcessfully");
+        }
+
+         catch (\Exception $e) {
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }        
+    }
+
+    
+    public function addDetailsToBrand(Request $request, Brand $brand) {
         try {
 
             $request->validate([

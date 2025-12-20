@@ -64,7 +64,7 @@ Route::group(["middleware" => ["auth:api"]], function () {
         Route::post('brand-audience/{audiencePrizeDelivery}/delivery-update', [PrizeController::class, 'updateAudienceBrandPrizeDelivery']);
         Route::post('badges', [BrandController::class, 'storeBrandBadges']);
         Route::post('brand/{brand}/branches', [BrandController::class, 'addBranchToBrand']);
-        Route::post('brand/{brand}/details', [BrandController::class, 'addBranchToBrand']);
+        Route::post('brand/{brand}/details', [BrandController::class, 'addDetailsToBrand']);
         Route::delete('badges/{id}', [BrandController::class, 'deleteBrandBadge']);
 
         Route::get('generate-brands-link/{brand}', [BrandController::class, 'generateCampaignLink']);
