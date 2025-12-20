@@ -418,14 +418,12 @@ class BrandController extends BaseController
     public function addDetailsToBrand(Request $request, Brand $brand) {
         try {
 
-            $request->validate([
+            $validated = $request->validate([
                 "details" => "required|array|min:1",
                 "details.*" => "required|string|max:255"
             ]);
 
-            $details = $request->validated()["details"];
-
-            foreach($details as $detail) {
+            foreach($validated["details"] as $detail) {
                 BrandDetail::create([
                     "brand_id" => $brand->id,
                     "detail" => $detail,
