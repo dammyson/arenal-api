@@ -29,7 +29,8 @@ class Campaign extends Model
         'overall_campaign_budget',
         'daily_start',
         'daily_stop',
-        'vendor_id'
+        'vendor_id',
+        'is_arena'
     ];
 
     public function games()
