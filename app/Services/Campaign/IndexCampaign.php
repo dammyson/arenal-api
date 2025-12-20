@@ -21,6 +21,7 @@ class IndexCampaign implements BaseServiceInterface{
         $filter = $this->request->query('filter');
 
         return Campaign::where('title', '!=', 'rmc world campaign')
+            ->where('title', '!=', "spin the wheel")
             ->where('title', 'LIKE', "%{$filter}%")
             ->get();
     }
