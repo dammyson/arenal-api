@@ -22,7 +22,7 @@ class IndexCampaign implements BaseServiceInterface{
         $category = $this->request->query('category');
 
         if (!$category) {
-            return Campaign::where('title', '!=', 'rmc world campaign')
+            return Campaign::where('is_arena', true)
                 ->where('title', '!=', "spin the wheel")
                 ->where('title', 'LIKE', "%{$filter}%")
                 ->get();
@@ -31,7 +31,7 @@ class IndexCampaign implements BaseServiceInterface{
         return Campaign::whereHas('category', function ($query) use ($category) {
                 $query->where('name', $category);
             })
-            ->where('title', '!=', 'rmc world campaign')
+            ->where('is_arena', true)
             ->where('title', '!=', "spin the wheel")
             ->where('title', 'LIKE', "%{$filter}%")
             // ->where('title', 'LIKE', "%{$filter}%")
