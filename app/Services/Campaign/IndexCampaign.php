@@ -19,10 +19,24 @@ class IndexCampaign implements BaseServiceInterface{
 
     public function run() {
         $filter = $this->request->query('filter');
+        $category = $this->request->query('category');
 
-        return Campaign::where('title', '!=', 'rmc world campaign')
+        if (!$category) {
+            return Campaign::where('title', '!=', 'rmc world campaign')
+                ->where('title', '!=', "spin the wheel")
+                ->where('title', 'LIKE', "%{$filter}%")
+                ->get();
+        }
+
+        return Campaign::whereHas('category', function ($query) use ($category) {
+                $query->where('name', $category);
+            })
+            ->where('title', '!=', 'rmc world campaign')
             ->where('title', '!=', "spin the wheel")
             ->where('title', 'LIKE', "%{$filter}%")
+            // ->where('title', 'LIKE', "%{$filter}%")
             ->get();
+
+         
     }
 }

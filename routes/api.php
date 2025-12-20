@@ -72,6 +72,7 @@ Route::group(["middleware" => ["auth:api"]], function () {
 
         
         Route::post('campaign', [CampaignController::class, 'storeCampaign']);   
+        Route::post('campaign-category', [CampaignController::class, 'createCampaignCategory']);   
         Route::post('campaign-card', [CampaignController::class, 'storeCampaignCard']);   
         Route::post('campaign/{campaign_id}/campaign-game', [CampaignGameController::class, 'storeCampaignGame']);     
         Route::post('games', [GameController::class, 'storeGame']);        
