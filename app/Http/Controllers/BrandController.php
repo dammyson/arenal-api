@@ -23,6 +23,7 @@ use App\Models\AudienceBadge;
 use App\Models\AudienceBranch;
 use App\Models\AudienceLiveStreak;
 use App\Models\BrandAudienceBranch;
+use App\Models\BrandDetail;
 use App\Models\BrandPoint;
 use App\Models\CampaignGamePlay;
 use App\Models\Live;
@@ -400,12 +401,25 @@ class BrandController extends BaseController
         return $this->sendResponse($data, "Brand retrieved succcessfully");
     }
 
-    public function addBranchToBrand(AddBranchToBrandRequest $request, Brand $brand) {
+    public function addDetaialsToBrand(Request $request, Brand $brand) {
         try {
 
-            $data = (new AddBranchToBrandService($request, $brand->id))->run();
+            $request->validate([
+                "details" => "required|array|min:1",
+                "details.*" => "required|string|max:255"
+            ]);
 
-            return $this->sendResponse($data, "branches added to brand succcessfully");
+            $details = $request->validated()["details"];
+
+            foreach($details as $detail) {
+                BrandDetail::create([
+                    "brand_id" => $brand->id,
+                    "detail" => $detail,
+                    "user_id" => $request->user()->id
+                ]);
+            }
+
+            return $this->sendResponse("brand_details_added", "branches added to brand succcessfully");
         }
 
          catch (\Exception $e) {
