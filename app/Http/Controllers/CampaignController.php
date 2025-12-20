@@ -15,6 +15,8 @@ use App\Services\CampaignGame\ShowCampaignGame;
 use App\Http\Requests\Campaign\StoreCampaignRequest;
 use App\Models\Audience;
 use App\Models\CampaignCard;
+use App\Models\CampaignCategory;
+use App\Models\Category;
 use App\Notifications\CampaignGameLink;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
@@ -29,6 +31,28 @@ class CampaignController extends BaseController
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
         }
         return $this->sendResponse($data, "Campaign created succcessfully", 201);
+    }
+
+    public function createCampaignCategory(Request $request)
+    {
+        try {
+
+
+            $cats = Category::create([
+                'name' => "board",
+            ]);           
+
+            $campaigns = Campaign::get();
+
+            foreach ($campaigns as $campaign) {
+                $campaign->category_id = $cats->id;
+                $campaign->save();
+            }
+
+        } catch (\Exception $e) {
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }
+        return $this->sendResponse($campaigns, "Campaign created succcessfully", 201);
     }
 
     public function fetchCampaigns($title)

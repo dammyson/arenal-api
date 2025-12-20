@@ -19,6 +19,7 @@ class Campaign extends Model
         'client_id',
         'brand_id',
         'company_id',
+        'category_id',
         'start_date',
         'end_date',
         'status',
@@ -42,5 +43,10 @@ class Campaign extends Model
     public function brand()
     {
         return $this->belongsTo(Brand::class);
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
     }
 }
