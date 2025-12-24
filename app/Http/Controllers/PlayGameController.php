@@ -53,7 +53,8 @@ class PlayGameController extends BaseController
 
             $points = 0;
             if ($percentageOfCompletedWords < 1) {
-                $points = (int) floor(($percentageOfCompletedWords * $totalImages) * $mode['regular_point']);
+                $calculatedPoints = ( $percentageOfCompletedWords * $totalImages) * $mode['regular_point'];
+                $points =  round($calculatedPoints, 0, PHP_ROUND_HALF_UP);
                 // dd($points);
             } else {
                 $points = $mode['max_point'];
