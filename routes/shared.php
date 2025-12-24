@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\AudienceRegisterController;
-use App\Models\Audience;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GameController;
 use App\Http\Controllers\LiveController;
@@ -16,13 +15,10 @@ use App\Http\Controllers\SpinTheWheelController;
 use App\Http\Controllers\TriviaQuestionController;
 use App\Http\Controllers\CampaignGamePlayController;
 use App\Http\Controllers\CampaignGameRuleController;
-use App\Http\Controllers\TransactionHistoryController;
 use App\Http\Controllers\SpinTheWheelComponentController;
 use App\Http\Controllers\BrandAudienceTransactionController;
 use App\Http\Controllers\CampaignGamePlayLeaderboardController;
-use App\Http\Controllers\BrandAudienceTransactionHistoryController;
 use App\Http\Controllers\FaqController;
-use App\Http\Controllers\OverallCampaignGamePlayLeaderboardController;
 use App\Http\Controllers\PlayGameController;
 
 Route::post('wallets/create', [WalletController::class, 'createWallet']);
@@ -90,28 +86,15 @@ Route::get('campaign', [CampaignController::class, 'index']);
 Route::get('campaign/{campaign_id}', [CampaignController::class, 'showCampaign']);
 Route::get('campaign-game', [CampaignGameController::class, 'indexCampaignGame']);
 Route::post('campaign/{campaign_id}/campaign-game/{game_id}/link', [CampaignController::class, 'generateCampaignLink']);
-Route::get('campaign/{campaign_id}/game/{game_id}/rules', [CampaignGameRuleController::class, 'showCampaignGameRules']);
 
-
-Route::get('campaign/games/game-plays', [CampaignGamePlayController::class, 'index']); // not seen in UI
 Route::get('campaign/{campaign_id}/games/{game_id}/show-campaign-game', [CampaignGameController::class, 'showCampaignGame']);
-Route::post('campaign/{campaign_id}/games/{game_id}/campaign-game-play', [CampaignGamePlayController::class, 'storeCampaignGamePlay']);
-Route::post('campaign/{campaign_id}/games/{game_id}/campaign-game-play/test', [CampaignGamePlayController::class, 'testStoreCampaignGamePlay']);
 Route::get('campaign/{campaign_id}/games/{game_id}/game-plays', [CampaignGamePlayController::class, 'show']);
-Route::put('campaign/{campaign_id}/games/{game_id}/game-plays', [CampaignGamePlayController::class, 'update']);
-Route::delete('campaign/{campaign_id}/games/{game_id}/game-plays', [CampaignGamePlayController::class, 'destroy']); // not seen in UI
 
-Route::get('general/overall-leaderboard/daily', [OverallCampaignGamePlayLeaderboardController::class, 'overallLeaderboardDaily']);
-Route::get('general/overall-leaderboard/weekly', [OverallCampaignGamePlayLeaderboardController::class, 'overallLeaderboardWeekly']);
-Route::get('general/overall-leaderboard/monthly', [OverallCampaignGamePlayLeaderboardController::class, 'overallLeaderboardMonthly']);
-Route::get('general/overall-leaderboard/alltime', [OverallCampaignGamePlayLeaderboardController::class, 'overallLeaderboard']);
 
-// Route::get('rules', [CampaignGameRuleController::class, 'index']);
 Route::get('trivia/brand/{brand}', [TriviaController::class, 'index']);
 Route::get('trivia/show-trivia/{trivia}', [TriviaController::class, 'show']);
 Route::get('trivia/questions', [TriviaQuestionController::class, 'index']);
 Route::get('trivia/{trivia}/questions', [TriviaQuestionController::class, 'show']);
-Route::get('trivia/{trivia}/questions-with-choices', [TriviaQuestionController::class, 'questionChoices']);
 Route::post('trivia/{trivia}', [TriviaQuestionController::class, 'processAnswers']);
 Route::post('arena/trivia/{trivia}', [TriviaQuestionController::class, 'processArenaTriviaAnswers']);
 Route::post('trivia-words/{trivia}', [TriviaQuestionController::class, 'wordTrivia']);

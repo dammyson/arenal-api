@@ -8,9 +8,6 @@ use App\Models\Brand;
 use Illuminate\Http\Request;
 use App\Models\CampaignGamePlay;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Gate;
-use App\Http\Requests\GamePlayRequest;
-use App\Http\Requests\Campaign\UpdateCampaignGamePlayRequest;
 use App\Services\CampaignGamePlay\ArenaLeaderboardService;
 
 class CampaignGamePlayLeaderboardController extends BaseController

@@ -9,23 +9,17 @@ use App\Models\BrandAudienceReward;
 use App\Models\AudiencePrizeDelivery;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\Arena\StoreArenaSpinTheWheelAudiencePrizeRequest;
-use App\Services\Brand\StoreBrandService;
 use App\Services\Prize\StorePrizeService;
 use App\Services\Prize\GetBrandPrizeService;
 use App\Services\Prize\RedeemHistoryService;
-use App\Http\Requests\User\BrandStoreRequest;
 use App\Http\Requests\User\PrizeStoreRequest;
-use App\Services\Prize\GetBrandBadgesService;
-use App\Services\Prize\GetBrandPrizeUserService;
 use App\Http\Requests\Prize\PrizeDeliveryRequest;
 use App\Services\Prize\RedeemUserBrandPrizeService;
 use App\Services\Point\GetAudienceBrandPointService;
 use App\Services\Prize\GetBrandAudienceBadgeService;
 use App\Http\Requests\Prize\UpdatePrizeDeliveryRequest;
 use App\Models\ArenaAudienceReward;
-use App\Models\Badge;
 use App\Models\BrandPoint;
-use App\Models\CampaignGamePlay;
 use App\Models\SpinTheWheel;
 use App\Models\TrialRecord;
 use App\Notifications\ArenaRewardCode;
@@ -144,32 +138,7 @@ class PrizeController extends BaseController
         return $this->sendResponse($data, "Brand info retrieved succcessfully");
     }
 
-    public function getBrandBadges(Brand $brand)
-    {
-        try {            
-            $data = (new GetBrandBadgesService($brand->id))->run();
-
-        }  catch (\Exception $e){
-            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
-        }        
-        return $this->sendResponse($data, "Brand info retrieved succcessfully");
-    }
-
-    public function getArenaBadges(Brand $brand)
-    {
-        try {            
-            $badges = Badge::where('is_arena', true)
-                ->get();
-
-            $prizes = Prize::where('is_arena', true)
-                ->get();
-
-        }  catch (\Exception $e){
-            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
-        }        
-        return $this->sendResponse($data, "Brand info retrieved succcessfully");
-    }
-
+  
 
     public function getBrandPrizes(Brand $brand)
     {
