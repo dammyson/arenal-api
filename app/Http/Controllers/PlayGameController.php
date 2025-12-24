@@ -115,7 +115,7 @@ class PlayGameController extends BaseController
             $data = [
                 "leaderboard" => $campaignGamePlay,
                 "user_points" => $audienceBrandPoint?->points,
-                "point_earned" => $points,
+                "points" => $points,
                 "current_badge" => $currentBadge,
                 "next_badge" => $nextBadge,    
                 'high_score_bonus' => $highScoreBonus ?? null,
