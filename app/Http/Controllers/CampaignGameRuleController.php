@@ -26,16 +26,5 @@ class CampaignGameRuleController extends BaseController
 
     }
 
-    public function showCampaignGameRules($campaignId, $gameId) {
-
-        try {
-            $data = (new ShowCampaignGameRuleService($campaignId, $gameId))->run();
-
-        } catch (\Exception $e){
-            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
-        }        
-        return $this->sendResponse($data, "Campaign Games rules retrieved succcessfully", 201);
-   
-        
-    }
+  
 }
