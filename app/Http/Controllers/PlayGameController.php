@@ -32,7 +32,7 @@ class PlayGameController extends BaseController
             $gameId = $request->input('game_id');
             $difficulty = $request->input('difficulty');            
             $percentageOfCompletedWords = $request->input('percentage_of_completion');
-            $totalMatchImage = $request->input('total_matched_image');
+            $totalImages = $request->input('total_images');
 
             $difficultyMultipliers = [
                 'easy' => [
@@ -53,7 +53,7 @@ class PlayGameController extends BaseController
 
             $points = 0;
             if ($percentageOfCompletedWords < 1) {
-                $points = (int) floor(($percentageOfCompletedWords * $totalMatchImage ) * $mode['regular_point']);
+                $points = (int) floor(($percentageOfCompletedWords * $totalImages) * $mode['regular_point']);
                 // dd($points);
             } else {
                 $points = $mode['max_point'];
