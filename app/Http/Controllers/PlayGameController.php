@@ -77,7 +77,7 @@ class PlayGameController extends BaseController
                 $dailyBonus = (new CheckDailyBonusService())->allocatedDailyBonus($bonusId, $audience->id, $brandId, $gameId, true);
                 $points += $dailyBonus;
             }
-            dump($points);
+            // dump($points);
            
             // Start a transaction
             // Start a transaction
