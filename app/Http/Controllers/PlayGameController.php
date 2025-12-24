@@ -77,7 +77,7 @@ class PlayGameController extends BaseController
                 $dailyBonus = (new CheckDailyBonusService())->allocatedDailyBonus($bonusId, $audience->id, $brandId, $gameId, true);
                 $points += $dailyBonus;
             }
-            // dump($points);
+            dump($points);
            
             // Start a transaction
             // Start a transaction
@@ -114,23 +114,20 @@ class PlayGameController extends BaseController
             $data = [
                 "leaderboard" => $campaignGamePlay,
                 "user_points" => $audienceBrandPoint?->points,
+                "point_earned" => $points,
                 "current_badge" => $currentBadge,
                 "next_badge" => $nextBadge,    
                 'high_score_bonus' => $highScoreBonus ?? null,
                 'daily_bonus' => $dailyBonus ?? null,
                 "audience_badges_list" => $audienceBadgesList
             ];
-            return $this->sendResponse($data, "trivia reward allocated successfully");
+            return $this->sendResponse($data, "recall play successfully");
         } catch (\Throwable $e) {
 
             DB::rollBack();
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
         }
 
-        // Return the response
-        return response()->json([
-            'message' => 'Game played successfully',
-            'score' => $score,
-        ]);
+       
     }
 }
