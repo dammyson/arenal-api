@@ -24,7 +24,7 @@ class PlayGameController extends BaseController
                 'difficulty' => 'required|in:easy,medium,hard',
                 'game_id' => 'required',
                 "percentage_of_completion" => "required|numeric|min:0|max:1",
-                "total_matched_image" => "required|integer|min:1",
+                "total_images" => "required|integer|min:1",
             ]);
             
             // $points = 100;
