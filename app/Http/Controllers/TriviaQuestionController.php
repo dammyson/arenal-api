@@ -30,6 +30,7 @@ use App\Services\Utility\CheckDailyBonusService;
 use App\Services\Utility\GenerateRandomLetters;
 use App\Services\Utility\GetArenaAudienceBadgeListService;
 use App\Services\Utility\GetTestAudienceCurrentAndNextBadge;
+use App\Services\Utility\IndexUtils;
 use App\Services\Utility\LeaderboardService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -162,6 +163,15 @@ class TriviaQuestionController extends BaseController
         try {
             $isArena = $request->boolean('is_arena') == "true" ? true : false;
 
+               
+            $audience = $request->user();
+            // add audience to campaign
+            $isAdded = (new IndexUtils())->addAudienceToCampaign($trivia->campaign_id, $audience->id);
+
+            if (!$isAdded) {
+                return $this->sendError("Campaign Filled. Sorry you cant join this campaign", [], 500);
+            }
+
             if (count($request->validated()["questions"]) < 1) {
                 return $this->sendError("Submitted Answers has no content", [], 422);
             } 
@@ -185,7 +195,12 @@ class TriviaQuestionController extends BaseController
 
     public function processArenaTriviaAnswers(Trivia $trivia, StoreTriviaAnswerRequest $request) {
         try {
+            // add audience to campaign
+            $isAdded = (new IndexUtils())->addAudienceToCampaign($trivia->campaign_id, $request->user()->id);
 
+             if (!$isAdded) {
+                return $this->sendError("Campaign Filled. Sorry you cant join this campaign", [], 500);
+            }
             if (count($request->validated()["questions"]) < 1) {
                 return $this->sendError("Submitted Answers has no content", [], 422);
             } 
@@ -211,7 +226,14 @@ class TriviaQuestionController extends BaseController
             $percentageOfCompletedWords = $request->input('percentage_of_completion');
 
             $totalNoOfWords = $request->input('total_no_of_words');
-         
+            
+            // add audience to campaign
+            $isAdded = (new IndexUtils())->addAudienceToCampaign($campaignId, $request->user()->id);
+
+            if (!$isAdded) {
+                return $this->sendError("Campaign Filled. Sorry you cant join this campaign", [], 500);
+            }
+
             $calculatedPoints = ( $percentageOfCompletedWords * $totalNoOfWords) * 2;
             $points =  round($calculatedPoints, 0, PHP_ROUND_HALF_UP);
             // dd($points);

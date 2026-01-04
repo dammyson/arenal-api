@@ -8,6 +8,7 @@ use App\Models\CampaignGamePlay;
 use App\Services\Utility\CheckDailyBonusService;
 use App\Services\Utility\GetArenaAudienceBadgeListService;
 use App\Services\Utility\GetTestAudienceCurrentAndNextBadge;
+use App\Services\Utility\IndexUtils;
 use App\Services\Utility\LeaderboardService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -48,6 +49,16 @@ class PlayGameController extends BaseController
                     "max_point" => 150     
                 ]
             ];
+            
+            $audience = $request->user();
+            // add audience to campaign
+            $isAdded = (new IndexUtils())->addAudienceToCampaign($campaign->id, $audience->id);
+
+            if (!$isAdded) {
+                return $this->sendError("Campaign Filled. Sorry you cant join this campaign", [], 500);
+            }
+            // dd($campaign->participants()->count());
+
 
             $mode = $difficultyMultipliers[$difficulty];  
 
@@ -62,7 +73,6 @@ class PlayGameController extends BaseController
 
             // dump($points);
 
-            $audience = $request->user();
             // dump($points);
             [ $isHighScore, $highScoreBonus ] = (new CheckDailyBonusService())->checkHighScore($audience->id, $points, $brandId, true);
             // dump($highScoreBonus);

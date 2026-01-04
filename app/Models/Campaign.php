@@ -30,7 +30,8 @@ class Campaign extends Model
         'daily_start',
         'daily_stop',
         'vendor_id',
-        'is_arena'
+        'is_arena',
+        'max_participants'
     ];
 
     public function games()
@@ -49,5 +50,11 @@ class Campaign extends Model
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function participants()
+    {
+        return $this->belongsToMany(Audience::class, 'campaign_audience')
+            ->withTimestamps();
     }
 }
