@@ -269,15 +269,12 @@ class TriviaQuestionController extends BaseController
         DB::beginTransaction();
             $campaignGamePlay = (new LeaderboardService())->storeLeaderboard($audience->id, $campaignId, $gameId, $brandId,  true, $totalPoints);
             
-        // Commit the transaction after updates
-        DB::commit();
-            
 
                 // Commit the transaction after updates
 
                 $audienceBrandPoint = BrandPoint::where('is_arena', true)        
-                ->where("audience_id", $audience->id)
-                ->first();
+                    ->where("audience_id", $audience->id)
+                    ->first();
 
                 if ($audienceBrandPoint) {
                     $audienceBrandPoint->points += $totalPoints;
@@ -297,22 +294,21 @@ class TriviaQuestionController extends BaseController
 
                 $audienceBadgesList = (new GetArenaAudienceBadgeListService($brandId, $audience->id, $audienceBrandPoint->points, true))->run();
         
-            DB::commit();
-
-              
+            DB::commit();              
                
 
             $data = [
-                "audience_point" => $audienceBrandPoint?->points,
-                // "leaderboard" => $campaignGamePlay,
-                "points" => $points,
+                "leaderboard" => $campaignGamePlay,
+                "audience_points" => $audienceBrandPoint?->points,
+                "score" => $points,
+                'daily_bonus' => $dailyBonus ?? null,
+                'high_score_bonus' => $highScoreBonus ?? null,
                 "total_points" => $totalPoints,
                 "current_badge" => $currentBadge,
-                "next_badge" => $nextBadge,
-                "daily_bonus" => $dailyBonus ?? null,
-                'high_score_bonus' => $highScoreBonus ?? null,
+                "next_badge" => $nextBadge,    
                 "audience_badges_list" => $audienceBadgesList
             ];
+           
             return $this->sendResponse($data, "trivia reward allocated successfully");
         } catch (\Throwable $e) {
 
