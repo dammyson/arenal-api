@@ -18,6 +18,7 @@ use App\Models\CampaignCard;
 use App\Models\CampaignCategory;
 use App\Models\Category;
 use App\Notifications\CampaignGameLink;
+use App\Services\Utility\IndexUtils;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class CampaignController extends BaseController
@@ -89,6 +90,13 @@ class CampaignController extends BaseController
     {
         try {
             // dd(" iran");
+
+            $isOpen = (new IndexUtils())->checkCampaignCapacity($campaignId);
+            // dd($isOpen);
+            if (!$isOpen) {
+                return $this->sendError("Campaign Filled. Sorry you cant join this campaign", [], 500);
+            }
+            
             $data = (new ShowCampaign($campaignId))->run();
         } catch (\Exception $e) {
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);

@@ -8,6 +8,7 @@ use App\Models\CampaignGamePlay;
 use App\Services\Utility\CheckDailyBonusService;
 use App\Services\Utility\GetArenaAudienceBadgeListService;
 use App\Services\Utility\GetTestAudienceCurrentAndNextBadge;
+use App\Services\Utility\IndexUtils;
 use App\Services\Utility\LeaderboardService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -48,6 +49,16 @@ class PlayGameController extends BaseController
                     "max_point" => 150     
                 ]
             ];
+            
+            $audience = $request->user();
+            // add audience to campaign
+            $isAdded = (new IndexUtils())->addAudienceToCampaign($campaign->id, $audience->id);
+
+            if (!$isAdded) {
+                return $this->sendError("Campaign Filled. Sorry you cant join this campaign", [], 500);
+            }
+            // dd($campaign->participants()->count());
+
 
             $mode = $difficultyMultipliers[$difficulty];  
 
@@ -60,14 +71,15 @@ class PlayGameController extends BaseController
                 $points = $mode['max_point'];
             }
 
+            $totalPoints = $points;
+
             // dump($points);
 
-            $audience = $request->user();
             // dump($points);
-            [ $isHighScore, $highScoreBonus ] = (new CheckDailyBonusService())->checkHighScore($audience->id, $points, $brandId, true);
+            [ $isHighScore, $highScoreBonus ] = (new CheckDailyBonusService())->checkHighScore($audience->id, $totalPoints, $brandId, true);
             // dump($highScoreBonus);
             if ($isHighScore) {
-                $points += $highScoreBonus; 
+                $totalPoints += $highScoreBonus; 
             }
             // dd($points);
               
@@ -76,24 +88,21 @@ class PlayGameController extends BaseController
             
             if ($eligibilityStatus == true) {
                 $dailyBonus = (new CheckDailyBonusService())->allocatedDailyBonus($bonusId, $audience->id, $brandId, $gameId, true);
-                $points += $dailyBonus;
+                $totalPoints += $dailyBonus;
             }
-            // dump($points);
-           
-            // Start a transaction
+
             // Start a transaction
             DB::beginTransaction();
-                $campaignGamePlay = (new LeaderboardService())->storeLeaderboard($audience->id, $campaign->id, $gameId, $brandId,  true, $points);
+                $campaignGamePlay = (new LeaderboardService())->storeLeaderboard($audience->id, $campaign->id, $gameId, $brandId,  true, $totalPoints);
             
 
                 // Commit the transaction after updates
-
                 $audienceBrandPoint = BrandPoint::where('is_arena', true)        
                     ->where("audience_id", $audience->id)
                     ->first();
 
                 if ($audienceBrandPoint) {
-                    $audienceBrandPoint->points += $points;
+                    $audienceBrandPoint->points += $totalPoints;
                     $audienceBrandPoint->save();
             
                 } else {
@@ -101,7 +110,7 @@ class PlayGameController extends BaseController
                         'is_arena' => true,
                         'audience_id' => $audience->id,
                         'brand_id' => $brandId,
-                        'points' => $points
+                        'points' => $totalPoints
                     ]);
                 }
 
@@ -114,14 +123,16 @@ class PlayGameController extends BaseController
 
             $data = [
                 "leaderboard" => $campaignGamePlay,
-                "user_points" => $audienceBrandPoint?->points,
-                "points" => $points,
+                "audience_points" => $audienceBrandPoint?->points,
+                "score" => $points,
+                'daily_bonus' => $dailyBonus ?? null,
+                'high_score_bonus' => $highScoreBonus ?? null,
+                "total_points" => $totalPoints,
                 "current_badge" => $currentBadge,
                 "next_badge" => $nextBadge,    
-                'high_score_bonus' => $highScoreBonus ?? null,
-                'daily_bonus' => $dailyBonus ?? null,
                 "audience_badges_list" => $audienceBadgesList
             ];
+
             return $this->sendResponse($data, "recall play successfully");
         } catch (\Throwable $e) {
 

@@ -126,7 +126,7 @@ class AudienceRegisterController extends BaseController
                         ->notify(new ArenaOTP($otpCode));
                 }
                 // $user->notify(new ArenaOTP($otp));
-                return $this->sendResponse($otp, false);
+                return $this->sendResponse("otp sent successfully", false);
             }
         } catch (\Throwable $th) {
 
