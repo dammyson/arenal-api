@@ -126,7 +126,6 @@ Route::middleware('auth:audience')->group(function () {
 
         Route::get('user-info', [ProfileController::class, 'userInfo']);
         Route::get('user-profile', [ProfileController::class, 'profile']);
-        Route::get('top-three', [OverallCampaignGamePlayLeaderboardController::class, 'overallGamePlayTopThree']);
         Route::get('favorite-games', [CampaignGameController::class, 'indexFavorite']);
         Route::post('spin-the-wheel-prize', [SpinTheWheelController::class, 'audiencePrize']);
 

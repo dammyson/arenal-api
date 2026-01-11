@@ -14,6 +14,7 @@ use App\Services\Trivia\IndexTrivaService;
 use App\Services\Trivia\CreateTriviaService;
 use App\Http\Requests\TriviaQuestion\StoreTriviaQuestionsRequest;
 use App\Models\Brand;
+use App\Services\Utility\IndexUtils;
 use Illuminate\Support\Facades\Storage;
 
 use function Laravel\Prompts\select;
@@ -54,6 +55,12 @@ class TriviaController extends BaseController
 
              $brand = $trivia->brand;
             // dd(now()->format('l'));
+
+            $isOpen = (new IndexUtils())->checkCampaignCapacity($trivia->campaign_id);
+            // dd($isOpen);
+            if (!$isOpen) {
+                return $this->sendError("Campaign Filled. Sorry you cant join this campaign", [], 500);
+            }
 
             if ($brand["closes_on"] == now()->format('l')) {
                 return response()->json([ 'message' => 'This week’s trivia has wrapped up! 🏆.

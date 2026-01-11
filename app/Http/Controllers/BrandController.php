@@ -392,9 +392,7 @@ class BrandController extends BaseController
                 'selected_branch' => $selectedBranch,
                 'brand' => $data,
             ], "Brand retrieved successfully");
-        
-        
-        
+            
         } catch (\Exception $e) {
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
         }

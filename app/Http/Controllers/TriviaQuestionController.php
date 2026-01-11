@@ -30,6 +30,7 @@ use App\Services\Utility\CheckDailyBonusService;
 use App\Services\Utility\GenerateRandomLetters;
 use App\Services\Utility\GetArenaAudienceBadgeListService;
 use App\Services\Utility\GetTestAudienceCurrentAndNextBadge;
+use App\Services\Utility\IndexUtils;
 use App\Services\Utility\LeaderboardService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -162,6 +163,15 @@ class TriviaQuestionController extends BaseController
         try {
             $isArena = $request->boolean('is_arena') == "true" ? true : false;
 
+               
+            $audience = $request->user();
+            // add audience to campaign
+            $isAdded = (new IndexUtils())->addAudienceToCampaign($trivia->campaign_id, $audience->id);
+
+            if (!$isAdded) {
+                return $this->sendError("Campaign Filled. Sorry you cant join this campaign", [], 500);
+            }
+
             if (count($request->validated()["questions"]) < 1) {
                 return $this->sendError("Submitted Answers has no content", [], 422);
             } 
@@ -185,7 +195,12 @@ class TriviaQuestionController extends BaseController
 
     public function processArenaTriviaAnswers(Trivia $trivia, StoreTriviaAnswerRequest $request) {
         try {
+            // add audience to campaign
+            $isAdded = (new IndexUtils())->addAudienceToCampaign($trivia->campaign_id, $request->user()->id);
 
+             if (!$isAdded) {
+                return $this->sendError("Campaign Filled. Sorry you cant join this campaign", [], 500);
+            }
             if (count($request->validated()["questions"]) < 1) {
                 return $this->sendError("Submitted Answers has no content", [], 422);
             } 
@@ -211,7 +226,14 @@ class TriviaQuestionController extends BaseController
             $percentageOfCompletedWords = $request->input('percentage_of_completion');
 
             $totalNoOfWords = $request->input('total_no_of_words');
-         
+            
+            // add audience to campaign
+            $isAdded = (new IndexUtils())->addAudienceToCampaign($campaignId, $request->user()->id);
+
+            if (!$isAdded) {
+                return $this->sendError("Campaign Filled. Sorry you cant join this campaign", [], 500);
+            }
+
             $calculatedPoints = ( $percentageOfCompletedWords * $totalNoOfWords) * 2;
             $points =  round($calculatedPoints, 0, PHP_ROUND_HALF_UP);
             // dd($points);
@@ -247,15 +269,12 @@ class TriviaQuestionController extends BaseController
         DB::beginTransaction();
             $campaignGamePlay = (new LeaderboardService())->storeLeaderboard($audience->id, $campaignId, $gameId, $brandId,  true, $totalPoints);
             
-        // Commit the transaction after updates
-        DB::commit();
-            
 
                 // Commit the transaction after updates
 
                 $audienceBrandPoint = BrandPoint::where('is_arena', true)        
-                ->where("audience_id", $audience->id)
-                ->first();
+                    ->where("audience_id", $audience->id)
+                    ->first();
 
                 if ($audienceBrandPoint) {
                     $audienceBrandPoint->points += $totalPoints;
@@ -275,22 +294,21 @@ class TriviaQuestionController extends BaseController
 
                 $audienceBadgesList = (new GetArenaAudienceBadgeListService($brandId, $audience->id, $audienceBrandPoint->points, true))->run();
         
-            DB::commit();
-
-              
+            DB::commit();              
                
 
             $data = [
-                "audience_point" => $audienceBrandPoint?->points,
-                // "leaderboard" => $campaignGamePlay,
-                "points" => $points,
+                "leaderboard" => $campaignGamePlay,
+                "audience_points" => $audienceBrandPoint?->points,
+                "score" => $points,
+                'daily_bonus' => $dailyBonus ?? null,
+                'high_score_bonus' => $highScoreBonus ?? null,
                 "total_points" => $totalPoints,
                 "current_badge" => $currentBadge,
-                "next_badge" => $nextBadge,
-                "daily_bonus" => $dailyBonus ?? null,
-                'high_score_bonus' => $highScoreBonus ?? null,
+                "next_badge" => $nextBadge,    
                 "audience_badges_list" => $audienceBadgesList
             ];
+           
             return $this->sendResponse($data, "trivia reward allocated successfully");
         } catch (\Throwable $e) {
 

@@ -55,5 +55,11 @@ class Audience extends Authenticatable
     public function liveTickets() {
       return $this->hasMany(LiveTicket::class);
     }
+
+    public function campaigns()
+    {
+        return $this->belongsToMany(Campaign::class, 'campaign_audience')
+            ->withTimestamps();
+    }
     
 }
