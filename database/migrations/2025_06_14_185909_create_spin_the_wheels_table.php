@@ -17,6 +17,9 @@ return new class extends Migration
             $table->uuid('game_id');
             $table->string('image_url');
             $table->uuid('user_id');
+            $table->boolean('is_published')->default(true);
+            $table->dateTimeTz('publish_time')->nullable();
+            $table->dateTimeTz('start_time')->nullable();
             $table->timestamps();
         });
     }

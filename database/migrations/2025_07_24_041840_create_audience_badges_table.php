@@ -15,6 +15,8 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->uuid('audience_id');
             $table->uuid('badge_id');
+            $table->uuid('brand_id')->nullable();
+            $table->boolean('is_arena')->default(false);
             $table->timestamps();
         });
     }

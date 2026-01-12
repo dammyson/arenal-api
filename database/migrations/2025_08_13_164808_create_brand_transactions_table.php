@@ -15,13 +15,13 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->uuid('audience_id');
             $table->uuid('wallet_id');
-            $table->uuid('brand_id');
             $table->string('payment_channel');            
-            $table->string('payment_channel_description');            
+            $table->string('payment_method');           
             $table->enum('status', ['success', 'pending', 'failed']);
             $table->boolean('is_credit');
             $table->string('sender_name');
             $table->integer('amount');
+            $table->string('payment_reference')->nullable();
             $table->timestamps();
         });
     }

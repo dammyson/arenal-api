@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('campaigns', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->enum('type', ['ADVERT', 'SURVERY', 'TOPBRAIN'])->index();
+            $table->string('type'); // ['ADVERT', 'SURVERY', 'TOPBRAIN']
             $table->string('title');
             $table->time('daily_start')->default('00:00:00');
             $table->time('daily_stop')->default('11:59:59');
@@ -24,6 +24,10 @@ return new class extends Migration
             $table->decimal('total_rewards_budget', 8, 2)->default(0);
             $table->decimal('overall_campaign_budget', 8, 2)->default(0);
             $table->uuid('created_by');
+            $table->string('image_url');
+            $table->uuid('category_id')->nullable();
+            $table->boolean('is_arena')->default(false);
+            $table->unsignedInteger('max_participants')->nullable();
             $table->foreign('created_by')->references('id')->on('users')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');

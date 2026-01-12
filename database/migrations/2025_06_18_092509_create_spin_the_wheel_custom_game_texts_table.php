@@ -17,8 +17,7 @@ return new class extends Migration
             $table->string('game_title')->nullable();
             $table->string('description')->nullable();
             $table->string('error_message')->nullable();
-            $table->string('style')->nullable();
-            
+            $table->string('style')->nullable();            
             $table->timestamps();
         });
     }

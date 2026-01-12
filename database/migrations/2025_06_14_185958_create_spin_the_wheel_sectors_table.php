@@ -14,11 +14,11 @@ return new class extends Migration
       
         Schema::create('spin_the_wheel_sectors', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->uuid('spin_the_wheels_id');
+            $table->uuid("spin_the_wheel_id");
             $table->string('text')->nullable();
             $table->string('color')->nullable();
             $table->string('value')->nullable();
-            $table->string('image_url');
+            $table->string('image_url')->nullable();
             $table->uuid('user_id');
             $table->timestamps();
         });

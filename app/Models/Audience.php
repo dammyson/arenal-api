@@ -24,8 +24,7 @@ class Audience extends Authenticatable
       'pin', 
       'referrer_id', 
       'referred_by', 
-      'total_referral_point', 
-      'points'
+      'total_referral_point'
     ];
     protected $hidden = ['password', 'remember_token'];
 

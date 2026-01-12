@@ -18,6 +18,10 @@ return new class extends Migration
             $table->string('user_email')->nullable();
             $table->string('phone_number')->nullable();
             $table->boolean('is_marked_required')->nullable();
+            $table->boolean('is_user_name')->default(false);
+            $table->boolean('is_user_email')->default(false);
+            $table->boolean('is_phone_number')->default(false);
+            $table->boolean('show_from_before_spin')->default(true);
             $table->timestamps();
         });
     }

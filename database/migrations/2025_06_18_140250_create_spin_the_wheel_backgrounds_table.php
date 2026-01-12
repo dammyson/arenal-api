@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('backgound_gradient')->nullable();
             $table->string('background_color')->nullable();
             $table->string('background_image')->nullable();
-            $table->string('interactive_component')->nullable();
+            $table->string('background_gradient')->nullable();
             $table->timestamps();
         });
     }

@@ -16,8 +16,10 @@ return new class extends Migration
             $table->foreignUuid('campaign_id')->constrained()->onDelete('cascade');
             $table->foreignUuid('game_id')->constrained()->onDelete('cascade');
             $table->foreignUuid('audience_id')->constrained()->onDelete('cascade');
+            $table->uuid('brand_id')->nullable();
             $table->integer('score');
             $table->timestamp('played_at');
+            $table->boolean('is_arena')->default(false);
             $table->timestamps();
         });
     }

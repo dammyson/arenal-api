@@ -138,6 +138,7 @@ class BrandController extends BaseController
                 ->where('audience_id', $user->id)
                 ->first()
                 ?->points ?? 0;
+            // dd($audiencePoints);
             
             $audienceBadgeCount =  AudienceBadge::when($isArena, fn($q) => $q->where('is_arena', true))
                 ->when((!$isArena), fn($q) => $q->where('brand_id', $brandId))  
@@ -165,10 +166,13 @@ class BrandController extends BaseController
                 ->when((!$isArena), fn($q) => $q->where('brand_id', $brand))
                 ->where("points", "<=", $audiencePoints)->orderBy("points", "desc")->first();
             
+            $liveStreakCount = null;
             if (!$isArena) {
                 $live = Live::where('brand_id', $brandId)->first();
-                $liveStreak = AudienceLiveStreak::where('audience_id', $user->id)->where('live_id', $live->id)->first();
-                $liveStreakCount = $liveStreak->streak_count ?? 0;
+                if ($live) {
+                    $liveStreak = AudienceLiveStreak::where('audience_id', $user->id)->where('live_id', $live->id)->first();
+                    $liveStreakCount = $liveStreak->streak_count ?? 0;
+                }
 
             }
 
@@ -176,6 +180,7 @@ class BrandController extends BaseController
             $rank = (new GetAudienceRankService($brandId, $user->id, $isArena))->run();
             $leaderboardCount = CampaignGamePlay::when($isArena, fn($q) => $q->where('is_arena', true))
                 ->when((!$isArena), fn($q) => $q->where('brand_id', $brandId))
+                ->distinct('audience_id')
                 ->count();
                 
             $audienceBadgesList = (new GetAudienceBadgeListService( $brandId, $user->id, $audiencePoints, $isArena))->run();
@@ -199,8 +204,8 @@ class BrandController extends BaseController
                 "phone_number" => $user->phone_number,
                 "audience_badge_name" => $userBadge->name ?? "no badge yet",
                 "audience_badge_image_url" => $userBadge->image_url ?? null,
-                "live_duration" => (!$isArena ) ? $live->duration : null,
-                'streak_count' => (!$isArena) ? $liveStreakCount : null,
+                "live_duration" => (!$isArena ) ? $live?->duration : null,
+                'streak_count' => (!$isArena && $liveStreakCount) ? $liveStreakCount : null,
                 'points' => $audiencePoints,
                 'badge_count' => $audienceBadgeCount,
                 "rank" => $rank,
@@ -219,7 +224,7 @@ class BrandController extends BaseController
     public function getBrandProfile(Request $request, Brand $brand) {
    
         try {
-
+            // dd($brand);
             $brandLive = (new GetAudienceBrandPointService($request, $brand->id))->run();
 
             return $this->sendResponse($brandLive, "audience points", 201);

@@ -16,6 +16,7 @@ return new class extends Migration
             $table->uuid('spin_the_wheel_id');
             $table->boolean('is_free')->default(true);
             $table->decimal('entry_fee', 10, 2)->nullable();
+            $table->integer('no_of_free_trials')->default(0);
             $table->timestamps();
         });
     }

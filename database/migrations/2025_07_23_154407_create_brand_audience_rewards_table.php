@@ -17,6 +17,7 @@ return new class extends Migration
             $table->uuid('audience_id');
             $table->uuid('prize_id');
             $table->boolean('is_redeemed');
+            $table->boolean('is_arena')->default(false);
             $table->timestamps();
         });
     }

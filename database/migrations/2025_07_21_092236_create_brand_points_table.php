@@ -14,8 +14,10 @@ return new class extends Migration
         Schema::create('brand_points', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->uuid('audience_id');
-            $table->uuid('brand_id');
+            $table->uuid('brand_id')->nullable();
             $table->integer('points');
+            $table->boolean('is_arena')->default(false);
+            $table->integer('high_score')->default(0);
             $table->timestamps();
         });
     }

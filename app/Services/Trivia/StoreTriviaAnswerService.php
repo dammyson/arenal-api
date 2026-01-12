@@ -39,6 +39,7 @@ class StoreTriviaAnswerService implements BaseServiceInterface
         $audience = $this->request->user();
         // dd($audience);
         $brandId = $this->trivia->brand_id;
+        // dd($brandId);
         $campaignId = $this->trivia->campaign_id;
         $gameId = $this->trivia->game_id;
 
@@ -57,6 +58,7 @@ class StoreTriviaAnswerService implements BaseServiceInterface
             if ($triviaQuestionChoice->is_correct_choice) {
                 $correctAnswersCount += 1;
                $triviaQuestion = TriviaQuestion::find( $question["question_id"]);
+                // dd($triviaQuestion->points);
                $points += $triviaQuestion->points;
             }
         }
