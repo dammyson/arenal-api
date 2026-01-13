@@ -18,6 +18,9 @@ return new class extends Migration
             $table->integer('duration');
             $table->integer('checkIn_amount');
             $table->integer('coins');
+            $table->time('start_time');
+            $table->time('end_time');
+            $table->uuid('branch_id')->nullable();
             $table->timestamps();
         });
     }

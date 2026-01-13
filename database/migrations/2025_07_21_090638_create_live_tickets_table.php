@@ -17,6 +17,8 @@ return new class extends Migration
             $table->uuid('live_id');
             $table->integer('coined_earned');
             $table->boolean('is_live')->default(true);
+            $table->string('ticket_id');
+            $table->uuid('brand_id');
             $table->timestamps();
         });
     }

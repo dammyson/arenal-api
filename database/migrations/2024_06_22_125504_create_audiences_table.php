@@ -19,7 +19,11 @@ return new class extends Migration
             $table->string('password');
             $table->string('phone_number')->unique()->nullable();
             $table->string('profile_image')->nullable();
-             $table->uuid('user_id')->nullable();
+            $table->string('pin')->nullable();
+            $table->uuid('user_id')->nullable();
+            $table->string('referrer_id')->nullable();
+            $table->uuid('referred_by')->nullable();
+            $table->integer('total_referral_point')->default(0);
             $table->timestamps();
         });
     }

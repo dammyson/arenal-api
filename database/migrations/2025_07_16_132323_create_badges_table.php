@@ -11,16 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (!Schema::hasTable('badges')) {
             Schema::create('badges', function (Blueprint $table) {
                 $table->uuid('id')->primary();
                 $table->string('name');
-                $table->string('image_url');
-                $table->uuid('audience_id');
-                $table->uuid('brand_id');
+                $table->string('image_url'); 
+                $table->uuid('user_id');
+                $table->uuid('brand_id')->nullable();
+                $table->boolean('is_arena')->default(false);
+                $table->integer('points');
                 $table->timestamps();
             });
-        }
     }
 
     /**
@@ -28,8 +28,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        if (Schema::hasTable('badges')) {
-            Schema::dropIfExists('badges');
-        }
+       
+        Schema::dropIfExists('badges');
+        
     }
 };

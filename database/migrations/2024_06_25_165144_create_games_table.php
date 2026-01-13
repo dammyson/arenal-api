@@ -15,9 +15,12 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->string('name');
             $table->string('type');
-            $table->string('image_url');
+            $table->string('image_url')->nullable();
+            $table->string('slug')->nullable();
             $table->uuid('user_id');
+            $table->string('description')->nullable();
             $table->decimal('price', 8, 2)->nullable()->default(null);
+            $table->decimal('daily_bonus', 8, 2)->default(0);
             $table->foreign('user_id')->references('id')->on('users')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');

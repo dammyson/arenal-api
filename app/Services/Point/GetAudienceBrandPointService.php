@@ -34,7 +34,7 @@ class GetAudienceBrandPointService implements BaseServiceInterface
         try {
 
             $user = $this->request->user();
-            $isArena = $this->request->query('is_arena');
+            $isArena = $this->request->query('is_arena') == "true" ? true : false;
 
             $walletBalance = $user->wallet?->balance ?? 0;
 
@@ -50,11 +50,15 @@ class GetAudienceBrandPointService implements BaseServiceInterface
                 ->where('audience_id', $user->id)
                 ->count(); 
 
-            
-            $userBadge = Badge::where('is_arena', $isArena)->where("points", "<=", $audiencePoints)->orderBy("points", "desc")->first();
+                
+                $userBadge = Badge::where('is_arena', $isArena)->where("points", "<=", $audiencePoints)->orderBy("points", "desc")->first();
+                
+                $live = Live::where('brand_id', $this->brandId)->first();
+                if ($live) {
 
-            $live = Live::where('brand_id', $this->brandId)->first();
-            $liveStreak = AudienceLiveStreak::where('audience_id', $user->id)->where('live_id', $live->id)->first();
+                    $liveStreak = AudienceLiveStreak::where('audience_id', $user->id)->where('live_id', $live->id)->first();
+                }
+                // dd(" i got here");
             $liveStreakCount = $liveStreak->streak_count ?? 0;
 
             $rank = (new GetAudienceRankService($this->brandId, $user->id))->run();
@@ -74,7 +78,7 @@ class GetAudienceBrandPointService implements BaseServiceInterface
                 "phone_number" => $user->phone_number,
                 "audience_badge_name" => $userBadge->name ?? "no badge yet",
                 "audience_badge_image_url" => $userBadge->image_url ?? null,
-                "live_duration" => $live->duration,
+                "live_duration" => $live?->duration,
                 'streak_count' => $liveStreakCount,
                 'points' => $audiencePoints,
                 'badge_count' => $audienceBadgeCount,

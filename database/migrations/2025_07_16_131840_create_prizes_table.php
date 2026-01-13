@@ -11,17 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (!Schema::hasTable('prizes')) {
-            Schema::create('prizes', function (Blueprint $table) {
-                $table->uuid('id')->primary();
-                $table->string('name');
-                $table->string('description');
-                $table->uuid('campaign_id');
-                $table->uuid('game_id');
-                $table->uuid('brand_id');
-                $table->timestamps();
-            });
-        }
+        Schema::create('prizes', function (Blueprint $table) {
+            $table->uuid('id')->primary();
+            $table->string('name');
+            $table->string('description');
+            $table->uuid('campaign_id')->nullable();
+            $table->uuid('game_id')->nullable();
+            $table->uuid('brand_id')->nullable();
+            $table->integer('points')->nullable();
+            $table->string('image_url')->nullable();
+            $table->boolean('is_arena')->default(false);
+            $table->integer('amount')->default(0)->nullable();
+            $table->integer('quantity')->default(1)->nullable();
+            $table->timestamps();
+        });
 
        
     }
@@ -31,8 +34,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        if (Schema::hasTable('prizes')) {
-            Schema::dropIfExists('prizes');
-        }
+        Schema::dropIfExists('prizes');
     }
 };

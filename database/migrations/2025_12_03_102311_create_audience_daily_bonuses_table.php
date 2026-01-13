@@ -17,6 +17,8 @@ return new class extends Migration
             $table->uuid('brand_id')->nullable();
             $table->date('bonus_date')->nullable();
             $table->boolean('is_arena');
+            $table->uuid('game_id')->nullable();
+
             $table->timestamps();
         });
     }

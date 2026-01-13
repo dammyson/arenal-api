@@ -37,10 +37,12 @@ class GetArenaAudienceProfileService implements BaseServiceInterface
             $isArena = $this->request->query('is_arena') == "true" ? true : false;
             // dd($isArena);
             
-            $audiencePoints =  CampaignGamePlay::where('is_arena', true)
+
+            $audiencePoints =  BrandPoint::where('is_arena', true)   
                 ->where('audience_id', $user->id)
                 ->first()
-                ?->score ?? 0;
+                ?->points ?? 0;
+          
             
             $audienceBadgeCount =  Badge::where('is_arena', true)->count(); 
 
@@ -49,7 +51,9 @@ class GetArenaAudienceProfileService implements BaseServiceInterface
 
 
             $rank = (new GetAudienceRankService(null, $user->id, true))->run();
-            $leaderboardCount = CampaignGamePlay::where("is_arena", true)->count();
+            $leaderboardCount = CampaignGamePlay::where("is_arena", true)
+                ->distinct('audience_id')
+                ->count();
             // dd(" ig ot here");
             $audienceBadgesList = (new GetArenaAudienceBadgeListService(null, $user->id, $audiencePoints, $isArena))->run();
 

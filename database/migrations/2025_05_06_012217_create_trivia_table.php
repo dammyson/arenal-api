@@ -17,6 +17,10 @@ return new class extends Migration
             $table->uuid('game_id');
             $table->string('image_url');
             $table->uuid('user_id');
+            $table->uuid('campaign_id')->nullable();
+            $table->uuid('brand_id')->nullable();
+            $table->integer('time_limit')->nullable();
+            $table->integer('entry_fee')->nullable();
             $table->timestamps();
         });
     }
