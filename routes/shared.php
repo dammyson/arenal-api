@@ -98,5 +98,5 @@ Route::get('trivia/{trivia}/questions', [TriviaQuestionController::class, 'show'
 Route::post('trivia/{trivia}', [TriviaQuestionController::class, 'processAnswers']);
 Route::post('arena/trivia/{trivia}', [TriviaQuestionController::class, 'processArenaTriviaAnswers']);
 Route::post('trivia-words/{trivia}', [TriviaQuestionController::class, 'wordTrivia']);
-Route::post('recall-and-match/play/{campaign}', [PlayGameController::class, 'playRecallAndMatch']);
+Route::post('recall-and-match/play/{recallMatch}', [PlayGameController::class, 'playRecallAndMatch']);
 
