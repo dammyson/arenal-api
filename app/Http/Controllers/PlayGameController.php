@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\BrandPoint;
 use App\Models\Campaign;
 use App\Models\CampaignGamePlay;
+use App\Models\RecallMatch;
 use App\Services\Utility\CheckDailyBonusService;
 use App\Services\Utility\GetArenaAudienceBadgeListService;
 use App\Services\Utility\GetTestAudienceCurrentAndNextBadge;
@@ -16,7 +17,7 @@ use Illuminate\Support\Facades\DB;
 class PlayGameController extends BaseController
 {
     
-    public function playRecallAndMatch(Request $request, Campaign $campaign)
+    public function playRecallAndMatch(Request $request, RecallMatch $recallMatch)
     {
         
         try {
@@ -27,10 +28,12 @@ class PlayGameController extends BaseController
                 "percentage_of_completion" => "required|numeric|min:0|max:1",
                 "total_images" => "required|integer|min:1",
             ]);
+
+            $campaign = $recallMatch->campaign;
+            $brandId = $campaign->brand_id;            
+            $gameId = $recallMatch->game_id;
             
-            // $points = 100;
-            $brandId = $campaign->brand_id;
-            $gameId = $request->input('game_id');
+        
             $difficulty = $request->input('difficulty');            
             $percentageOfCompletedWords = $request->input('percentage_of_completion');
             $totalImages = $request->input('total_images');
@@ -142,4 +145,5 @@ class PlayGameController extends BaseController
 
        
     }
+    
 }
