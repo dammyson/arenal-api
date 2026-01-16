@@ -67,7 +67,7 @@ class CampaignController extends BaseController
         } catch (\Exception $e) {
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
         }
-        return $this->sendResponse($categorys, "Campaign created succcessfully", 201);
+        return $this->sendResponse($categorys, "category retrieved succcessfully", 201);
     }
 
     public function fetchCampaigns($title)
