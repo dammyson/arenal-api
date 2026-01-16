@@ -35,6 +35,7 @@ Route::get('faq', [FaqController::class, 'getFaq']);
 Route::get('spin-the-wheel/{spinTheWheel}/details', [SpinTheWheelController::class, 'getSpinTheWheelDetails']);
 Route::get('spin-the-wheel-participation-details/{spinTheWheel}/trial-check', [SpinTheWheelController::class, 'trialCheck']);
 
+Route::get('campaign-category', [CampaignController::class, 'getCampaignCategory']); 
 
 Route::get('arena/prizes', [PrizeController::class, 'getArenaPrizes']);
 Route::get('get-prizes', [PrizeController::class, 'getPrizes']);
