@@ -41,6 +41,8 @@ class CampaignGamePlayLeaderboardController extends BaseController
 
             $audience = $request->user();
             $filter = $request->query('filter');
+            $campaignId = $request->query('campaign_id');
+
             $leaderboard = CampaignGamePlay::with(['audience', 'audience.audienceBadges' => function($q) use($brand) { 
                         $q->where('brand_id', $brand->id)
                             ->with(['badge' => function ($b) {
@@ -57,7 +59,10 @@ class CampaignGamePlayLeaderboardController extends BaseController
                     }]) 
                 // with(['audience', 'audience.audienceBadges.badge:id,name']) // Assuming you have a relationship with the Audience model
                    
-                    ->where('brand_id', $brand->id);
+                    ->where('brand_id', $brand->id)
+                    ->when($campaignId, fn($q) => (
+                        $q->where('campaign_id', $campaignId)
+                    ));
 
                 // return $leaderboard->get();
 
@@ -76,9 +81,9 @@ class CampaignGamePlayLeaderboardController extends BaseController
                 $leaderboard->whereDate('created_at', '>=', $start_month)->whereDate('created_at', '<=', $end_month);
            } 
 
-           $leaderboard->select('audience_id', DB::raw('SUM(score) as total_score'));
+           $leaderboard->select('audience_id', 'campaign_id', DB::raw('SUM(score) as total_score'));
 
-            $leaderboard = $leaderboard->groupBy('audience_id')
+            $leaderboard = $leaderboard->groupBy('audience_id', 'campaign_id')
                 ->orderBy('total_score', 'desc')
                 ->get();
 
@@ -93,13 +98,14 @@ class CampaignGamePlayLeaderboardController extends BaseController
     }
 
     
-    public function testArenaLeaderboard(Request $request)
+    public function ArenaLeaderboard(Request $request)
     {
       
         try{
 
             $audience = $request->user();
             $filter = $request->query('filter');
+            $campaignId = $request->query('campaign_id');
 
             $leaderboard = CampaignGamePlay::with(['audience', 'audience.audienceBadges' => function($q)  { 
                     $q->where('is_arena', true)
@@ -114,7 +120,10 @@ class CampaignGamePlayLeaderboardController extends BaseController
                         )
                         // optional tiebreaker so equal points keep newest first
                         ->orderBy('audience_badges.created_at', 'desc');
-                }])                     
+                }])
+                ->when($campaignId, fn($q) => (
+                    $q->where('campaign_id', $campaignId)
+                ))                   
                 ->where('is_arena', true);
 
                 // return $leaderboard->get();
@@ -134,9 +143,9 @@ class CampaignGamePlayLeaderboardController extends BaseController
                 $leaderboard->whereDate('created_at', '>=', $start_month)->whereDate('created_at', '<=', $end_month);
            } 
 
-           $leaderboard->select('audience_id', DB::raw('SUM(score) as total_score'));
+            $leaderboard->select('audience_id', 'campaign_id', DB::raw('SUM(score) as total_score'));
 
-            $leaderboard = $leaderboard->groupBy('audience_id')
+            $leaderboard = $leaderboard->groupBy('audience_id', 'campaign_id')
                 ->orderBy('total_score', 'desc')
                 ->get();
 
@@ -150,12 +159,7 @@ class CampaignGamePlayLeaderboardController extends BaseController
         return response()->json(["audience" => $audience->id, "leaderboard" => $leaderboard]);
     }
 
-    public function arenaLeaderboard(Request $request, Brand $brandId) {       
-
-        $data = (new ArenaLeaderboardService($request, $brandId))->run();
-
-        return $this->sendResponse($data, "arena leaderboard");
-    }
+   
 
   
 

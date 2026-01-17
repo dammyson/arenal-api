@@ -26,7 +26,7 @@ Route::post('audience-wallets/create', [WalletController::class, 'createAudience
 Route::post('wallet/deduct-fee', [WalletController::class, 'deductFee']);
 Route::get('/brands',  [BrandController::class, 'index'])->name('index');
 Route::get('brand-leaderboard/{brand}', [CampaignGamePlayLeaderboardController::class, 'brandLeaderboard']);
-Route::get('arena-leaderboard', [CampaignGamePlayLeaderboardController::class, 'testArenaLeaderboard']);
+Route::get('arena-leaderboard', [CampaignGamePlayLeaderboardController::class, 'ArenaLeaderboard']);
 Route::get('brand/{brand}/live', [LiveController::class, 'viewBrandLive']);
 Route::get('list-referrals', [AudienceRegisterController::class, 'listReferrals']);
 Route::put('redeem-referrals', [AudienceRegisterController::class, 'redeemReferrals']);
