@@ -21,7 +21,7 @@ class IndexCampaign implements BaseServiceInterface{
         $filter = $this->request->query('filter');
         $category = $this->request->query('category');
 
-        return Campaign::where("is_arena", false)
+        return Campaign::where("is_arena", true)
             ->when($category, fn($q) => (
                 $q->whereHas('category', function ($query) use ($category) {
                     $query->where('name', $category);
