@@ -17,12 +17,31 @@ class ShowCampaign implements BaseServiceInterface{
 
     public function run() {
         
-       $campaignGame = CampaignGame::where("campaign_id", $this->campaignId)->first();
-        $game = $campaignGame?->game;
-        return CampaignGame::where("campaign_id", $this->campaignId)
-            ->whereHas('game') // Just check if game relationship exists
-            ->with(['campaign', 'game.rules', "game.{$game->type}"]) // Eager load both campaign and rules of game
+        $campaign = Campaign::where('id', $this->campaignId)
+            ->with([
+                'games' => function($query) {
+                    $query->with([
+                        'rules'
+                    ]);
+                }
+            ])
             ->firstOrFail();
-    //    return Campaign::where("id", $this->campaignId)->with('games')->first();
+
+        return $campaign->games->each(function ($game) {
+            if (method_exists($game, $game->type)) {
+                $game->load($game->type);
+            }
+        });
+        
+
+    //     $campaignGame = CampaignGame::where("campaign_id", $this->campaignId)->first();
+    //     // dd($campaignGame);
+    //     $game = $campaignGame?->game;
+    //     // dd($game);
+    //     return CampaignGame::where("campaign_id", $this->campaignId)
+    //         ->whereHas('game') // Just check if game relationship exists
+    //         ->with(['campaign', 'game.rules', "game.{$game->type}"]) // Eager load both campaign and rules of game
+    //         ->get();
+    // //    return Campaign::where("id", $this->campaignId)->with('games')->first();
     }
 }
