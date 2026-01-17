@@ -35,7 +35,7 @@ Route::get('faq', [FaqController::class, 'getFaq']);
 Route::get('spin-the-wheel/{spinTheWheel}/details', [SpinTheWheelController::class, 'getSpinTheWheelDetails']);
 Route::get('spin-the-wheel-participation-details/{spinTheWheel}/trial-check', [SpinTheWheelController::class, 'trialCheck']);
 
-Route::get('campaign-category', [CampaignController::class, 'getCampaignCategory']); 
+
 
 Route::get('arena/prizes', [PrizeController::class, 'getArenaPrizes']);
 Route::get('get-prizes', [PrizeController::class, 'getPrizes']);
@@ -51,8 +51,7 @@ Route::post('join-live', [LiveController::class, 'joinLive']);
 Route::get('brand/{brand}/live-history', [LiveController::class, 'liveHistory']);
 Route::get('transaction-history', [BrandAudienceTransactionController::class, 'audienceTransactionHistory']);
 
-
-Route::get('campaign-card', [CampaignController::class, 'getCampaignCards']);   
+ 
 Route::get('brand/{brand}/get-profile', [BrandController::class, 'getBrandProfile']);
 Route::get('/get-profile', [BrandController::class, 'getProfile']);
 Route::get('arena-profile', [BrandController::class, 'arenaProfile']);
@@ -90,7 +89,8 @@ Route::post('campaign/{campaign_id}/campaign-game/{game_id}/link', [CampaignCont
 
 Route::get('campaign/{campaign_id}/games/{game_id}/show-campaign-game', [CampaignGameController::class, 'showCampaignGame']);
 Route::get('campaign/{campaign_id}/games/{game_id}/game-plays', [CampaignGamePlayController::class, 'show']);
-
+Route::get('campaign-card', [CampaignController::class, 'getCampaignCards']);  
+Route::get('campaign-category', [CampaignController::class, 'getCampaignCategory']); 
 
 Route::get('trivia/brand/{brand}', [TriviaController::class, 'index']);
 Route::get('trivia/show-trivia/{trivia}', [TriviaController::class, 'show']);
