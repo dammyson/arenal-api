@@ -12,6 +12,8 @@ class CampaignGame extends Pivot
     use HasFactory, HasUuids;
 
     protected $fillable = ['campaign_id', 'game_id', 'details'];
+    
+    protected $table = 'campaign_games';
 
     public function campaign() {
         return $this->belongsTo(Campaign::class);
