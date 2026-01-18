@@ -26,6 +26,7 @@ class CampaignController extends BaseController
     public function index(Request $request)
     {
         try {
+        
 
             $data = (new IndexCampaign($request))->run();
         } catch (\Exception $e) {
