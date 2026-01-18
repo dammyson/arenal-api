@@ -25,9 +25,10 @@ class ShowCampaignGame implements BaseServiceInterface{
        
         $campaigns =  CampaignGame::where('campaign_id', $this->campaignId)
             ->where('game_id', $this->gameId)
-            ->whereHas('game')
             ->with('campaign', 'game.rules', "game.{$game->type}")
             ->firstOrFail();
+
+     
             
         return $campaigns;
     
