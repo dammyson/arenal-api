@@ -14,7 +14,10 @@ use App\Services\Trivia\IndexTrivaService;
 use App\Services\Trivia\CreateTriviaService;
 use App\Http\Requests\TriviaQuestion\StoreTriviaQuestionsRequest;
 use App\Models\Brand;
+use App\Models\CampaignGame;
+use App\Models\CampaignGameRule;
 use App\Services\Utility\IndexUtils;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 use function Laravel\Prompts\select;
@@ -69,6 +72,43 @@ class TriviaController extends BaseController
             }
             
             return $trivia->load('game.prizes');
+
+
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'An error occurred while processing your request.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+    
+    public function deleteTrivias() {
+        try {
+            DB::transaction(function () {
+
+            $trivia = Trivia::with(['questions.choices', 'game'])
+                ->where('id', 'a0ddf9d2-6d00-441c-9747-5b28816ee598')
+                ->firstOrFail();
+
+            // Delete choices → questions
+            foreach ($trivia->questions as $question) {
+                $question->choices()->delete();
+            }
+
+            $trivia->questions()->delete();
+
+            // Delete trivia
+            $trivia->delete();
+
+            if ($trivia->game) {
+                CampaignGame::where('game_id', $trivia->game->id)->delete();
+                CampaignGameRule::where('game_id', $trivia->game->id)->delete();
+
+                $trivia->game->delete();
+            }
+            });
+
+            return response()->json([ 'message' => 'Trivia deleted successfully'], 200);
 
 
         } catch (\Throwable $e) {
