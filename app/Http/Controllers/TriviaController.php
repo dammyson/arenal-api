@@ -81,43 +81,7 @@ class TriviaController extends BaseController
             ], 500);
         }
     }
-    
-    public function deleteTrivias() {
-        try {
-            DB::transaction(function () {
-
-            $trivia = Trivia::with(['questions.choices', 'game'])
-                ->where('id', 'a0ddf9d2-6d00-441c-9747-5b28816ee598')
-                ->firstOrFail();
-
-            // Delete choices → questions
-            foreach ($trivia->questions as $question) {
-                $question->choices()->delete();
-            }
-
-            $trivia->questions()->delete();
-
-            // Delete trivia
-            $trivia->delete();
-
-            if ($trivia->game) {
-                CampaignGame::where('game_id', $trivia->game->id)->delete();
-                CampaignGameRule::where('game_id', $trivia->game->id)->delete();
-
-                $trivia->game->delete();
-            }
-            });
-
-            return response()->json([ 'message' => 'Trivia deleted successfully'], 200);
-
-
-        } catch (\Throwable $e) {
-            return response()->json([
-                'message' => 'An error occurred while processing your request.',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
+  
 
    
 
