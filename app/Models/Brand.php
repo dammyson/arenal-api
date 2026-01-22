@@ -22,7 +22,9 @@ class Brand extends Model
         'is_arena',
         'closes_on',
         'daily_bonus',
-        'high_score_bonus'
+        'high_score_bonus',
+        'primary_color',
+        'secondary_color'
     ];
 
     public function details() {
