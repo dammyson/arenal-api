@@ -17,16 +17,25 @@ class ShowGameService implements BaseServiceInterface{
     }
 
     public function run() {
-      $game = Game::where('id', $this->gameId)->with('rules')
-          ->with('spinTheWheels')
-          ->with('trivias')
-          ->first();
+      $game = Game::with([
+          'rules',
+          'campaigns.brand'
+      ])->find($this->gameId);
 
       if (!$game) {
         throw new ModelNotFoundException("Game is not found");
       }
+
+      $brands = $game->campaigns
+        ->pluck('brand')
+        ->filter()
+        ->unique('id')
+        ->values();
       
-      return $game;
+      return [
+        "game" => $game,
+        "brands" => $brands
+      ];
 
 
     }
