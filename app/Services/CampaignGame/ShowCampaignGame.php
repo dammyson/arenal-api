@@ -22,10 +22,11 @@ class ShowCampaignGame implements BaseServiceInterface{
     public function run() {
 
         $game = Game::where('id', $this->gameId)->first();
+
        
         $campaigns =  CampaignGame::where('campaign_id', $this->campaignId)
             ->where('game_id', $this->gameId)
-            ->with('campaign', 'game.rules', "game.{$game->type}")
+            ->with('campaign', 'campaign.brand', 'game.rules', "game.{$game->type}")
             ->firstOrFail();
 
      
