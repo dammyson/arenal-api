@@ -23,7 +23,7 @@ class CampaignGameController extends BaseController
         } catch (\Exception $e){
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
         }        
-        return $this->sendResponse($data, "Campaign created succcessfully", 201);
+        return $this->sendResponse($data, "Campaign Game created succcessfully", 201);
    
     }
 
