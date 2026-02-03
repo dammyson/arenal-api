@@ -143,9 +143,9 @@ class CampaignGamePlayLeaderboardController extends BaseController
                 $leaderboard->whereDate('created_at', '>=', $start_month)->whereDate('created_at', '<=', $end_month);
            } 
 
-            $leaderboard->select('audience_id',  DB::raw('SUM(score) as total_score'));
+            $leaderboard->select('audience_id', 'campaign_id', DB::raw('SUM(score) as total_score'));
 
-            $leaderboard = $leaderboard->groupBy('audience_id',)
+            $leaderboard = $leaderboard->groupBy('audience_id', 'campaign_id')
                 ->orderBy('total_score', 'desc')
                 ->get();
 
