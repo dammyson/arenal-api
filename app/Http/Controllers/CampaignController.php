@@ -13,13 +13,22 @@ use App\Services\Campaign\IndexCampaign;
 use App\Services\Campaign\StoreCampaign;
 use App\Services\CampaignGame\ShowCampaignGame;
 use App\Http\Requests\Campaign\StoreCampaignRequest;
+use App\Http\Requests\Campaign\StoreCampaignRewardRequest;
+use App\Models\Airtime;
 use App\Models\Audience;
+use App\Models\BrandPoint;
 use App\Models\CampaignCard;
 use App\Models\CampaignCategory;
+use App\Models\Cash;
 use App\Models\Category;
+use App\Models\Item;
+use App\Models\Redemption;
+use App\Models\Reward;
 use App\Notifications\CampaignGameLink;
 use App\Services\Utility\IndexUtils;
+use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\DB;
 
 class CampaignController extends BaseController
 {
@@ -217,5 +226,113 @@ class CampaignController extends BaseController
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
         }
         return $this->sendResponse($data, "Campaign Game retrieved succcessfully", 200);
+    }
+
+    public function createCampaignReward(StoreCampaignRewardRequest $request){
+        $rewardType = $request->input('type');
+        $campaign = Campaign::findOrFail($request->input('campaign_id'));
+
+        if ($rewardType === 'cash') {
+            $rewardMorph = Cash::create([                
+                'image_url' => $request->input('image_url'),
+                'amount_per_redemption' => $request->input('amount_per_redemption'),
+            ]);
+
+        } elseif ($rewardType === 'airtime') {
+            $rewardMorph = Airtime::create([
+                'airtime_value' => $request->input('airtime_value'),                
+                'image_url' => $request->input('image_url'),
+                'network' => $request->input('network'),
+            ]);
+         
+        } elseif ($rewardType === 'item') {
+            $rewardMorph = Item::create([
+                'name' => $request->input('item_name'),
+                'sku' => $request->input('item_sku'),
+                'image_url' => $request->input('image_url'),
+                'description' => $request->input('item_description')
+            ]);           
+        }
+
+        $reward = $rewardMorph->reward()->create([
+            'name' => $request->input('reward_name'),
+            'campaign_id' => $campaign->id,
+            'type' => $request->input('type'),
+            'points_required' => $request->input('points_required'),
+            'stock_total' => $request->input('stock_total'),
+            'stock_remaining' => $request->input('stock_total'),
+            'is_active' => $request->input('is_active', true),
+        ]);
+
+        return  $this->sendResponse($reward, "Campaign reward created successfully", 201);
+    }
+
+    public function getCampaignRewards(Campaign $campaign)
+    {
+        try {
+            $rewards = $campaign->rewards()->get();
+        } catch (\Exception $e) {
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }
+        return $this->sendResponse($rewards, "Campaign rewards retrieved successfully", 200);
+    }
+
+    // Redeeming reward Logic 
+    public function redeemReward(Request $request, $rewardId) {
+        $user = $request->user();        
+        
+        $redemption = DB::transaction(function () use ($user, $rewardId) {
+
+            $reward = Reward::where('id', $rewardId)
+                ->lockForUpdate()
+                ->first();
+
+            if (!$reward) {
+                throw new Exception('Reward not found');
+            }
+
+            $campaign = $reward->campaign()->first();            
+
+            if (!$reward->is_active || $reward->isOutOfStock()) {
+                throw new Exception('Reward unavailable');
+            }
+
+            $userPoint = BrandPoint::where('audience_id', $user->id)
+                ->where('is_arena', true)
+                // ->where('brand_id', $campaign->brand_id)
+                ->first();
+
+            // dd($userPoint);
+
+            if ($userPoint->points < $reward->points_required) {
+                throw new Exception('Insufficient points');
+            }
+
+            $userPoint->decrement('points', $reward->points_required);
+
+            if (!is_null($reward->stock_remaining)) {
+                $reward->decrement('stock_remaining');
+            }
+
+            return Redemption::create([
+                'user_id' => $user->id,
+                'reward_id' => $reward->id,
+                'points_spent' => $reward->points_required,
+            ]);
+        });
+
+        return $this->sendResponse($redemption, "Reward redeemed successfully", 200);
+
+    }
+
+    public function getRedemptions(Request $request)
+    {
+        try {
+            $user = $request->user();
+            $redemptions = Redemption::where('user_id', $user->id)->with('reward')->get();
+        } catch (\Exception $e) {
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }
+        return $this->sendResponse($redemptions, "User redemptions retrieved successfully", 200);
     }
 }
