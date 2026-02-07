@@ -57,4 +57,9 @@ class Campaign extends Model
         return $this->belongsToMany(Audience::class, 'campaign_audience')
             ->withTimestamps();
     }
+
+    public function rewards()
+    {
+        return $this->hasMany(Reward::class);
+    }   
 }
