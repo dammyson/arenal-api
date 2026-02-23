@@ -27,6 +27,7 @@ class BrandUpdateRequest extends FormRequest
             'industry_code' => ['sometimes', 'string'],
             'sub_industry_code' => ['sometimes', 'string'],
             'slug' => ['sometimes', 'string'],
+            'description' => ['sometimes', 'string'],
             'client_id' => ['sometimes', 'uuid', 'exists:Clients,id'],
         
         ];
