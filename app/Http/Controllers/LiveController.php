@@ -127,5 +127,6 @@ class LiveController extends BaseController
 
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
         }
+    }
    
 }
