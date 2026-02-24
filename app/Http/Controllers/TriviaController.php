@@ -14,6 +14,7 @@ use App\Services\Trivia\IndexTrivaService;
 use App\Services\Trivia\CreateTriviaService;
 use App\Http\Requests\TriviaQuestion\StoreTriviaQuestionsRequest;
 use App\Models\Brand;
+use App\Models\Campaign;
 use App\Models\CampaignGame;
 use App\Models\CampaignGameRule;
 use App\Services\Utility\IndexUtils;
@@ -43,6 +44,7 @@ class TriviaController extends BaseController
 
     public function index(Request $request, Brand $brand){
         try {
+            
             return Trivia::where('brand_id', $brand->id)->select('id', 'name')->get();
 
         } catch (\Throwable $e) {
@@ -52,6 +54,26 @@ class TriviaController extends BaseController
             ], 500);
         }
     }
+
+    public function homeIndex(Request $request, Brand $brand){
+        try {
+            
+            $trivia = Trivia::where('brand_id', $brand->id)->select('id', 'name')->get();
+            $homePageData = $brand->worldCustomFirstPage()->first();
+
+            return $this->sendResponse([
+                "trivia" => $trivia,
+                "home_page_data" => $homePageData
+            ], "Home index retrieved successfully");
+
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'An error occurred while processing your request.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
 
     public function show(Request $request, Trivia $trivia) {
         try {

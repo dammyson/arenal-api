@@ -30,6 +30,7 @@ use App\Models\Live;
 use App\Models\Trivia;
 use App\Models\TriviaQuestion;
 use App\Models\TriviaQuestionChoice;
+use App\Models\WorldCustomFirstPage;
 use App\Services\Point\GetArenaAudienceDemoService;
 use App\Services\Point\GetAudienceBrandPointService;
 use App\Services\Point\StoreArenaAudienceDemoService;
@@ -467,4 +468,30 @@ class BrandController extends BaseController
         return $this->sendResponse($data, "branch selected successfully", 200);
    
     }
+
+    public function storeHomePageData(Request $request, Brand $brand) {
+        try {
+            $validated = $request->validate([
+                "header_one" => "required|string|max:255",
+                "header_two" => "required|string|max:255",
+                "header_two_description" => "required|string|max:255",
+                "header_three" => "required|string|max:255",
+                "header_three_description" => "required|string|max:255",
+                "btn_text" => "required|string|max:255"
+            ]);
+
+            $data = WorldCustomFirstPage::create([
+                "brand_id" => $brand->id,
+                "header_one" => $validated["header_one"],
+                "header_two" => $validated["header_two"],
+                "header_two_description" => $validated["header_two_description"],
+                "header_three" => $validated["header_three"],
+                "header_three_description" => $validated["header_three_description"],
+                "btn_text" => $validated["btn_text"]
+            ]);
+
+            return $this->sendResponse($data, "home page data added successfully");
+        } catch (\Exception $e) {
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }
 }

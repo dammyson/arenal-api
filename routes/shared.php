@@ -97,6 +97,7 @@ Route::get('campaign-card', [CampaignController::class, 'getCampaignCards']);
 Route::get('campaign-category', [CampaignController::class, 'getCampaignCategory']); 
 
 Route::get('trivia/brand/{brand}', [TriviaController::class, 'index']);
+Route::get('trivia/brand/{brand}/home-index', [TriviaController::class, 'homeIndex']);
 Route::get('trivia/show-trivia/{trivia}', [TriviaController::class, 'show']);
 Route::get('trivia/questions', [TriviaQuestionController::class, 'index']);
 Route::get('trivia/{trivia}/questions', [TriviaQuestionController::class, 'show']);
