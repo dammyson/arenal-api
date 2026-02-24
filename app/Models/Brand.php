@@ -24,7 +24,9 @@ class Brand extends Model
         'daily_bonus',
         'high_score_bonus',
         'primary_color',
-        'secondary_color'
+        'secondary_color',
+        'select_text',
+        'leave_text'
     ];
 
     public function details() {
@@ -40,4 +42,10 @@ class Brand extends Model
         return $this->hasOne(AudienceBranch::class)
             ->where('audience_id', auth()->id());
     }
+
+    public function live()
+    {
+        return $this->hasOne(Live::class);
+    }
+    
 }
