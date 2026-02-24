@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Live\StoreBrandDayOfWeekRequest;
 use App\Models\Live;
 use App\Models\Brand;
 use Illuminate\Http\Request;
@@ -13,6 +14,7 @@ use App\Services\Live\UpdateBrandLiveService;
 use App\Http\Requests\Live\StoreJoinLiveRequest;
 use App\Http\Requests\Live\UpdateBrandLiveRequest;
 use App\Http\Requests\Live\UpdateStoreLiveRequest;
+use App\Models\LiveDaysName;
 use App\Services\Point\GetAudienceBrandPointService;
 use App\Services\Live\AudieneBrandLiveHistoryService;
 use App\Services\Live\AudienceBrandLiveHistoryService;
@@ -30,22 +32,33 @@ class LiveController extends BaseController
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
         }   
 
-
     }
 
-    public function updateBrandLive(UpdateBrandLiveRequest $request, Live $live) {
+    public function StoreBrandDayOfWeek(StoreBrandDayOfWeekRequest $request) {
         try {
-            $updatedBrandLive = (new UpdateBrandLiveService($live, $request))->run();
-    
-            return $this->sendResponse($updatedBrandLive, "live brand updated successfully", 201);
+            $requestData = $request->validated();
+
+            $data = [];
+            foreach($requestData['day_of_week_array'] as $dayOfWeekData) {
+                $live = Live::find($requestData['live_id']);
+                $data[] = LiveDaysName::updateOrCreate(
+                    [
+                        'live_id' => $requestData['live_id'],
+                        'day_of_week' => $dayOfWeekData['day_of_week']
+                    ],
+                    [
+                        'day_value' => $dayOfWeekData['day_value']
+                    ]
+                );
+            }
+            return $this->sendResponse($data, "live day of week updated successfully", 201);
         
         } catch (\Exception $e){
 
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
-        }   
-
-
+        }
     }
+
 
     public function viewBrandLive(Request $request, Brand $brand) {
         try {
@@ -99,5 +112,20 @@ class LiveController extends BaseController
 
 
     }
+
+    public function dayOfWeekBrandLive(Request $request, Live $live) {  
+        try {
+
+
+            $dayOfWeek = $request->input('day_of_week');
+
+            $updatedLive = (new UpdateBrandLiveService($live, $request))->updateDayOfWeek($dayOfWeek);
+    
+            return $this->sendResponse($updatedLive, "live day of week updated successfully", 201);
+        
+        } catch (\Exception $e){
+
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }
    
 }

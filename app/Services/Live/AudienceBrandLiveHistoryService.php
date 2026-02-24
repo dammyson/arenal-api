@@ -13,6 +13,7 @@ use App\Services\BaseServiceInterface;
 use App\Http\Requests\Live\StoreLiveRequest;
 use App\Http\Requests\User\BrandStoreRequest;
 use App\Http\Requests\Live\StoreJoinLiveRequest;
+use App\Models\LiveDaysName;
 use Exception;
 
 class AudienceBrandLiveHistoryService implements BaseServiceInterface{
@@ -26,27 +27,24 @@ class AudienceBrandLiveHistoryService implements BaseServiceInterface{
     }
 
     public function run() {
-       try {
-       
-            // $user = $this->request->user();
+       try {       
+           
+            $live = Live::with('liveDays')->where('brand_id', $this->brandId)->first();
+                
+            if (!$live) {
+                return collect();
+            }
 
-            $dayTitles = [
-                'Monday'    => 'Miracle Monday',
-                'Tuesday'   => 'Testimony Tuesday',
-                'Wednesday' => 'Worship Wednesday',
-                'Thursday'  => 'Thankful Thursday',
-                'Friday'    => 'Faith-Filled Friday',
-                'Saturday'  => 'Sanctified Saturday',
-                'Sunday'    => 'Sacred Sunday',
-            ];
-            
+            $dayMap = $live->liveDays
+                ->pluck('day_value', 'day_of_week');
+
             return LiveTicket::where('brand_id', $this->brandId)
                 ->where('audience_id', $this->userId)
                 ->orderBy('created_at', 'desc')
-                ->get()->map(function ($ticket) use ($dayTitles) {
+                ->get()->map(function ($ticket) use ($dayMap) {
                     $dayName = $ticket->created_at->format('l');
                     return [
-                        'title' => $dayTitles[$dayName] ?? $dayName,
+                        'title' => $dayMap->get($dayName) ?? $dayName,
                         'date'  => $ticket->created_at->format('m/d/Y'),
                         'live_id' => $ticket->live_id,
                     ];
