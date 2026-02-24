@@ -47,5 +47,10 @@ class Brand extends Model
     {
         return $this->hasOne(Live::class);
     }
+
+    public function worldCustomFirstPage()
+    {
+        return $this->hasOne(WorldCustomFirstPage::class);
+    }
     
 }
