@@ -494,4 +494,5 @@ class BrandController extends BaseController
         } catch (\Exception $e) {
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
         }
+    }
 }
