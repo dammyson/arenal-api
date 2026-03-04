@@ -59,6 +59,7 @@ class ViewBrandLiveService implements BaseServiceInterface{
                     "user_id" => $live->user_id,
                     "brand_id" => $live->brand_id,
                     "duration" => $live->duration,
+                    "live_text" => $live->live_text,
                     "checkIn_amount" => $live->checkIn_amount,
                     "coins" => $live->coins,
                     "created_at" => $live->created_at,
