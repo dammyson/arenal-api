@@ -23,6 +23,7 @@ use App\Http\Controllers\TriviaQuestionController;
 use App\Http\Controllers\AudienceRegisterController;
 use App\Http\Controllers\CampaignGameRuleController;
 use App\Http\Controllers\FaqController;
+use App\Http\Controllers\OdditorController;
 use App\Http\Controllers\SearchTransactionController;
 use App\Http\Controllers\TransactionHistoryController;
 use App\Http\Controllers\SpinTheWheelComponentController;
@@ -40,9 +41,14 @@ Route::post('audiences/auth/forgot-password', [AudienceRegisterController::class
 Route::post('audiences/auth/change-password', [AudienceRegisterController::class, 'changePassword']);
 
 Route::post('auth/verify-otp', [UserRegisterController::class, 'verifyOtp']);
-
+Route::get('audiences/odditor-brand/{brand}/home-page', [OdditorController::class, 'odditorHomePage']);
+Route::get('audiences/odditor-brand/{brand}/education-page', [OdditorController::class, 'odditorEducationPage']);
+Route::get('audiences/odditor-brand/{brand}/get-odditor-trivia', [OdditorController::class, 'getOdditorTrivia']);
+Route::post('audiences/trivia/{trivia}/play-odditor-trivia', [OdditorController::class, 'playOdditorTrivia']);
 Route::group(["middleware" => ["auth:api"]], function () {
     Route::prefix('users/')->group(function () {
+        Route::post('store-odditor-home-page', [OdditorController::class, 'storeOdditorHomeData']);
+        Route::post('store-odditor-educator-page', [OdditorController::class, 'storeOdditorEducationPageData']);
 
         Route::get('wallets/transactions/{id}', [TransactionController::class, 'show']);
         Route::get('companies', [CompanyController::class, 'index']);
@@ -70,6 +76,8 @@ Route::group(["middleware" => ["auth:api"]], function () {
         Route::delete('badges/{id}', [BrandController::class, 'deleteBrandBadge']);
 
         Route::get('generate-brands-link/{brand}', [BrandController::class, 'generateCampaignLink']);
+        Route::get('generate-brands-link/odditor/{brand}', [BrandController::class, 'generateBrandCampaignLink']);
+        // Route::get('generate-brands-link/{brand}', [BrandController::class, 'generateBrandCampaignLink']);
         Route::delete('delete-trivia/{trivia}', [BrandController::class, 'deleteTriviaQuestion']);
         Route::put('update-question', [BrandController::class, 'UpdateTriviaQuestion']);
 

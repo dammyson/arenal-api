@@ -16,6 +16,7 @@ use App\Http\Requests\Campaign\StoreCampaignRequest;
 use App\Http\Requests\Campaign\StoreCampaignRewardRequest;
 use App\Models\Airtime;
 use App\Models\Audience;
+use App\Models\Brand;
 use App\Models\BrandPoint;
 use App\Models\CampaignCard;
 use App\Models\CampaignCategory;
@@ -227,6 +228,9 @@ class CampaignController extends BaseController
         }
         return $this->sendResponse($data, "Campaign Game retrieved succcessfully", 200);
     }
+
+    
+    
 
     public function createCampaignReward(StoreCampaignRewardRequest $request){
         $rewardType = $request->input('type');
