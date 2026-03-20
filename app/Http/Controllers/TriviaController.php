@@ -17,6 +17,8 @@ use App\Models\Brand;
 use App\Models\Campaign;
 use App\Models\CampaignGame;
 use App\Models\CampaignGameRule;
+use App\Models\OdditorHomePageData;
+use App\Models\OdditorUsersPoint;
 use App\Services\Utility\IndexUtils;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -103,6 +105,7 @@ class TriviaController extends BaseController
             ], 500);
         }
     }
+
   
 
    

@@ -27,9 +27,9 @@ use App\Models\BrandDetail;
 use App\Models\BrandPoint;
 use App\Models\CampaignGamePlay;
 use App\Models\Live;
+use App\Models\OdditorHomePageData;
 use App\Models\Trivia;
 use App\Models\TriviaQuestion;
-use App\Models\TriviaQuestionChoice;
 use App\Models\WorldCustomFirstPage;
 use App\Services\Point\GetArenaAudienceDemoService;
 use App\Services\Point\GetAudienceBrandPointService;
@@ -354,6 +354,54 @@ class BrandController extends BaseController
         return $this->sendResponse($front_url, "World updated succcessfully", 200);
     }
 
+    
+    public function generateBrandCampaignLink($brandId)
+    {
+        try {
+            $brand = Brand::find($brandId);
+            $expired = now()->addHour(24);
+            $user = auth()->user();
+
+            $payload = "{$brandId}|{$user->id}";
+            $encoded = base64_encode($payload);
+
+            $url =  URL::temporarySignedRoute('world.game',  $expired, ['data' => $encoded]);
+            // dd($url);
+            // "http://127.0.0.1:8000/api/audiences/world-game?data=OWY3YjdmY2ItYTRmMy00MWExLTg4NTktMzM0MDNmZTU0Y2Q1fDlmMWViNjQ3LWU5NjEtNGYyYS04OTU2LTc2MmY1OWM3OGJmYw%3D%3D&expires=1756377530&signature=82bda65adf2506c2c14204444fdb2a7fba7fbb99176cdb27adddd305a4a8cae6"
+            $urlComponents = parse_url($url);
+            // dd($urlComponents);
+            // data=OWY3YjdmY2ItYTRmMy00MWExLTg4NTktMzM0MDNmZTU0Y2Q1fDlmMWViNjQ3LWU5NjEtNGYyYS04OTU2LTc2MmY1OWM3OGJmYw%3D%3D&expires=1756377616&signature=e43ec6fa2534f8299bc42583c35952096dfe30a8241b3cb5ef53e6307ba3b25a
+            $front_url = env('FRONT_END_URL', 24) . '/oddito-brand?' . $urlComponents['query'];
+
+            return $this->sendResponse($front_url, "World link generated successfully", 200);
+        } catch (\Exception $e) {
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }
+        return $this->sendResponse($front_url, "World updated succcessfully", 200);
+    }
+
+    // public function generateBrandCampaignLink($brandId)
+    // {
+    //     try {
+    //         $brand = Brand::find($brandId)->first();
+    //         $expired = now()->addHour(24);
+    //         $user = auth()->user();
+
+    //         $payload = "{$brand->id}|{$user->id}";
+    //         $encoded = base64_encode($payload);
+
+    //         $url =  URL::temporarySignedRoute('play.game',  $expired, ['data' => $encoded]);
+    //         $urlComponents = parse_url($url);
+    //         $front_url = env('FRONT_END_URL', 24) . '?' . $urlComponents['query'];
+    //         return $front_url;
+
+    //         $user->notify(new CampaignGameLink($front_url));
+    //     } catch (\Exception $e) {
+    //         return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+    //     }
+    //     return $this->sendResponse($front_url, "Campaign updated succcessfully", 200);
+    // }
+
 
     public function showBrand(GetBrandRequest $request)
     {
@@ -469,6 +517,7 @@ class BrandController extends BaseController
    
     }
 
+    
     public function storeHomePageData(Request $request, Brand $brand) {
         try {
             $validated = $request->validate([
