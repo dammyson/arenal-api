@@ -71,26 +71,30 @@ class OdditorController extends BaseController
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
         }
     }
-
     public function storeFeedChoice(Request $request) {
         try {
 
             $validated = $request->validate([
                 "choices" => "required|array",
-                "choices.*.choice_id" => "required|uuid|trivia_question_choices",
-                "choices.*.choice_feedback" => "string"
+                "choices.*.choice_id" => "required|uuid|exists:trivia_question_choices,id",
+                "choices.*.choice_feedback" => "nullable|string"
             ]);
 
             $data = [];
-            foreach($validated["choices"] as $choices) {
-                $foundChoice = TriviaQuestionChoice::where("id", $choices->choice_id)->first();
+            
+            foreach ($validated["choices"] as $choice) {
 
-                $foundChoice->feedback = $choices->choice_feedback;
-                $foundChoice->save();
-                $data[] = $foundChoice;
+                $foundChoice = TriviaQuestionChoice::where("id", $choice['choice_id'])->first();
+
+                if ($foundChoice) {
+                    $foundChoice->feedback = $choice['choice_feedback'] ?? null;
+                    $foundChoice->save();
+                    $data[] = $foundChoice;
+                }
             }
 
-            return $this->sendResponse($data, "home page data added successfully");
+            return $this->sendResponse($data, "Feedback updated successfully");
+
         } catch (\Exception $e) {
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
         }
