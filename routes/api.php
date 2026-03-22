@@ -49,6 +49,7 @@ Route::group(["middleware" => ["auth:api"]], function () {
     Route::prefix('users/')->group(function () {
         Route::post('store-odditor-home-page', [OdditorController::class, 'storeOdditorHomeData']);
         Route::post('store-odditor-educator-page', [OdditorController::class, 'storeOdditorEducationPageData']);
+        Route::post('add-feedback-choice', [OdditorController::class, 'storeFeedChoice']);
 
         Route::get('wallets/transactions/{id}', [TransactionController::class, 'show']);
         Route::get('companies', [CompanyController::class, 'index']);
