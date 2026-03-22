@@ -22,6 +22,7 @@ class TriviaQuestionChoice extends Model
         'is_correct_choice',
         'media_type',
         'asset_url',
+        'feedback'
     ];
 
     protected $casts = [

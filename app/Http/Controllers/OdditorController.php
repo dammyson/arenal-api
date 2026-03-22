@@ -72,6 +72,30 @@ class OdditorController extends BaseController
         }
     }
 
+    public function storeFeedChoice(Request $request) {
+        try {
+
+            $validated = $request->validate([
+                "choices" => "required|array",
+                "choices.*.choice_id" => "required|uuid|trivia_question_choices",
+                "choices.*.choice_feedback" => "string"
+            ]);
+
+            $data = [];
+            foreach($validated["choices"] as $choices) {
+                $foundChoice = TriviaQuestionChoice::where("id", $choices->choice_id)->first();
+
+                $foundChoice->feedback = $choices->choice_feedback;
+                $foundChoice->save();
+                $data[] = $foundChoice;
+            }
+
+            return $this->sendResponse($data, "home page data added successfully");
+        } catch (\Exception $e) {
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }
+    }
+
     public function odditorHomePage(Request $request, Brand $brand) {
         try {
             $data = OdditorHomePageData::where('brand_id', $brand->id)->first();
