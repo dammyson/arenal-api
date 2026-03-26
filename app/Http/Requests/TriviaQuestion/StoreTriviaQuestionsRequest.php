@@ -30,6 +30,7 @@ class StoreTriviaQuestionsRequest extends FormRequest
 
             'questions.*.choices' => 'required|array|min:2',
             'questions.*.choices.*.choice' => 'required|string',
+            'questions.*.choices.*.feedback' => 'required|string',
             'questions.*.choices.*.is_correct_choice' => 'required|boolean',
             'questions.*.choices.*.media_type' => 'nullable|in:image,audio,video',
             'questions.*.choices.*.asset_url' => 'nullable|string',

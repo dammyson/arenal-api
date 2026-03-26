@@ -59,6 +59,7 @@ class CreateService implements BaseServiceInterface
                         'id' => Str::uuid(),
                         'question_id' => $question->id,
                         'choice' => $choiceData['choice'],
+                        'feedback' => $choiceData['feedback'],
                         'is_correct_choice' => $choiceData['is_correct_choice'],
                         'media_type' => $choiceData['media_type'] ?? null,
                         'asset_url' => $choiceData['asset_url'] ?? null,
