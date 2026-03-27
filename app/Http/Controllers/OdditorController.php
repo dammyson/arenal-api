@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\OdditorParticipantResource;
 use App\Models\Brand;
 use App\Models\OdditorEducatorPage;
 use App\Models\OdditorHomePageData;
+use App\Models\OdditorReengagementStats;
 use App\Models\OdditorUsersPoint;
 use App\Models\Trivia;
 use App\Models\TriviaQuestion;
@@ -122,19 +124,59 @@ class OdditorController extends BaseController
     }
 
     
-    public function getOdditorTrivia(Request $request, Brand $brand) {
-        // $fullName = $request->input('full_name');
-        // $email = $request->input('email');
-        // $phoneNo = $request->input('phone_no');
+    public function oldGetOdditorTrivia(Request $request, Brand $brand) {
+      
         $brandId = $brand->id;
 
-        $trivias = Trivia::with('questions', 'questions.choices')->where('brand_id', $brandId)->first();
+        $trivia = Trivia::with('questions', 'questions.choices')->where('brand_id', $brandId)->first();
 
-        if (!$trivias) {
+        if (!$trivia) {
             return $this->sendError("No Trivia found");
         }
 
-        return $this->sendResponse($trivias, "trivia question loaded successfuly");
+       
+
+        return $this->sendResponse($trivia, "trivia question loaded successfuly");
+    }
+    
+    public function getOdditorTrivia(Request $request, Brand $brand) {
+        $fullName = $request->input('full_name');
+        $email = $request->input('email');
+        $phoneNo = $request->input('phone_no');
+        $deviceType = $request->input('device_type');
+        $brandId = $brand->id;
+        $location = $request->input('location');
+
+        $trivia = Trivia::with('questions', 'questions.choices')->where('brand_id', $brandId)->first();
+
+        if (!$trivia) {
+            return $this->sendError("No Trivia found");
+        }
+
+        // $odditorUser = OdditorUsersPoint::where('email', $email)->first();
+
+        // if ($odditorUser) {
+        //     if ($odditorUser->status == "in_progress") {
+        //         OdditorReengagementStats::where("email", $email)->update([
+        //             'still_in_progress_after_return' => true
+        //         ]);
+        //     }
+        // }
+        OdditorUsersPoint::create([
+            'full_name' => $fullName,
+            'email' => $email,
+            'phone_no' => $phoneNo,
+            'points' => 0,
+            'status' => "in_progress",
+            'location' => $location,
+            'brand_id' => $trivia->brand_id,
+            'campaign_id' => $trivia->campaign_id,
+            'started_at' => now(),
+            'device_type' => $deviceType
+        ]);
+
+
+        return $this->sendResponse($trivia, "trivia question loaded successfuly");
     }
 
     public function playOdditorTrivia(Request $request, Trivia $trivia) {
@@ -143,19 +185,43 @@ class OdditorController extends BaseController
             'full_name' => 'required|string',
             'email' => 'required|email',
             'phone_no' => 'required|string',
-            'questions' => 'required|array',
+            'status' => "required|string:completed,abandoned",
+            'questions' => 'sometimes|array',
             'questions.*.question_id' => 'required|uuid|exists:trivia_questions,id',
             'questions.*.answer_id' => 'required|uuid|exists:trivia_question_choices,id',
         ]);
+
+
 
         $fullName = $request->input('full_name');
         $email = $request->input('email');
         $phoneNo = $request->input('phone_no');
         $questions = $request->input('questions');
 
-       
+        $odditorUser = OdditorUsersPoint::where("email", $email)->first();
 
-        $trivias = $trivia->questions;
+        $reengagementStats = null;
+        if ($odditorUser->status == "abandoned") {
+            $reengagementStats = OdditorReengagementStats::create([
+                'email' => $email,
+                'abandoned_then_returned' => true
+            ]);  
+        }
+       
+        if ($validate["status"] == "abandoned") {
+            
+            if ($odditorUser)  {
+                $odditorUser->status = "abandoned";
+
+                $odditorUser->save();
+                
+                return $this->sendResponse($odditorUser, "quiz abandoned");
+              
+            }
+            return $this->sendError("user not found");
+        }
+
+       
 
          // dd($trivia->game_id);
         $points = 0;
@@ -178,16 +244,78 @@ class OdditorController extends BaseController
             }
         }
 
-        $data = OdditorUsersPoint::create([
-            'full_name' => $fullName,
-            'email' => $email,
-            'phone_no' => $phoneNo,
-            'points' => $points,
-            'brand_id' => $trivia->brand_id,
-            'campaign_id' => $trivia->campaign_id
+       $odditorUser->points = $points;
+       $odditorUser->status = 'completed';
+       $odditorUser->ended_at = now();
+       $odditorUser->save;
+
+
+
+
+        return $this->sendResponse($odditorUser, "trivia question answers successfuly");
+    }
+
+    public function cardData(Request $request) {
+
+        $totalParticipants = OdditorUsersPoint::get()->count();
+        $totalCompleted = OdditorUsersPoint::where('status', 'completed')->count();
+        $completedPercentage = round(((($totalParticipants - $totalCompleted   ) / $totalParticipants) * 100), 2);
+      
+        $totalInProgress = OdditorUsersPoint::where('status', 'in_progress')->count();
+        $totalInProgressPercentage =  $totalInProgress > 0 ?  round(((($totalCompleted - $totalInProgress ) / $totalParticipants) * 100),2) : 0;
+       
+        $totalAbandoned = OdditorUsersPoint::where('status', 'abandoned')->count();
+        $totalAbandonedPercentage =  $totalAbandoned > 0 ?  round(((($totalCompleted - $totalAbandoned) / $totalParticipants) * 100),2) : 0;
+
+        $sumStartTime = OdditorUsersPoint::where('status', 'completed')->sum('started_at');
+        $sumEndTime = OdditorUsersPoint::where('status', 'completed')->sum('ended_at');
+
+        $avgCompletedTime =( $sumStartTime > 0 && $sumEndTime > 0) ? ($sumStartTime - $sumEndTime) / ($sumStartTime + $sumEndTime) : 0;
+
+        $abandonAndReturned = OdditorReengagementStats::where('abandoned_then_returned', true)->count();
+
+        $data = [
+            'total_participants' => $totalParticipants,
+            'total_completed' => $totalCompleted,
+            'total_completed_percentage' => $completedPercentage,
+            'total_in_progress' => $totalInProgress,
+            'total_in_progress_percentage' => $totalInProgressPercentage,
+            'total_abandoned' => $totalAbandoned,
+            'total_abandoned_percentage' => $totalAbandonedPercentage,
+            'avg_completion_time' => $avgCompletedTime,
+            'abandon_and_returned' => $abandonAndReturned
+
+        ];
+
+        return $this->sendResponse($data, "card data retrieved");
+    }
+
+    public function getOdditorParticipants(Request $request) {
+        $request->validate([
+            'filter' => ['nullable', 'in:completed,in_progress,abandoned'],
         ]);
+        $filter = $request->query('filter');
+        try {
+            $participantList =  OdditorUsersPoint::when( $filter,
+                fn ($query) => $query->where('status', $filter)
+            )->get();
 
+            $totalParticipants = $participantList->count();
+            $totalAbandoned = OdditorUsersPoint::where('status', 'abandoned')->count();
+            $totalInProgress = OdditorUsersPoint::where('status', 'in_progress')->count();
+            $totalCompleted = OdditorUsersPoint::where('status', 'completed')->count();
 
-        return $this->sendResponse($data, "trivia question answers successfuly");
+            $data = OdditorParticipantResource::collection($participantList);
+            $updatedData = [
+                "participants" => $data,
+                "total_abandoned" => $totalAbandoned,
+                "total_completed" =>  $totalCompleted,
+                "total_in_progress" =>  $totalInProgress
+            ];
+            return $this->sendResponse($updatedData, "participant retrieved successfully");
+
+        } catch (\Exception $e) {
+            return $this->sendError($e->getMessage(), [], 500);
+        }
     }
 }
