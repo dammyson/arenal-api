@@ -43,13 +43,17 @@ Route::post('audiences/auth/change-password', [AudienceRegisterController::class
 Route::post('auth/verify-otp', [UserRegisterController::class, 'verifyOtp']);
 Route::get('audiences/odditor-brand/{brand}/home-page', [OdditorController::class, 'odditorHomePage']);
 Route::get('audiences/odditor-brand/{brand}/education-page', [OdditorController::class, 'odditorEducationPage']);
-Route::get('audiences/odditor-brand/{brand}/get-odditor-trivia', [OdditorController::class, 'getOdditorTrivia']);
+Route::post('audiences/odditor-brand/{brand}/new-get-odditor-trivia', [OdditorController::class, 'getOdditorTrivia']);
+Route::get('audiences/odditor-brand/{brand}/get-odditor-trivia', [OdditorController::class, 'oldGetOdditorTrivia']);
 Route::post('audiences/trivia/{trivia}/play-odditor-trivia', [OdditorController::class, 'playOdditorTrivia']);
+
 Route::group(["middleware" => ["auth:api"]], function () {
     Route::prefix('users/')->group(function () {
         Route::post('store-odditor-home-page', [OdditorController::class, 'storeOdditorHomeData']);
         Route::post('store-odditor-educator-page', [OdditorController::class, 'storeOdditorEducationPageData']);
         Route::post('add-feedback-choice', [OdditorController::class, 'storeFeedChoice']);
+        Route::get('odditor-card-info', [OdditorController::class, 'cardData']);
+        Route::get('odditor-participants', [OdditorController::class, 'getOdditorParticipants']);
 
         Route::get('wallets/transactions/{id}', [TransactionController::class, 'show']);
         Route::get('companies', [CompanyController::class, 'index']);

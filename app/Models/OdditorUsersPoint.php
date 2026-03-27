@@ -15,7 +15,11 @@ class OdditorUsersPoint extends Model
         'phone_no',
         'points',
         'brand_id',
-        'campaign_id'
+        'campaign_id',
+        'location',
+        'status',
+        'started_at',
+        'ended_at'
     ];
 
     public function brand() {
