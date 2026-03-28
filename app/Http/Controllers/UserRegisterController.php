@@ -32,15 +32,18 @@ class UserRegisterController extends BaseController
                 500
             );
         }
-
-        $companyData = (new CreateCompanyService($validated, $user->id))->run();
-        if (!$companyData) {
-            return $this->sendError(
-                "Company creation failed",
-                [],
-                500
-            );
+        $companyData = null;
+        if (isset($validated['company_name'])) {
+            $companyData = (new CreateCompanyService($validated, $user->id))->run();
+            if (!$companyData) {
+                return $this->sendError(
+                    "Company creation failed",
+                    [],
+                    500
+                );
+            }
         }
+       
 
         $data = [
             'user' => $user,
