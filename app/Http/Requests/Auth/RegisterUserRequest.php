@@ -45,7 +45,8 @@ class RegisterUserRequest extends FormRequest
             'company_website' => ['nullable', 'string'],
             'company_city' => ['nullable', 'string'],
             'company_state' => ['nullable', 'string'],
-            'company_country' => ['nullable', 'string'],  
+            'company_country' => ['nullable', 'string'], 
+             
         ];
     }
 }
