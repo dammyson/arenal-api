@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\CampaignParticipantResource;
 use App\Http\Resources\OdditorParticipantResource;
 use App\Models\Brand;
+use App\Models\Campaign;
+use App\Models\CampaignParticipant;
+use App\Models\CampaignReengagement;
 use App\Models\OdditorEducatorPage;
 use App\Models\OdditorHomePageData;
 use App\Models\OdditorReengagementStats;
@@ -162,7 +166,7 @@ class OdditorController extends BaseController
         //         ]);
         //     }
         // }
-        OdditorUsersPoint::create([
+        CampaignParticipant::create([
             'full_name' => $fullName,
             'email' => $email,
             'phone_no' => $phoneNo,
@@ -197,25 +201,32 @@ class OdditorController extends BaseController
         $email = $request->input('email');
         $phoneNo = $request->input('phone_no');
         $questions = $request->input('questions');
+        $brandId = $trivia->brand_id;
+        $campaignId = $trivia->campaign_id;
 
-        $odditorUser = OdditorUsersPoint::where("email", $email)->first();
 
-        $reengagementStats = null;
-        if ($odditorUser->status == "abandoned") {
-            $reengagementStats = OdditorReengagementStats::create([
+        $campParticipants = CampaignParticipant::where("email", $email)->where("brand_id", $brandId)->where("campaign_id", $campaignId)->first();
+        if (!$campParticipants) {
+            return $this->sendError("user not found");
+        }
+        $campPartEngagemnet = null;
+        if ($campParticipants->status == "abandoned") {
+            $campPartEngagemnet = CampaignReengagement::create([
                 'email' => $email,
-                'abandoned_then_returned' => true
+                'abandoned_then_returned' => true,
+                'brand_id' => $brandId,
+                'campaign_id' => $campaignId
             ]);  
         }
        
         if ($validate["status"] == "abandoned") {
             
-            if ($odditorUser)  {
-                $odditorUser->status = "abandoned";
+            if ($campPartEngagemnet)  {
+                $campParticipants->status = "abandoned";
 
-                $odditorUser->save();
+                $campParticipants->save();
                 
-                return $this->sendResponse($odditorUser, "quiz abandoned");
+                return $this->sendResponse($campParticipants, "quiz abandoned");
               
             }
             return $this->sendError("user not found");
@@ -244,35 +255,40 @@ class OdditorController extends BaseController
             }
         }
 
-       $odditorUser->points = $points;
-       $odditorUser->status = 'completed';
-       $odditorUser->ended_at = now();
-       $odditorUser->save;
+       $campParticipants->points = $points;
+       $campParticipants->status = 'completed';
+       $campParticipants->ended_at = now();
+       $campParticipants->save();
 
 
 
 
-        return $this->sendResponse($odditorUser, "trivia question answers successfuly");
+        return $this->sendResponse($campParticipants, "trivia question answers successfuly");
     }
 
-    public function cardData(Request $request) {
+    public function cardData(Request $request, Campaign $campaign) {
 
-        $totalParticipants = OdditorUsersPoint::get()->count();
-        $totalCompleted = OdditorUsersPoint::where('status', 'completed')->count();
+        $totalParticipants = CampaignParticipant::where('campaign_id', $campaign->id)->count();
+        $totalCompleted = CampaignParticipant::where('campaign_id', $campaign->id)->where('status', 'completed')->count();
         $completedPercentage = round(((($totalParticipants - $totalCompleted   ) / $totalParticipants) * 100), 2);
       
-        $totalInProgress = OdditorUsersPoint::where('status', 'in_progress')->count();
+        $totalInProgress = CampaignParticipant::where('campaign_id', $campaign->id)->where('status', 'in_progress')->count();
         $totalInProgressPercentage =  $totalInProgress > 0 ?  round(((($totalCompleted - $totalInProgress ) / $totalParticipants) * 100),2) : 0;
        
-        $totalAbandoned = OdditorUsersPoint::where('status', 'abandoned')->count();
+        $totalAbandoned = CampaignParticipant::where('campaign_id', $campaign->id)->where('status', 'abandoned')->count();
         $totalAbandonedPercentage =  $totalAbandoned > 0 ?  round(((($totalCompleted - $totalAbandoned) / $totalParticipants) * 100),2) : 0;
 
-        $sumStartTime = OdditorUsersPoint::where('status', 'completed')->sum('started_at');
-        $sumEndTime = OdditorUsersPoint::where('status', 'completed')->sum('ended_at');
+        $sumStartTime = CampaignParticipant::where('campaign_id', $campaign->id)->where('status', 'completed')->sum('started_at');
+        $sumEndTime = CampaignParticipant::where('campaign_id', $campaign->id)->where('status', 'completed')->sum('ended_at');
 
-        $avgCompletedTime =( $sumStartTime > 0 && $sumEndTime > 0) ? ($sumStartTime - $sumEndTime) / ($sumStartTime + $sumEndTime) : 0;
+        $avgCompletedTime = CampaignParticipant::where('campaign_id', $campaign->id)
+            ->where('status', 'completed')
+            ->whereNotNull('started_at')
+            ->whereNotNull('ended_at')
+            ->selectRaw('AVG(TIMESTAMPDIFF(MINUTE, started_at, ended_at)) as avg_time')
+            ->value('avg_time');
 
-        $abandonAndReturned = OdditorReengagementStats::where('abandoned_then_returned', true)->count();
+        $abandonAndReturned = CampaignReengagement::where('abandoned_then_returned', true)->count();
 
         $data = [
             'total_participants' => $totalParticipants,
@@ -290,22 +306,23 @@ class OdditorController extends BaseController
         return $this->sendResponse($data, "card data retrieved");
     }
 
-    public function getOdditorParticipants(Request $request) {
+    public function getOdditorParticipants(Request $request , Campaign $campaign) {
         $request->validate([
             'filter' => ['nullable', 'in:completed,in_progress,abandoned'],
         ]);
         $filter = $request->query('filter');
         try {
-            $participantList =  OdditorUsersPoint::when( $filter,
+            $participantList =  CampaignParticipant::where('campaign_id', $campaign->id)->when( $filter,
                 fn ($query) => $query->where('status', $filter)
             )->get();
 
             $totalParticipants = $participantList->count();
-            $totalAbandoned = OdditorUsersPoint::where('status', 'abandoned')->count();
-            $totalInProgress = OdditorUsersPoint::where('status', 'in_progress')->count();
-            $totalCompleted = OdditorUsersPoint::where('status', 'completed')->count();
+            $totalAbandoned = CampaignParticipant::where('campaign_id', $campaign->id)->where('status', 'abandoned')->count();
+            $totalInProgress = CampaignParticipant::where('campaign_id', $campaign->id)->where('status', 'in_progress')->count();
+            $totalCompleted = CampaignParticipant::where('campaign_id', $campaign->id)->where('status', 'completed')->count();
 
-            $data = OdditorParticipantResource::collection($participantList);
+            $data = CampaignParticipantResource::collection($participantList);
+            
             $updatedData = [
                 "participants" => $data,
                 "total_abandoned" => $totalAbandoned,

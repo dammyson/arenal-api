@@ -52,8 +52,8 @@ Route::group(["middleware" => ["auth:api"]], function () {
         Route::post('store-odditor-home-page', [OdditorController::class, 'storeOdditorHomeData']);
         Route::post('store-odditor-educator-page', [OdditorController::class, 'storeOdditorEducationPageData']);
         Route::post('add-feedback-choice', [OdditorController::class, 'storeFeedChoice']);
-        Route::get('odditor-card-info', [OdditorController::class, 'cardData']);
-        Route::get('odditor-participants', [OdditorController::class, 'getOdditorParticipants']);
+        Route::get('brand-campaign/{campaign}/odditor-card-info', [OdditorController::class, 'cardData']);
+        Route::get('brand-campaign/{campaign}/odditor-participants', [OdditorController::class, 'getOdditorParticipants']);
 
         Route::get('wallets/transactions/{id}', [TransactionController::class, 'show']);
         Route::get('companies', [CompanyController::class, 'index']);
