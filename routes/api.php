@@ -27,7 +27,6 @@ use App\Http\Controllers\OdditorController;
 use App\Http\Controllers\SearchTransactionController;
 use App\Http\Controllers\TransactionHistoryController;
 use App\Http\Controllers\SpinTheWheelComponentController;
-use App\Http\Controllers\OverallCampaignGamePlayLeaderboardController;
 
 Route::post('users/auth/register', [UserRegisterController::class, 'userRegister']);
 Route::post('users/auth/login', [UserRegisterController::class, 'login']);
@@ -52,8 +51,8 @@ Route::group(["middleware" => ["auth:api"]], function () {
         Route::post('store-odditor-home-page', [OdditorController::class, 'storeOdditorHomeData']);
         Route::post('store-odditor-educator-page', [OdditorController::class, 'storeOdditorEducationPageData']);
         Route::post('add-feedback-choice', [OdditorController::class, 'storeFeedChoice']);
-        Route::get('brand-campaign/{campaign}/odditor-card-info', [OdditorController::class, 'cardData']);
-        Route::get('brand-campaign/{campaign}/odditor-participants', [OdditorController::class, 'getOdditorParticipants']);
+        Route::get('brand-campaign/{campaign}/card-info', [OdditorController::class, 'cardData']);
+        Route::get('brand-campaign/{campaign}/participants', [OdditorController::class, 'getOdditorParticipants']);
 
         Route::get('wallets/transactions/{id}', [TransactionController::class, 'show']);
         Route::get('companies', [CompanyController::class, 'index']);
@@ -65,6 +64,8 @@ Route::group(["middleware" => ["auth:api"]], function () {
         Route::put('clients/{client}', [ClientController::class, 'updateClient']);
         Route::delete('clients/{client}', [ClientController::class, 'deleteClient']);
         Route::post('brands', [BrandController::class, 'storeBrand']);
+        Route::get('get-user-brands', [BrandController::class, 'getUserBrands']);
+        Route::get('get-brand/{brand}/campaigns', [BrandController::class, 'getUserBrandCampaigns']);
         Route::post('updateBonus', [BrandController::class, 'updateBonus']);
         Route::put('brands/{brand}', [BrandController::class, 'updateBrand']);
         Route::post('brands/{brand}/addHomePageData', [BrandController::class, 'storeHomePageData']);
@@ -167,7 +168,7 @@ Route::middleware('auth:audience')->group(function () {
 
         Route::post("account-settings/profile/upload-image", [ProfileController::class, "uploadImage"]);
         Route::patch('account-settings/security/change-password', [ChangePasswordController::class, 'changePassword']);
-
+       
         Route::post('wallet/fund-wallet/transfer-funding', [WalletController::class, 'seerbit']);
         Route::get('wallet/fund-wallet/card-funding/{ref}', [WalletController::class, 'cardPayment']);
         Route::get('/seerbit/get-seerbit-token', [WalletController::class, 'getSeerBitToken']);
