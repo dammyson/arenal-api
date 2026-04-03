@@ -14,7 +14,8 @@ class ChangePasswordController extends Controller
     {
         
         try {
-            $user =  $request->user('audience');
+            $user =  $request->user();
+            // dd($user->password, Hash::make($request->input('old_password')));
             
             if (!Hash::check($request['old_password'], $user->password)) {
                 // throw error that old password dont match

@@ -102,12 +102,12 @@ class UserRegisterController extends BaseController
 
         try{
             $user = User::where('email', $request->email)->first();
-
+            // dd("iran");
             if (is_null($user)) {
                 return response()->json(['error' => true, 'message' => 'Invalid credentials'], 401);
             }
     
-            if (Hash::check($request->password_or_pin, $user->password) || $request->password_or_pin === $user->pin) {
+            if (Hash::check($request->password, $user->password)) {
                 $data['user'] = $user;
                 $data['token'] = $user->createToken('Nova')->accessToken;
 

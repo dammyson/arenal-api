@@ -37,6 +37,10 @@ class Brand extends Model
         return $this->hasMany(Branch::class);
     }
 
+    public function campaigns() {
+        return $this->hasMany(Campaign::class);
+    }
+
     public function audienceBranch()
     {
         return $this->hasOne(AudienceBranch::class)

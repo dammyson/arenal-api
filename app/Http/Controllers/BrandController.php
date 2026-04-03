@@ -25,7 +25,9 @@ use App\Models\AudienceLiveStreak;
 use App\Models\BrandAudienceBranch;
 use App\Models\BrandDetail;
 use App\Models\BrandPoint;
+use App\Models\Campaign;
 use App\Models\CampaignGamePlay;
+use App\Models\Client;
 use App\Models\Live;
 use App\Models\OdditorHomePageData;
 use App\Models\Trivia;
@@ -58,6 +60,34 @@ class BrandController extends BaseController
     {
         try {
             $data = (new StoreBrandService($request))->run();
+        } catch (\Exception $e) {
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }
+        return $this->sendResponse($data, "Brand info retrieved succcessfully");
+    }
+
+    public function getUserBrands(Request $request)
+    {
+        try {
+            $user = $request->user();
+            $brands = Brand::where('created_by', $user->id)->get();
+            $clients = Client::where('created_by', $user->id)->get();
+            
+            $data = [
+                'brands' => $brands,
+                'clients' => $clients
+            ];
+        } catch (\Exception $e) {
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }
+        return $this->sendResponse($data, "Brand info retrieved succcessfully");
+    }
+
+    public function getUserBrandCampaigns(Request $request, Brand $brand)
+    {
+        try {
+            $user = $request->user();
+            $data = $brand->campaigns()->where('created_by', $user->id)->get();
         } catch (\Exception $e) {
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
         }

@@ -18,8 +18,11 @@ use App\Http\Controllers\CampaignGameRuleController;
 use App\Http\Controllers\SpinTheWheelComponentController;
 use App\Http\Controllers\BrandAudienceTransactionController;
 use App\Http\Controllers\CampaignGamePlayLeaderboardController;
+use App\Http\Controllers\ChangePasswordController;
 use App\Http\Controllers\FaqController;
 use App\Http\Controllers\PlayGameController;
+
+Route::patch('security/change-password', [ChangePasswordController::class, 'changePassword']);
 
 Route::post('wallets/create', [WalletController::class, 'createWallet']);
 Route::post('audience-wallets/create', [WalletController::class, 'createAudienceWallet']);
