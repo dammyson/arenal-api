@@ -70,10 +70,18 @@ class BrandController extends BaseController
     {
         try {
             $user = $request->user();
-            $brands = Brand::where('created_by', $user->id)->get();
+            $brands = Brand::where('created_by', $user->id)
+                ->with('campaigns', function($q) use ($user) {
+                    $q->select('id', 'title')
+                      ->where('created_by', $user->id);
+                })
+            ->get();
             $clients = Client::where('created_by', $user->id)->get();
+
+            $campaigns = Campaign::where('created_by', $user->id)->select('id', 'title')->get();
             
             $data = [
+                'campaigns' => $campaigns,
                 'brands' => $brands,
                 'clients' => $clients
             ];
