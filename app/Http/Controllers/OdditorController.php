@@ -189,7 +189,7 @@ class OdditorController extends BaseController
             'full_name' => 'required|string',
             'email' => 'required|email',
             'phone_no' => 'required|string',
-            'status' => "required|string:completed,abandoned",
+            'status' => "required|string:abandoned",
             'questions' => 'sometimes|array',
             'questions.*.question_id' => 'required|uuid|exists:trivia_questions,id',
             'questions.*.answer_id' => 'required|uuid|exists:trivia_question_choices,id',
@@ -256,7 +256,7 @@ class OdditorController extends BaseController
         }
 
        $campParticipants->points = $points;
-       $campParticipants->status = 'completed';
+       $campParticipants->status = 'in_progress';
        $campParticipants->ended_at = now();
        $campParticipants->save();
 
@@ -264,6 +264,13 @@ class OdditorController extends BaseController
 
 
         return $this->sendResponse($campParticipants, "trivia question answers successfuly");
+    }
+
+    public function completedOdditor(CampaignParticipant $campParticipant) {
+        $campParticipant->status = "completed";
+        $campParticipant->save();
+
+        return $this->sendResponse($campParticipant, "campaign status updated successfully");
     }
 
     public function cardData(Request $request, Campaign $campaign) {
