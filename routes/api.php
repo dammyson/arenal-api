@@ -45,7 +45,7 @@ Route::get('audiences/odditor-brand/{brand}/education-page', [OdditorController:
 Route::post('audiences/odditor-brand/{brand}/new-get-odditor-trivia', [OdditorController::class, 'getOdditorTrivia']);
 Route::get('audiences/odditor-brand/{brand}/get-odditor-trivia', [OdditorController::class, 'oldGetOdditorTrivia']);
 Route::post('audiences/trivia/{trivia}/play-odditor-trivia', [OdditorController::class, 'playOdditorTrivia']);
-Route::post('audiences/odditor-campaign-participant/{campParticipant}/completed', [OdditorController::class, 'completedOdditor']);
+Route::put('audiences/odditor-campaign-participant/{campParticipant}/completed', [OdditorController::class, 'completedOdditor']);
 
 Route::group(["middleware" => ["auth:api"]], function () {
     Route::prefix('users/')->group(function () {
