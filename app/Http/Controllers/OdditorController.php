@@ -189,7 +189,7 @@ class OdditorController extends BaseController
             'full_name' => 'required|string',
             'email' => 'required|email',
             'phone_no' => 'required|string',
-            'status' => "required|string:abandoned",
+            'status' => "required|string:in_progress,abandoned",
             'questions' => 'sometimes|array',
             'questions.*.question_id' => 'required|uuid|exists:trivia_questions,id',
             'questions.*.answer_id' => 'required|uuid|exists:trivia_question_choices,id',
