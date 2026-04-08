@@ -270,16 +270,16 @@ class OdditorController extends BaseController
 
         $totalParticipants = CampaignParticipant::where('campaign_id', $campaign->id)->count();
         $totalCompleted = CampaignParticipant::where('campaign_id', $campaign->id)->where('status', 'completed')->count();
-        $completedPercentage = round(((($totalParticipants - $totalCompleted   ) / $totalParticipants) * 100), 2);
+        $completedPercentage = $totalParticipants > 0  ? round((($totalCompleted / $totalParticipants) * 100), 2) : 0;
       
         $totalInProgress = CampaignParticipant::where('campaign_id', $campaign->id)->where('status', 'in_progress')->count();
-        $totalInProgressPercentage =  $totalInProgress > 0 ?  round(((($totalCompleted - $totalInProgress ) / $totalParticipants) * 100),2) : 0;
+        $totalInProgressPercentage =  $totalInProgress > 0 ?  round((( $totalInProgress  / $totalParticipants) * 100),2) : 0;
        
         $totalAbandoned = CampaignParticipant::where('campaign_id', $campaign->id)->where('status', 'abandoned')->count();
-        $totalAbandonedPercentage =  $totalAbandoned > 0 ?  round(((($totalCompleted - $totalAbandoned) / $totalParticipants) * 100),2) : 0;
+        $totalAbandonedPercentage =  $totalAbandoned > 0 ?  round((( $totalAbandoned / $totalParticipants) * 100),2) : 0;
 
-        $sumStartTime = CampaignParticipant::where('campaign_id', $campaign->id)->where('status', 'completed')->sum('started_at');
-        $sumEndTime = CampaignParticipant::where('campaign_id', $campaign->id)->where('status', 'completed')->sum('ended_at');
+        // $sumStartTime = CampaignParticipant::where('campaign_id', $campaign->id)->where('status', 'completed')->sum('started_at');
+        // $sumEndTime = CampaignParticipant::where('campaign_id', $campaign->id)->where('status', 'completed')->sum('ended_at');
 
         $avgCompletedTime = CampaignParticipant::where('campaign_id', $campaign->id)
             ->where('status', 'completed')
