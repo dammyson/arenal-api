@@ -117,6 +117,8 @@ class BrandController extends BaseController
             return $this->sendError("No campaign found for the user", [], 404);
         }
 
+        $campaigns = Campaign::where('created_by', $request->user()->id)->select('id', 'title')->get();
+
         $totalParticipants = CampaignParticipant::where('campaign_id', $campaign->id)->count();
         $totalCompleted = CampaignParticipant::where('campaign_id', $campaign->id)->where('status', 'completed')->count();
         $completedPercentage = $totalParticipants > 0  ? round((($totalCompleted / $totalParticipants) * 100), 2) : 0;
@@ -138,8 +140,8 @@ class BrandController extends BaseController
             ->value('avg_time');
 
         $abandonAndReturned = CampaignReengagement::where('abandoned_then_returned', true)->count();
-
-        $data = [
+         $data = [
+            'campaigns' => $campaigns,
             'campaign_id' => $campaign->id,
             'total_participants' => $totalParticipants,
             'total_completed' => $totalCompleted,
