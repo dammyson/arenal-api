@@ -116,6 +116,13 @@ class BrandController extends BaseController
         if (!$campaign) {
             return $this->sendError("No campaign found for the user", [], 404);
         }
+        
+        CampaignParticipant::where([
+            'status' => "in_progress",
+            
+        ])->where('started_at', '<', now()->subMinutes(6))->update([
+            'status' => "abandoned"
+        ]);
 
         $campaigns = Campaign::where('created_by', $request->user()->id)->select('id', 'title')->get();
 
@@ -142,6 +149,7 @@ class BrandController extends BaseController
         $abandonAndReturned = CampaignReengagement::where('abandoned_then_returned', true)->count();
          $data = [
             'campaigns' => $campaigns,
+            'campaign_title' => $campaign->title,
             'campaign_id' => $campaign->id,
             'total_participants' => $totalParticipants,
             'total_completed' => $totalCompleted,
