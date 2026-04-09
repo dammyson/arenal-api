@@ -54,6 +54,7 @@ Route::group(["middleware" => ["auth:api"]], function () {
         Route::post('add-feedback-choice', [OdditorController::class, 'storeFeedChoice']);
         Route::get('brand-campaign/{campaign}/card-info', [OdditorController::class, 'cardData']);
         Route::get('brand-campaign/{campaign}/participants', [OdditorController::class, 'getOdditorParticipants']);
+        Route::get('brand-campaign/customcard-data', [BrandController::class, 'customCardData']);
 
         Route::get('wallets/transactions/{id}', [TransactionController::class, 'show']);
         Route::get('companies', [CompanyController::class, 'index']);

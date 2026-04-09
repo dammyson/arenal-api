@@ -27,6 +27,8 @@ use App\Models\BrandDetail;
 use App\Models\BrandPoint;
 use App\Models\Campaign;
 use App\Models\CampaignGamePlay;
+use App\Models\CampaignParticipant;
+use App\Models\CampaignReengagement;
 use App\Models\Client;
 use App\Models\Live;
 use App\Models\OdditorHomePageData;
@@ -100,6 +102,58 @@ class BrandController extends BaseController
             return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
         }
         return $this->sendResponse($data, "Brand info retrieved succcessfully");
+    }
+
+    public function customCardData(Request $request) {
+        $campaignId = $request->query('campaign_id');
+        $campaign = null;
+        if (!$campaignId) {
+            $campaign = Campaign::where('created_by', $request->user()->id)->first();          
+        } else {
+            $campaign = Campaign::where('created_by', $request->user()->id)->find($campaignId); 
+        }
+
+        if (!$campaign) {
+            return $this->sendError("No campaign found for the user", [], 404);
+        }
+
+        $totalParticipants = CampaignParticipant::where('campaign_id', $campaign->id)->count();
+        $totalCompleted = CampaignParticipant::where('campaign_id', $campaign->id)->where('status', 'completed')->count();
+        $completedPercentage = $totalParticipants > 0  ? round((($totalCompleted / $totalParticipants) * 100), 2) : 0;
+    
+        $totalInProgress = CampaignParticipant::where('campaign_id', $campaign->id)->where('status', 'in_progress')->count();
+        $totalInProgressPercentage =  $totalInProgress > 0 ?  round((( $totalInProgress  / $totalParticipants) * 100),2) : 0;
+    
+        $totalAbandoned = CampaignParticipant::where('campaign_id', $campaign->id)->where('status', 'abandoned')->count();
+        $totalAbandonedPercentage =  $totalAbandoned > 0 ?  round((( $totalAbandoned / $totalParticipants) * 100),2) : 0;
+
+        // $sumStartTime = CampaignParticipant::where('campaign_id', $campaign->id)->where('status', 'completed')->sum('started_at');
+        // $sumEndTime = CampaignParticipant::where('campaign_id', $campaign->id)->where('status', 'completed')->sum('ended_at');
+
+        $avgCompletedTime = CampaignParticipant::where('campaign_id', $campaign->id)
+            ->where('status', 'completed')
+            ->whereNotNull('started_at')
+            ->whereNotNull('ended_at')
+            ->selectRaw('AVG(TIMESTAMPDIFF(MINUTE, started_at, ended_at)) as avg_time')
+            ->value('avg_time');
+
+        $abandonAndReturned = CampaignReengagement::where('abandoned_then_returned', true)->count();
+
+        $data = [
+            'campaign_id' => $campaign->id,
+            'total_participants' => $totalParticipants,
+            'total_completed' => $totalCompleted,
+            'total_completed_percentage' => $completedPercentage,
+            'total_in_progress' => $totalInProgress,
+            'total_in_progress_percentage' => $totalInProgressPercentage,
+            'total_abandoned' => $totalAbandoned,
+            'total_abandoned_percentage' => $totalAbandonedPercentage,
+            'avg_completion_time' => $avgCompletedTime,
+            'abandon_and_returned' => $abandonAndReturned
+
+        ];
+
+        return $this->sendResponse($data, "card data retrieved");
     }
 
     public function updateBonus() {
