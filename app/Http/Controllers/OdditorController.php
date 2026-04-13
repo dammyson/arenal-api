@@ -321,7 +321,9 @@ class OdditorController extends BaseController
         try {
             $participantList =  CampaignParticipant::where('campaign_id', $campaign->id)->when( $filter,
                 fn ($query) => $query->where('status', $filter)
-            )->get();
+            )
+            ->orderBy('created_at', 'desc')
+            ->get();
 
             $totalParticipants = $participantList->count();
             $totalAbandoned = CampaignParticipant::where('campaign_id', $campaign->id)->where('status', 'abandoned')->count();
