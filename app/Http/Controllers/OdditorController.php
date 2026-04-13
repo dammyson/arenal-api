@@ -166,18 +166,24 @@ class OdditorController extends BaseController
         //         ]);
         //     }
         // }
-        CampaignParticipant::create([
-            'full_name' => $fullName,
-            'email' => $email,
-            'phone_no' => $phoneNo,
-            'points' => 0,
-            'status' => "in_progress",
-            'location' => $location,
-            'brand_id' => $trivia->brand_id,
-            'campaign_id' => $trivia->campaign_id,
-            'started_at' => now(),
-            'device_type' => $deviceType
-        ]);
+
+        CampaignParticipant::updateOrCreate(
+            [
+                'email' => $email,
+                'campaign_id' => $trivia->campaign_id,
+                'brand_id' => $trivia->brand_id,
+            ],
+            [
+                'full_name' => $fullName,
+                'phone_no' => $phoneNo,
+                'points' => 0,
+                'status' => "in_progress",
+                'location' => $location,
+                'started_at' => now(),
+                'device_type' => $deviceType
+            ]
+        );
+        
 
 
         return $this->sendResponse($trivia, "trivia question loaded successfuly");
@@ -223,6 +229,7 @@ class OdditorController extends BaseController
             
             if ($campPartEngagemnet)  {
                 $campParticipants->status = "abandoned";
+                $campParticipants->ended_at = now();
 
                 $campParticipants->save();
                 
@@ -275,6 +282,14 @@ class OdditorController extends BaseController
 
     public function cardData(Request $request, Campaign $campaign) {
 
+
+        return CampaignParticipant::where('campaign_id', $campaign->id)
+            ->whereNotNull('started_at')
+            ->whereNotNull('ended_at')
+            ->selectRaw('email, TIMESTAMPDIFF(MINUTE, started_at, ended_at) as duration')
+            ->orderByDesc('duration')
+            ->get();
+
         $totalParticipants = CampaignParticipant::where('campaign_id', $campaign->id)->count();
         $totalCompleted = CampaignParticipant::where('campaign_id', $campaign->id)->where('status', 'completed')->count();
         $completedPercentage = $totalParticipants > 0  ? round((($totalCompleted / $totalParticipants) * 100), 2) : 0;
@@ -288,10 +303,19 @@ class OdditorController extends BaseController
         // $sumStartTime = CampaignParticipant::where('campaign_id', $campaign->id)->where('status', 'completed')->sum('started_at');
         // $sumEndTime = CampaignParticipant::where('campaign_id', $campaign->id)->where('status', 'completed')->sum('ended_at');
 
+        // $avgCompletedTime = CampaignParticipant::where('campaign_id', $campaign->id)
+        //     ->where('status', 'completed')
+        //     ->whereNotNull('started_at')
+        //     ->whereNotNull('ended_at')
+        //     ->selectRaw('AVG(TIMESTAMPDIFF(MINUTE, started_at, ended_at)) as avg_time')
+        //     ->value('avg_time');
+
         $avgCompletedTime = CampaignParticipant::where('campaign_id', $campaign->id)
             ->where('status', 'completed')
             ->whereNotNull('started_at')
             ->whereNotNull('ended_at')
+            ->whereRaw('ended_at >= started_at') 
+            ->whereRaw('TIMESTAMPDIFF(MINUTE, started_at, ended_at) < 180') 
             ->selectRaw('AVG(TIMESTAMPDIFF(MINUTE, started_at, ended_at)) as avg_time')
             ->value('avg_time');
 
