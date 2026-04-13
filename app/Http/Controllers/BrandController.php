@@ -139,10 +139,13 @@ class BrandController extends BaseController
         // $sumStartTime = CampaignParticipant::where('campaign_id', $campaign->id)->where('status', 'completed')->sum('started_at');
         // $sumEndTime = CampaignParticipant::where('campaign_id', $campaign->id)->where('status', 'completed')->sum('ended_at');
 
+      
         $avgCompletedTime = CampaignParticipant::where('campaign_id', $campaign->id)
             ->where('status', 'completed')
             ->whereNotNull('started_at')
             ->whereNotNull('ended_at')
+            ->whereRaw('ended_at >= started_at') 
+            ->whereRaw('TIMESTAMPDIFF(MINUTE, started_at, ended_at) < 180') 
             ->selectRaw('AVG(TIMESTAMPDIFF(MINUTE, started_at, ended_at)) as avg_time')
             ->value('avg_time');
 
