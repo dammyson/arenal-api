@@ -283,12 +283,7 @@ class OdditorController extends BaseController
     public function cardData(Request $request, Campaign $campaign) {
 
 
-        return CampaignParticipant::where('campaign_id', $campaign->id)
-            ->whereNotNull('started_at')
-            ->whereNotNull('ended_at')
-            ->selectRaw('email, TIMESTAMPDIFF(MINUTE, started_at, ended_at) as duration')
-            ->orderByDesc('duration')
-            ->get();
+       
 
         $totalParticipants = CampaignParticipant::where('campaign_id', $campaign->id)->count();
         $totalCompleted = CampaignParticipant::where('campaign_id', $campaign->id)->where('status', 'completed')->count();
