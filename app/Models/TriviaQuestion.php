@@ -40,4 +40,6 @@ class TriviaQuestion extends Model
     {
         return $this->hasMany(TriviaQuestionChoice::class, 'question_id');
     }
+
+    
 }

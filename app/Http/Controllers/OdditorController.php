@@ -151,8 +151,18 @@ class OdditorController extends BaseController
         $brandId = $brand->id;
         $location = $request->input('location');
 
-        $trivia = Trivia::with('questions', 'questions.choices')->where('brand_id', $brandId)->first();
+        // $trivia = Trivia::with('questions', 'questions.choices')->where('brand_id', $brandId)->first();
 
+        $trivia = Trivia::with([
+            'questions' => function ($q) {
+                $q->orderBy('created_at', 'asc');
+            },
+            'questions.choices' => function ($q) {
+                $q->orderBy('created_at', 'asc');
+            }
+        ])
+        ->where('brand_id', $brandId)
+        ->first();
         if (!$trivia) {
             return $this->sendError("No Trivia found");
         }
