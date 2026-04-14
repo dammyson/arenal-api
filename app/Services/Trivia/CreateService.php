@@ -37,11 +37,12 @@ class CreateService implements BaseServiceInterface
 
             $createdQuestions = [];   
            
-            foreach ($this->data['questions'] as $questionData) {
+            foreach ($this->data['questions'] as $qIndex => $questionData) {
                 $question = TriviaQuestion::create([
                     'id' => Str::uuid(),
                     'trivia_id' => $this->data['trivia_id'], //$trivia->id,
                     'question' => $questionData['question'],
+                    'position' => $qIndex,
                     'is_general' => $questionData['is_general'] ?? true,
                     'points' => $questionData['points'] ?? 0,
                     'duration' => $questionData['duration'] ?? 0,
@@ -54,13 +55,14 @@ class CreateService implements BaseServiceInterface
     
                 $choices = [];
     
-                foreach ($questionData['choices'] as $choiceData) {
+                foreach ($questionData['choices'] as $cIndex => $choiceData) {
                     $choice = TriviaQuestionChoice::create([
                         'id' => Str::uuid(),
                         'question_id' => $question->id,
                         'choice' => $choiceData['choice'],
                         'feedback' => $choiceData['feedback'],
                         'is_correct_choice' => $choiceData['is_correct_choice'],
+                        'position' => $cIndex,
                         'media_type' => $choiceData['media_type'] ?? null,
                         'asset_url' => $choiceData['asset_url'] ?? null,
                     ]);

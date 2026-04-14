@@ -155,10 +155,10 @@ class OdditorController extends BaseController
 
         $trivia = Trivia::with([
             'questions' => function ($q) {
-                $q->orderBy('created_at', 'asc');
+                $q->orderBy('position', 'asc');
             },
             'questions.choices' => function ($q) {
-                $q->orderBy('created_at', 'asc');
+                $q->orderBy('position', 'asc');
             }
         ])
         ->where('brand_id', $brandId)
