@@ -149,9 +149,6 @@ class BrandController extends BaseController
             ->selectRaw('AVG(TIMESTAMPDIFF(MINUTE, started_at, ended_at)) as avg_time')
             ->value('avg_time');
 
-
-        
-
         if ($avgCompletedTime < 1) {
             CampaignParticipant::where('campaign_id', $campaign->id)
                 ->where('status', 'completed')
@@ -162,8 +159,6 @@ class BrandController extends BaseController
                 ->selectRaw('AVG(TIMESTAMPDIFF(SECOND, started_at, ended_at)) as avg_time')
                 ->value('avg_time');
             $timeUnit = "sec";
-        } else {
-            $avgCompletedTime = $avgCompletedTime . " mins";
         }
 
         $abandonAndReturned = CampaignReengagement::where('abandoned_then_returned', true)->count();
