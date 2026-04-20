@@ -139,7 +139,7 @@ class BrandController extends BaseController
         // $sumStartTime = CampaignParticipant::where('campaign_id', $campaign->id)->where('status', 'completed')->sum('started_at');
         // $sumEndTime = CampaignParticipant::where('campaign_id', $campaign->id)->where('status', 'completed')->sum('ended_at');
 
-      
+        $timeUnit = "mins";
         $avgCompletedTime = CampaignParticipant::where('campaign_id', $campaign->id)
             ->where('status', 'completed')
             ->whereNotNull('started_at')
@@ -150,14 +150,6 @@ class BrandController extends BaseController
             ->value('avg_time');
 
 
-            $avgCompletedTime = CampaignParticipant::where('campaign_id', $campaign->id)
-            ->where('status', 'completed')
-            ->whereNotNull('started_at')
-            ->whereNotNull('ended_at')
-            ->whereRaw('ended_at >= started_at') 
-            ->whereRaw('TIMESTAMPDIFF(SECOND, started_at, ended_at) < 180') 
-            ->selectRaw('AVG(TIMESTAMPDIFF(MINUTE, started_at, ended_at)) as avg_time')
-            ->value('avg_time');
         
 
         if ($avgCompletedTime < 1) {
@@ -169,7 +161,7 @@ class BrandController extends BaseController
                 ->whereRaw('TIMESTAMPDIFF(SECOND, started_at, ended_at) < 180') 
                 ->selectRaw('AVG(TIMESTAMPDIFF(SECOND, started_at, ended_at)) as avg_time')
                 ->value('avg_time');
-            $avgCompletedTime = $avgCompletedTime . " sec";
+            $timeUnit = "sec";
         } else {
             $avgCompletedTime = $avgCompletedTime . " mins";
         }
@@ -187,6 +179,7 @@ class BrandController extends BaseController
             'total_abandoned' => $totalAbandoned,
             'total_abandoned_percentage' => $totalAbandonedPercentage,
             'avg_completion_time' => $avgCompletedTime,
+            'avg_completion_time_unit' => $timeUnit,
             'abandon_and_returned' => $abandonAndReturned
 
         ];
