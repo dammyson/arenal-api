@@ -284,6 +284,16 @@ class OdditorController extends BaseController
     }
 
     public function completedOdditor(CampaignParticipant $campParticipant) {
+
+        if ($campParticipant->status == "abandoned") {
+            CampaignReengagement::create([
+                'email' => $campParticipant->email,
+                'abandoned_then_returned' => true,
+                'brand_id' => $campParticipant->brand_id,
+                'campaign_id' => $campParticipant->campaign_id,
+                'campaign_participant_id' => $campParticipant->id
+            ]);
+        }
         $campParticipant->status = "completed";
         $campParticipant->save();
 
@@ -291,9 +301,6 @@ class OdditorController extends BaseController
     }
 
     public function cardData(Request $request, Campaign $campaign) {
-
-
-       
 
         $totalParticipants = CampaignParticipant::where('campaign_id', $campaign->id)->count();
         $totalCompleted = CampaignParticipant::where('campaign_id', $campaign->id)->where('status', 'completed')->count();
