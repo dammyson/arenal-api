@@ -382,8 +382,11 @@ class OdditorController extends BaseController
             $totalCompleted = CampaignParticipant::where('campaign_id', $campaign->id)->where('status', 'completed')->count();
 
             $data = CampaignParticipantResource::collection($participantList);
+
+            $reengagment = CampaignReengagement::where('campaign_id', $campaign->id)->get();
             
             $updatedData = [
+                "reengagment" => $reengagment,
                 "participants" => $data,
                 "total_abandoned" => $totalAbandoned,
                 "total_completed" =>  $totalCompleted,
