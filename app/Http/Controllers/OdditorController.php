@@ -322,7 +322,7 @@ class OdditorController extends BaseController
         //     ->selectRaw('AVG(TIMESTAMPDIFF(MINUTE, started_at, ended_at)) as avg_time')
         //     ->value('avg_time');
 
-        $avgCompletedTime = CampaignParticipant::where('campaign_id', $campaign->id)
+        $avgMinCompletedTime = CampaignParticipant::where('campaign_id', $campaign->id)
             ->where('status', 'completed')
             ->whereNotNull('started_at')
             ->whereNotNull('ended_at')
@@ -330,6 +330,21 @@ class OdditorController extends BaseController
             ->whereRaw('TIMESTAMPDIFF(SECOND, started_at, ended_at) < 180') 
             ->selectRaw('AVG(TIMESTAMPDIFF(MINUTE, started_at, ended_at)) as avg_time')
             ->value('avg_time');
+        
+
+        if ($avgMinCompletedTime < 1) {
+            $avgMinCompletedTime = CampaignParticipant::where('campaign_id', $campaign->id)
+                ->where('status', 'completed')
+                ->whereNotNull('started_at')
+                ->whereNotNull('ended_at')
+                ->whereRaw('ended_at >= started_at') 
+                ->whereRaw('TIMESTAMPDIFF(SECOND, started_at, ended_at) < 180') 
+                ->selectRaw('AVG(TIMESTAMPDIFF(SECOND, started_at, ended_at)) as avg_time')
+                ->value('avg_time');
+            $avgCompletedTime = $avgMinCompletedTime . " sec";
+        } else {
+            $avgCompletedTime = $avgMinCompletedTime . " mins";
+        }
 
         $abandonAndReturned = CampaignReengagement::where('abandoned_then_returned', true)->count();
 
