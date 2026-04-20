@@ -327,7 +327,7 @@ class OdditorController extends BaseController
             ->whereNotNull('started_at')
             ->whereNotNull('ended_at')
             ->whereRaw('ended_at >= started_at') 
-            ->whereRaw('TIMESTAMPDIFF(MINUTE, started_at, ended_at) < 180') 
+            ->whereRaw('TIMESTAMPDIFF(SECOND, started_at, ended_at) < 180') 
             ->selectRaw('AVG(TIMESTAMPDIFF(MINUTE, started_at, ended_at)) as avg_time')
             ->value('avg_time');
 
