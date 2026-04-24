@@ -180,20 +180,21 @@ class OdditorController extends BaseController
 
 
         $campPart = CampaignParticipant::where("email", $email)
-        ->where('status','completed')
-        ->first();
-            // ->where("brand_id", $brandId)
-            // ->where("campaign_id", $trivia->campaign_id)
+            ->where('status','completed')
+            ->where("brand_id", $brandId)
+            ->where("campaign_id", $trivia->campaign_id)
+            ->first();
 
         if ($campPart) {
             return $this->sendError("user already completed the trivia", [], 403);
         }
 
-        CampaignParticipant::create(
+        CampaignParticipant::updateOrCreate(
             [
                 'email' => $email,
                 'campaign_id' => $trivia->campaign_id,
                 'brand_id' => $trivia->brand_id,
+            ], [  
                 'full_name' => $fullName,
                 'phone_no' => $phoneNo,
                 'points' => 0,
