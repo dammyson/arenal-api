@@ -180,8 +180,8 @@ class OdditorController extends BaseController
 
 
         $campPart = CampaignParticipant::where("email", $email)
+        ->where('status','completed')
         ->first();
-            // ->where('status','completed')
             // ->where("brand_id", $brandId)
             // ->where("campaign_id", $trivia->campaign_id)
 
