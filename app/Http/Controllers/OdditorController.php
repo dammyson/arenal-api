@@ -186,7 +186,7 @@ class OdditorController extends BaseController
             ->first();
 
         if ($campPart) {
-            return $this->sendError("user already completed the trivia", [], 403);
+            return $this->sendError("You already completed the campaign", [], 403);
         }
 
         CampaignParticipant::updateOrCreate(
