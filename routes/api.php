@@ -41,6 +41,7 @@ Route::post('audiences/auth/change-password', [AudienceRegisterController::class
 
 Route::post('auth/verify-otp', [UserRegisterController::class, 'verifyOtp']);
 Route::get('audiences/odditor-brand/{brand}/home-page', [OdditorController::class, 'odditorHomePage']);
+Route::get('delete-participants', [OdditorController::class, 'deleteParticipants']);
 Route::get('audiences/odditor-brand/{brand}/education-page', [OdditorController::class, 'odditorEducationPage']);
 Route::post('audiences/odditor-brand/{brand}/new-get-odditor-trivia', [OdditorController::class, 'getOdditorTrivia']);
 Route::get('audiences/odditor-brand/{brand}/get-odditor-trivia', [OdditorController::class, 'oldGetOdditorTrivia']);

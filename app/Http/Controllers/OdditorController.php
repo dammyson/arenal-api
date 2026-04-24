@@ -127,6 +127,17 @@ class OdditorController extends BaseController
 
     }
 
+    public function deleteParticipants() {
+        try {
+            CampaignParticipant::query()->delete();
+
+            CampaignReengagement::query()->delete();
+            return $this->sendResponse(null, "participants deleted successfully");
+        } catch (\Exception $e) {
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }
+    }
+
     
     public function oldGetOdditorTrivia(Request $request, Brand $brand) {
       
@@ -167,23 +178,20 @@ class OdditorController extends BaseController
             return $this->sendError("No Trivia found");
         }
 
-        // $odditorUser = OdditorUsersPoint::where('email', $email)->first();
 
-        // if ($odditorUser) {
-        //     if ($odditorUser->status == "in_progress") {
-        //         OdditorReengagementStats::where("email", $email)->update([
-        //             'still_in_progress_after_return' => true
-        //         ]);
-        //     }
-        // }
+        $campPart =CampaignParticipant::where("email", $email)->where("brand_id", $brandId)
+            ->where("campaign_id", $trivia->campaign_id)
+            ->where('status','completed')->first();
 
-        CampaignParticipant::updateOrCreate(
+        if ($campPart) {
+            return $this->sendError("user already completed the trivia", [], 403);
+        }
+
+        CampaignParticipant::create(
             [
                 'email' => $email,
                 'campaign_id' => $trivia->campaign_id,
                 'brand_id' => $trivia->brand_id,
-            ],
-            [
                 'full_name' => $fullName,
                 'phone_no' => $phoneNo,
                 'points' => 0,
