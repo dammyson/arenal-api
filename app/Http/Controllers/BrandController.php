@@ -150,7 +150,7 @@ class BrandController extends BaseController
             ->value('avg_time');
 
         if ($avgCompletedTime < 1) {
-            CampaignParticipant::where('campaign_id', $campaign->id)
+             $avgCompletedTime =  CampaignParticipant::where('campaign_id', $campaign->id)
                 ->where('status', 'completed')
                 ->whereNotNull('started_at')
                 ->whereNotNull('ended_at')
