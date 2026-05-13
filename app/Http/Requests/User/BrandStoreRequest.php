@@ -29,7 +29,7 @@ class BrandStoreRequest extends FormRequest
             'sub_industry_code' => ['nullable', 'string'],
             'slug' => ['nullable', 'string'],
             'is_arena' => ['sometimes', 'boolean'],
-            'client_id' => ['required', 'uuid', 'exists:Clients,id'],
+            'client_id' => ['required', 'uuid', 'exists:clients,id'],
             'daily_bonus'=> 'sometimes|numeric',
             'high_score_bonus' => 'sometimes|numeric',
             "brand_details" => "sometimes|array",
