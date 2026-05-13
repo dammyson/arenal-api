@@ -24,7 +24,7 @@ class ClientStoreRequest extends FormRequest
         return [
             'name' => ['required', 'string'],
             'image_url' => ['nullable', 'string'],
-            'company_id' => ['required', 'uuid', 'exists:Companies,id'],
+            'company_id' => ['required', 'uuid', 'exists:companies,id'],
             'street_address' => ['nullable', 'string'],
             'city' => ['nullable', 'string'],
             'state' => ['nullable', 'string'],

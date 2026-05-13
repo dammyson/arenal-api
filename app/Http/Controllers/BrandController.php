@@ -487,8 +487,8 @@ class BrandController extends BaseController
             // dd($url);
             // "http://127.0.0.1:8000/api/audiences/world-game?data=OWY3YjdmY2ItYTRmMy00MWExLTg4NTktMzM0MDNmZTU0Y2Q1fDlmMWViNjQ3LWU5NjEtNGYyYS04OTU2LTc2MmY1OWM3OGJmYw%3D%3D&expires=1756377530&signature=82bda65adf2506c2c14204444fdb2a7fba7fbb99176cdb27adddd305a4a8cae6"
             $urlComponents = parse_url($url);
-            // $front_url = env('FRONT_END_URL', 24) . '/oddito-brand?' . $urlComponents['query'];
-            $front_url = env('ODIITOR_FRONT_END_URL', 24) . '/oddito-brand?' . $urlComponents['query'];
+            $front_url = env('FRONT_END_URL', 24) . '/oddito-brand?' . $urlComponents['query'];
+            // $front_url = env('ODIITOR_FRONT_END_URL', 24) . '?' . $urlComponents['query'];
 
             return $this->sendResponse($front_url, "World link generated successfully", 200);
         } catch (\Exception $e) {
