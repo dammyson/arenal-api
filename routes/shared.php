@@ -40,7 +40,8 @@ Route::get('spin-the-wheel-participation-details/{spinTheWheel}/trial-check', [S
 
 
 
-Route::get('arena/prizes', [PrizeController::class, 'getArenaPrizes']);
+// Route::get('arena/prizes', [PrizeController::class, 'getArenaPrizes']);
+Route::get('arena/prizes', [PrizeController::class, 'getPrizes']);
 Route::get('get-prizes', [PrizeController::class, 'getPrizes']);
 Route::get('select-prize/{prize}', [PrizeController::class, 'selectPrize']);
 Route::post('arena-audience/prizes', [PrizeController::class, 'storeArenaAudiencesPrizes']);
