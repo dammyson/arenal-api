@@ -151,6 +151,19 @@ class PrizeController extends BaseController
         return $this->sendResponse($data, "Brand info retrieved succcessfully");
     }
 
+    public function getArenaPrizes(Request $request)
+    {
+        try {    
+         
+
+                $data = Prize::where('is_arena', true)->get();
+
+        }  catch (\Exception $e){
+            return $this->sendError("something went wrong", ['error' => $e->getMessage()], 500);
+        }        
+        return $this->sendResponse($data, "Arena prizes retrieved succcessfully");
+    }
+
     public function getPrizes(Request $request)
     {
         try {    
