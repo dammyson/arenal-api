@@ -93,6 +93,7 @@ Route::put('/campaign/redeem-reward/{rewardId}', [CampaignController::class, 're
 Route::get('/users-rewards', [CampaignController::class, 'getRedemptions']);  
 Route::get('campaign-game', [CampaignGameController::class, 'indexCampaignGame']);
 
+Route::get('generate-brands-link/{brand}', [BrandController::class, 'generateCampaignLink']);
 Route::post('campaign/{campaign_id}/campaign-game/{game_id}/link', [CampaignController::class, 'generateCampaignLink']);
 
 Route::get('campaign/{campaign_id}/games/{game_id}/show-campaign-game', [CampaignGameController::class, 'showCampaignGame']);
